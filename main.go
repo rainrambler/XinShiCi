@@ -49,5 +49,7 @@ func main() {
 	var qc QscConv
 	qc.Init()
 
-	qc.analyseCipai("qsc.txt")
+	//qc.analyseStrangeEncoding("qsc.txt")
+	//qc.analyseCipai("qsc.txt")
+	qc.convertFile("qsc.txt")
 }

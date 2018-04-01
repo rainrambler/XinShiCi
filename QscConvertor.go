@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+const (
+	CIPAI_MAX = 7
+)
+
 type Poets struct {
 	poet2id map[string]int
 }
@@ -72,44 +76,61 @@ func (p *Cipais) Count() int {
 	return len(p.item2id)
 }
 
-func (p *Cipais) HasCipai(line string) bool {
-	firstpart := SubChineseString(line, 0, 3)
-	//fmt.Printf("DBG:First part: [%s]\n", firstpart)
-	if p.Exists(firstpart) {
-		return true
+func (p *Cipais) HasCipai2(line string) (bool, string) {
+	s := line
+	chsize := ChcharLen(s)
+	if chsize < 2 {
+		return false, s
 	}
 
-	if ChcharLen(line) >= 5 {
-		firstpart = SubChineseString(line, 0, 5)
-		if p.Exists(firstpart) {
-			return true
+	if IsCommentLine(s) {
+		return false, s
+	}
+
+	pos := strings.Index(s, " ")
+	if pos != -1 {
+		// contains blank
+		leftpart := s[:pos]
+
+		if ChcharLen(leftpart) > CIPAI_MAX {
+			return false, s
 		}
+
+		return p.HasActualCipai(leftpart), leftpart
 	}
 
-	if ChcharLen(line) >= 4 {
-		firstpart = SubChineseString(line, 0, 4)
-		if p.Exists(firstpart) {
-			return true
+	pos = strings.Index(s, "（")
+	if pos != -1 {
+		// contains blank
+		leftpart := s[:pos]
+		if ChcharLen(leftpart) > CIPAI_MAX {
+			return false, leftpart
 		}
+
+		return p.HasActualCipai(leftpart), leftpart
 	}
 
-	firstpart = SubChineseString(line, 0, 2)
-	if p.Exists(firstpart) {
-		return true
+	if chsize > CIPAI_MAX {
+		return false, s
 	}
 
-	return false
+	return p.HasActualCipai(s), s
+}
+
+func (p *Cipais) HasActualCipai(line string) bool {
+	return p.Exists(line)
 }
 
 type QscConv struct {
 	curPoet    string
 	curTitle   string
-	curLine    int
 	curContent string
 	curComment string
+	curLineNum int
 
-	allpoets Poets
-	allPoems ChinesePoems
+	allpoets  Poets
+	allPoems  ChinesePoems
+	allCipais Cipais
 }
 
 func (p *QscConv) Init() {
@@ -122,9 +143,7 @@ func (p *QscConv) convertFile(srcFile string) {
 }
 
 func (p *QscConv) convertLines(lines []string) {
-	var allCipai Cipais
-
-	allCipai.Init("CiPai.txt")
+	p.allCipais.Init("CiPai.txt")
 	p.allpoets.Init("SongPoets.txt")
 
 	fmt.Printf("INFO: Total poets: %d\n", p.allpoets.Count())
@@ -136,39 +155,41 @@ func (p *QscConv) convertLines(lines []string) {
 		line := lines[i]
 		linenew := strings.TrimSpace(line)
 
-		//fmt.Printf("Before: [%s], After: [%s]\n", line, linenew)
-
 		if len(linenew) == 0 {
-			prevBlank = true
-			continue
+			if prevBlank {
+				prevBlank = true
+				continue
+			} else {
+				p.MakeNewPoem(i)
+				prevBlank = true
+				continue
+			}
+
 		}
 
 		if prevBlank {
 			prevBlank = false
-
-			p.MakeNewPoem(i)
-
 			p.curPoet = linenew
 
 			if !p.allpoets.IsPoet(linenew) {
-				fmt.Printf("WARN: Cannot find poet: %s\n", linenew)
+				fmt.Printf("WARN: [%d]Cannot find poet: %s\n", i, linenew)
 			}
 			continue
 		}
 
-		if allCipai.HasCipai(linenew) {
-
+		hascipai, title := p.allCipais.HasCipai2(linenew)
+		if hascipai {
 			p.MakeNewPoem(i)
 
-			p.curTitle = linenew
+			p.curTitle = title
 			continue
 		}
 
-		//p.curContent += linenew + "\n"
 		if IsCommentLine(linenew) {
 			p.curComment += linenew + "\n"
 		} else {
 			p.curContent += linenew
+			p.curLineNum++
 		}
 	}
 
@@ -177,18 +198,25 @@ func (p *QscConv) convertLines(lines []string) {
 
 func (p *QscConv) MakeNewPoem(id int) {
 	if p.curPoet == "" {
+		//fmt.Printf("DBG: Cannot find author in line: %d\n", id)
 		return
 	}
 	if p.curTitle == "" {
+		//fmt.Printf("DBG: Cannot find title in line: %d\n", id)
 		return
 	}
 	if p.curContent == "" {
+		fmt.Printf("DBG: Cannot find content in line: %d\n", id)
 		return
 	}
 	poetId := p.allpoets.FindPoet(p.curPoet)
 	if poetId < 0 {
-		log.Printf("DBG: Cannot find poet: %s\n", p.curPoet)
+		log.Printf("DBG: [%d]Cannot find poet: %s\n", id, p.curPoet)
 		return
+	}
+
+	if p.curLineNum > 2 {
+		fmt.Printf("DBG: [%d][%s] Lines: (%d): %s\n", id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
 	}
 
 	poemId := fmt.Sprintf("%d-%d", poetId, id)
@@ -201,54 +229,113 @@ func (p *QscConv) MakeNewPoem(id int) {
 
 func (p *QscConv) ClearCurrent() {
 	p.curContent = ""
-	p.curLine = 0
 	p.curTitle = ""
+	p.curLineNum = 0
 }
 
 // analyse and collect Cipai
 func (p *QscConv) analyseCipai(srcFile string) {
 	lines := ReadTxtFile(srcFile)
 
-	var allCipai Cipais
-
-	allCipai.Init("CiPai.txt")
+	p.allCipais.Init("CiPai.txt")
 	p.allpoets.Init("SongPoets.txt")
 
-	linenums := []int{}
-	idx2nm := map[int]string{}
-	nm2idx := map[string]int{}
+	var k2lines Keyword2Lines
+	k2lines.Init()
 
 	for idx, line := range lines {
 		linenew := strings.TrimSpace(line)
 
-		chsize := ChcharLen(linenew)
-
-		if (chsize < 2) || (chsize > 5) {
-			continue
+		isCipai, cipainame := p.isCipaiMissed(linenew)
+		if isCipai {
+			k2lines.AddLine(cipainame, idx+1)
 		}
-
-		if p.allpoets.IsPoet(linenew) {
-			continue
-		}
-
-		if allCipai.HasCipai(linenew) {
-			continue
-		}
-
-		if IsCommentLine(linenew) {
-			continue
-		}
-
-		idx2nm[idx] = linenew
-		nm2idx[linenew] = idx
-		linenums = append(linenums, idx)
 	}
 
-	for _, curLine := range linenums {
-		fmt.Printf("[%d]%s\n", curLine+1, idx2nm[curLine])
+	fmt.Println("-----------------")
+
+	k2lines.DemoPrint()
+}
+
+func (p *QscConv) isPossibleCipai(s string) bool {
+	chsize := ChcharLen(s)
+
+	if chsize < 2 {
+		return false
 	}
 
-	fmt.Printf("Total %d lines, %d are unique.\n", len(linenums), len(nm2idx))
+	if IsCommentLine(s) {
+		return false
+	}
+
+	pos := strings.Index(s, " ")
+	if pos != -1 {
+		// contains blank
+		leftpart := s[:pos]
+		return p.allCipais.HasActualCipai(leftpart)
+	}
+
+	pos = strings.Index(s, "（")
+	if pos != -1 {
+		// contains blank
+		leftpart := s[:pos]
+		return p.allCipais.HasActualCipai(leftpart)
+	}
+
+	if chsize <= 5 {
+		if p.allpoets.IsPoet(s) {
+			return false
+		}
+
+		return p.allCipais.HasActualCipai(s)
+	} else {
+		return false
+	}
+}
+
+func (p *QscConv) isCipaiMissed(s string) (bool, string) {
+	chsize := ChcharLen(s)
+
+	if chsize < 2 {
+		return false, s
+	}
+
+	if IsCommentLine(s) {
+		return false, s
+	}
+
+	pos := strings.Index(s, " ")
+	if pos != -1 {
+		// contains blank
+		leftpart := s[:pos]
+
+		if ChcharLen(leftpart) > CIPAI_MAX {
+			return false, leftpart
+		}
+
+		return !p.allCipais.HasActualCipai(leftpart), leftpart
+	}
+
+	pos = strings.Index(s, "（")
+	if pos != -1 {
+		// contains blank
+		leftpart := s[:pos]
+		if ChcharLen(leftpart) > CIPAI_MAX {
+			return false, leftpart
+		}
+
+		return !p.allCipais.HasActualCipai(leftpart), leftpart
+	}
+
+	if chsize <= 5 {
+		if p.allpoets.IsPoet(s) {
+			return false, s
+		}
+
+		return !p.allCipais.HasActualCipai(s), s
+	} else {
+		return false, s
+	}
 }
 
 func CreateQscPoem(id, author, title, content, comment string) *ChinesePoem {
@@ -265,4 +352,28 @@ func CreateQscPoem(id, author, title, content, comment string) *ChinesePoem {
 	cp.ParseSentences()
 
 	return cp
+}
+
+func (p *QscConv) analyseStrangeEncoding(srcFile string) {
+	lines := ReadTxtFile(srcFile)
+
+	p.allCipais.Init("CiPai.txt")
+	p.allpoets.Init("SongPoets.txt")
+
+	var k2lines Keyword2Lines
+	k2lines.Init()
+
+	for idx, line := range lines {
+		linenew := strings.TrimSpace(line)
+
+		arr := FindFirstStrangeEncoding(linenew)
+
+		for _, oneCh := range arr {
+			k2lines.AddLine(oneCh, idx+1)
+		}
+	}
+
+	fmt.Println("-----------------")
+
+	k2lines.DemoPrint()
 }

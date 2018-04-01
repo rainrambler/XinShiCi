@@ -6,35 +6,84 @@ import (
 	"testing"
 )
 
-func TestHasCipai(t *testing.T) {
+func TestHasCipai2(t *testing.T) {
 	s := `西江月（平山堂）`
 
 	var allCipai Cipais
 
 	allCipai.Init("CiPai.txt")
 
-	if !allCipai.HasCipai(s) {
-		t.Errorf("TestHasCipai failed: %v", s)
+	if hascipai, retval := allCipai.HasCipai2(s); !hascipai {
+		t.Errorf("TestHasCipai failed: %v, parsed: %s", s, retval)
 	}
 
 	s = `临江仙（冬日即事）`
-	if !allCipai.HasCipai(s) {
+	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
 		t.Errorf("TestHasCipai failed: %v", s)
 	}
 
 	s = `戚氏（此词始终指意，言周穆王宾于西王母事）`
-	if !allCipai.HasCipai(s) {
+	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
 		t.Errorf("TestHasCipai failed: %v", s)
 	}
 
 	s = `卜算子`
-	if !allCipai.HasCipai(s) {
+	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
 		t.Errorf("TestHasCipai failed: %v", s)
 	}
 
 	s = `春事阑珊芳草歇。`
-	if allCipai.HasCipai(s) {
+	if hascipai, _ := allCipai.HasCipai2(s); hascipai {
 		t.Errorf("TestHasCipai failed: %v", s)
+	}
+}
+
+func TestIsPossibleCipai(t *testing.T) {
+	var qc QscConv
+	qc.Init()
+
+	qc.allCipais.Init("CiPai.txt")
+	qc.allpoets.Init("SongPoets.txt")
+
+	s := `西江月（平山堂）`
+
+	if !qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
+	}
+
+	s = `临江仙（冬日即事）`
+	if !qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
+	}
+
+	s = `临江仙 冬日即事`
+	if !qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
+	}
+
+	s = `戚氏（此词始终指意，言周穆王宾于西王母事）`
+	if !qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
+	}
+
+	s = `卜算子`
+	if !qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
+	}
+
+	s = `春事阑珊芳草歇。`
+	if qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
+	}
+
+	s = ` `
+	if qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
+	}
+
+	s = `桃园忆故人`
+	if !qc.isPossibleCipai(s) {
+		t.Errorf("TestIsPossibleCipai failed: %v", s)
 	}
 }
 
@@ -86,11 +135,6 @@ func TestConvertLines2(t *testing.T) {
 	`
 
 	lines := strings.Split(s, "\n")
-	/*
-		for _, curLine := range lines {
-			fmt.Printf("[%s]\n", curLine)
-		}
-	*/
 
 	var qc QscConv
 	qc.Init()
@@ -101,12 +145,6 @@ func TestConvertLines2(t *testing.T) {
 	if actCount != 2 {
 		t.Errorf("TestConvertLines2 failed: %v", actCount)
 	}
-
-	/*
-		for _, poem := range qc.allPoems.ID2Poems {
-			fmt.Println(poem.toDesc())
-		}
-	*/
 
 	ids := qc.allPoems.GetAllIDs()
 
@@ -120,5 +158,57 @@ func TestConvertLines2(t *testing.T) {
 
 	for _, sentence := range poem.Sentences {
 		fmt.Printf("[%s]\n", sentence)
+	}
+}
+
+func TestConvertLines3(t *testing.T) {
+	s := `
+	
+姜个翁
+霓裳中序第一（春晚旅寓）
+园林罢组织。树树东风翠云滴。草满旧家行迹。
+龟石。当年第一。也似老、人间风日。
+
+	`
+
+	lines := strings.Split(s, "\n")
+
+	var qc QscConv
+	qc.Init()
+
+	qc.convertLines(lines)
+
+	actCount := qc.allPoems.Count()
+	if actCount != 1 {
+		t.Errorf("TestConvertLines3 failed: %v", actCount)
+	}
+
+	for _, poem := range qc.allPoems.ID2Poems {
+		fmt.Println(poem.toDesc())
+	}
+
+	ids := qc.allPoems.GetAllIDs()
+
+	poem := qc.allPoems.GetPoem(ids[0])
+
+	sentencesize := len(poem.Sentences)
+
+	if sentencesize != 7 {
+		t.Errorf("TestConvertLines3 failed: want 7, actual %v", sentencesize)
+	}
+
+	for _, sentence := range poem.Sentences {
+		fmt.Printf("[%s]\n", sentence)
+	}
+}
+
+func testUnicode2(t *testing.T) {
+	var r rune
+	r = 0xb75e
+
+	s := string(r)
+
+	if s != "3" {
+		t.Errorf(" failed: %v, want: 3", s)
 	}
 }

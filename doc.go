@@ -275,6 +275,8 @@ func SubChineseString(s string, beginPos, size int) string {
 	return string(rs[beginPos : beginPos+size])
 }
 
+const ZH_CHAR_LEN = 3
+
 func ChcharLen(s string) int {
 	rs := []rune(s)
 	return len(rs)
