@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "fmt"
+	"fmt"
 	"testing"
 )
 
@@ -15,14 +15,12 @@ func TestCollectLastWords(t *testing.T) {
 		t.Errorf("TestPinyin1 failed: %v, want: 8", arrlen)
 	}
 
-	/*
-		s := ""
-		for _, wd := range lastwords {
-			s += wd
-		}
+	s := ""
+	for _, wd := range lastwords {
+		s += wd
+	}
 
-		fmt.Println(s)
-	*/
+	fmt.Println(s)
 }
 
 func CreateFakePoem() *ChinesePoem {

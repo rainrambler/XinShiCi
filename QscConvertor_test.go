@@ -14,76 +14,27 @@ func TestHasCipai2(t *testing.T) {
 	allCipai.Init("CiPai.txt")
 
 	if hascipai, retval := allCipai.HasCipai2(s); !hascipai {
-		t.Errorf("TestHasCipai failed: %v, parsed: %s", s, retval)
+		t.Errorf("TestHasCipai2 failed: %v, parsed: %s", s, retval)
 	}
 
 	s = `临江仙（冬日即事）`
 	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
-		t.Errorf("TestHasCipai failed: %v", s)
+		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 
 	s = `戚氏（此词始终指意，言周穆王宾于西王母事）`
 	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
-		t.Errorf("TestHasCipai failed: %v", s)
+		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 
 	s = `卜算子`
 	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
-		t.Errorf("TestHasCipai failed: %v", s)
+		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 
 	s = `春事阑珊芳草歇。`
 	if hascipai, _ := allCipai.HasCipai2(s); hascipai {
-		t.Errorf("TestHasCipai failed: %v", s)
-	}
-}
-
-func TestIsPossibleCipai(t *testing.T) {
-	var qc QscConv
-	qc.Init()
-
-	qc.allCipais.Init("CiPai.txt")
-	qc.allpoets.Init("SongPoets.txt")
-
-	s := `西江月（平山堂）`
-
-	if !qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
-	}
-
-	s = `临江仙（冬日即事）`
-	if !qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
-	}
-
-	s = `临江仙 冬日即事`
-	if !qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
-	}
-
-	s = `戚氏（此词始终指意，言周穆王宾于西王母事）`
-	if !qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
-	}
-
-	s = `卜算子`
-	if !qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
-	}
-
-	s = `春事阑珊芳草歇。`
-	if qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
-	}
-
-	s = ` `
-	if qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
-	}
-
-	s = `桃园忆故人`
-	if !qc.isPossibleCipai(s) {
-		t.Errorf("TestIsPossibleCipai failed: %v", s)
+		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 }
 
@@ -92,16 +43,16 @@ func TestConvertLines(t *testing.T) {
 	
 	苏轼
 	临江仙
-	123, 234
-	345, 456
+	紫曲迷香，绿窗梦月。
+	紫曲迷香，绿窗梦月。
 	卜算子
-	123, 234
-	345, 456
+	紫曲迷香，绿窗梦月。
+	紫曲迷香，绿窗梦月。
 	
 	晏几道
 	西江月
-	123, 234
-	345, 456
+	紫曲迷香，绿窗梦月。
+	紫曲迷香，绿窗梦月。
 	
 	`
 
@@ -109,7 +60,7 @@ func TestConvertLines(t *testing.T) {
 	var qc QscConv
 	qc.Init()
 
-	qc.convertLines(lines)
+	qc.convertLines(lines, false)
 
 	for _, poem := range qc.allPoems.ID2Poems {
 		fmt.Println(poem.toDesc())
@@ -139,7 +90,7 @@ func TestConvertLines2(t *testing.T) {
 	var qc QscConv
 	qc.Init()
 
-	qc.convertLines(lines)
+	qc.convertLines(lines, false)
 
 	actCount := qc.allPoems.Count()
 	if actCount != 2 {
@@ -176,7 +127,7 @@ func TestConvertLines3(t *testing.T) {
 	var qc QscConv
 	qc.Init()
 
-	qc.convertLines(lines)
+	qc.convertLines(lines, false)
 
 	actCount := qc.allPoems.Count()
 	if actCount != 1 {
@@ -210,5 +161,23 @@ func testUnicode2(t *testing.T) {
 
 	if s != "3" {
 		t.Errorf(" failed: %v, want: 3", s)
+	}
+}
+
+func testLineFormat2(t *testing.T) {
+	s := "庶有瘳乎。|<事见七发>| "
+	trimed := lineFormat(s)
+	wanted := "庶有瘳乎。"
+	if trimed != wanted {
+		t.Errorf(" failed: %v, want: %s", trimed, wanted)
+	}
+}
+
+func testLineFormat1(t *testing.T) {
+	s := "十巡今止。乐事要须防极喜。|<淳子髡曰：酒极则乱，乐极则悲>|烛影摇风。月落参横影子通。"
+	trimed := lineFormat(s)
+	wanted := "十巡今止。乐事要须防极喜。烛影摇风。月落参横影子通。"
+	if trimed != wanted {
+		t.Errorf(" failed: %v, want: %s", trimed, wanted)
 	}
 }

@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"sort"
 	"strings"
 )
+
+var g_Rhymes ChineseRhymes
 
 type Rhyme struct {
 	Desc   string
@@ -33,9 +37,8 @@ func (p *ChineseRhymes) Init() {
 
 func (p *ChineseRhymes) AddRhyme(zhch, rhyme string) {
 	// https://stackoverflow.com/questions/2050391/how-to-check-if-a-map-contains-a-key-in-go
-	if _, ok := p.ZhChar2Rhyme[zhch]; ok {
+	if curRhyme, ok := p.ZhChar2Rhyme[zhch]; ok {
 		// exists
-		curRhyme := p.ZhChar2Rhyme[zhch]
 		curRhyme.AddItem(rhyme)
 		return
 	}
@@ -45,6 +48,7 @@ func (p *ChineseRhymes) AddRhyme(zhch, rhyme string) {
 	p.ZhChar2Rhyme[zhch] = curRhyme
 }
 
+// https://baike.baidu.com/item/%E8%AF%97%E9%9F%B5%E6%96%B0%E7%BC%96
 func (p *ChineseRhymes) ImportFile(filename string) {
 	p.Init()
 
@@ -76,4 +80,125 @@ func (p *ChineseRhymes) parseLine(rownum int, line string) {
 		p.AddRhyme(string(zhch), rhymestr)
 	}
 
+}
+
+var missedChars Rhyme2Count
+
+func (p *ChineseRhymes) AnalyseRhyme(lastwords []string) string {
+	var rhy2count Rhyme2Count
+	rhy2count.Init()
+
+	for _, wd := range lastwords {
+		if curRhyme, ok := p.ZhChar2Rhyme[wd]; ok {
+			// exists
+			//fmt.Printf("[%s] Rhyme: [%s]\n", wd, curRhyme.Desc)
+			for _, rhy := range curRhyme.rhymes {
+				rhy2count.Add(rhy)
+			}
+		} else {
+			//fmt.Printf("WARN: Cannot find rhyme for: %s\n", wd)
+			missedChars.Add(wd)
+		}
+	}
+
+	return rhy2count.FindTop1()
+}
+
+type Rhyme2Count struct {
+	rhy2Count map[string]int
+}
+
+func (p *Rhyme2Count) Init() {
+	p.rhy2Count = make(map[string]int)
+}
+
+func (p *Rhyme2Count) Add(rhy string) {
+	if len(rhy) == 0 {
+		return
+	}
+
+	if _, ok := p.rhy2Count[rhy]; ok {
+		// exists
+		p.rhy2Count[rhy] += 1
+	} else {
+		p.rhy2Count[rhy] = 1
+	}
+
+}
+
+type KeyValue struct {
+	Key   string
+	Value int
+}
+
+func (p *Rhyme2Count) SortByValue() []KeyValue {
+	arrlen := len(p.rhy2Count)
+
+	if arrlen == 0 {
+		return []KeyValue{}
+	}
+
+	if arrlen == 1 {
+		for k, v := range p.rhy2Count {
+			return []KeyValue{KeyValue{k, v}}
+		}
+	}
+
+	var kvarr []KeyValue
+	for k, v := range p.rhy2Count {
+		kvarr = append(kvarr, KeyValue{k, v})
+	}
+
+	sort.Slice(kvarr, func(i, j int) bool {
+		return kvarr[i].Value > kvarr[j].Value
+	})
+
+	return kvarr
+}
+
+func (p *Rhyme2Count) FindTop1() string {
+	kvs := p.SortByValue()
+
+	if len(kvs) == 0 {
+		return ""
+	}
+
+	return kvs[0].Key
+}
+
+func (p *Rhyme2Count) DbgPrint() {
+	kvs := p.SortByValue()
+
+	fmt.Println("-->Start")
+	for _, kv := range kvs {
+		fmt.Printf("DBG: [%s] count: %d\n", kv.Key, kv.Value)
+	}
+	fmt.Println("<--End")
+}
+
+// https://stackoverflow.com/questions/18695346/how-to-sort-a-mapstringint-by-its-values
+func sortMapByValue() {
+	m := map[string]int{
+		"something": 10,
+		"yo":        20,
+		"blah":      20,
+	}
+
+	type kv struct {
+		Key   string
+		Value int
+	}
+
+	var ss []kv
+	for k, v := range m {
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
+
+	for _, kv := range ss {
+		fmt.Printf("%s, %d\n", kv.Key, kv.Value)
+	}
 }

@@ -35,8 +35,7 @@ func (p *ChineseWord) toDesc() string {
 // TODO len(chinese word) == 3??
 func (p *ChineseWord) IsSingle() bool {
 	wdlen := len(p.Chs)
-	//fmt.Printf("Len: %d\n", wdlen)
-	return wdlen == 3
+	return wdlen == ZH_CHAR_LEN
 }
 
 type ChineseDict struct {
@@ -229,13 +228,10 @@ func convertHanzi2Pinyin() {
 	cd.Init()
 	ReadDict("/Users/anyu/goproj/Xindict/cedict.u8", &cd)
 
-	//singles := []string{}
 	var singles string
 	for _, cw := range cd.chs2Word {
 
 		if cw.IsSingle() {
-			//fmt.Println(cw.toDesc())
-			//singlecount++
 			singles += cw.Chs + "|" + cw.Pinyin + "\n"
 		}
 	}
@@ -243,7 +239,6 @@ func convertHanzi2Pinyin() {
 	bs := []byte(singles)
 	err := ioutil.WriteFile("hanzi2pinyin", bs, 0644)
 	check(err)
-	//fmt.Printf("Hanzi Count: %d\n", singlecount)
 }
 
 func SubString(s string, beginPos, size int) string {

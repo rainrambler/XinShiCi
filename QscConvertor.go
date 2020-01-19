@@ -139,10 +139,10 @@ func (p *QscConv) Init() {
 
 func (p *QscConv) convertFile(srcFile string) {
 	lines := ReadTxtFile(srcFile)
-	p.convertLines(lines)
+	p.convertLines(lines, true)
 }
 
-func (p *QscConv) convertLines(lines []string) {
+func (p *QscConv) convertLines(lines []string, runRhyme bool) {
 	p.allCipais.Init("CiPai.txt")
 	p.allpoets.Init("SongPoets.txt")
 
@@ -153,14 +153,14 @@ func (p *QscConv) convertLines(lines []string) {
 	prevBlank := false
 	for i := 0; i < totallines; i++ {
 		line := lines[i]
-		linenew := strings.TrimSpace(line)
+		linenew := lineFormat(line) // remove comment tag : |< >|
 
 		if len(linenew) == 0 {
 			if prevBlank {
 				prevBlank = true
 				continue
 			} else {
-				p.MakeNewPoem(i)
+				p.MakeNewPoem(i, runRhyme)
 				prevBlank = true
 				continue
 			}
@@ -179,7 +179,7 @@ func (p *QscConv) convertLines(lines []string) {
 
 		hascipai, title := p.allCipais.HasCipai2(linenew)
 		if hascipai {
-			p.MakeNewPoem(i)
+			p.MakeNewPoem(i, runRhyme)
 
 			p.curTitle = title
 			continue
@@ -193,10 +193,31 @@ func (p *QscConv) convertLines(lines []string) {
 		}
 	}
 
-	p.MakeNewPoem(totallines)
+	p.MakeNewPoem(totallines, runRhyme)
 }
 
-func (p *QscConv) MakeNewPoem(id int) {
+// remove prefix and suffix spaces and comments (tag : |< >|)
+func lineFormat(line string) string {
+	linenew := strings.TrimSpace(line)
+
+	posStart := strings.Index(linenew, "|<")
+	if posStart == -1 {
+		return linenew
+	}
+
+	posEnd := strings.Index(linenew, ">|")
+	if posEnd == -1 {
+		log.Printf("INFO: Line only has start comment tag: %s\n", line)
+		return linenew
+	}
+
+	leftPart := SubString(linenew, 0, posStart)
+	rightPart := SubString(linenew, posEnd+2, len(linenew))
+
+	return leftPart + rightPart
+}
+
+func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
 	if p.curPoet == "" {
 		//fmt.Printf("DBG: Cannot find author in line: %d\n", id)
 		return
@@ -222,6 +243,10 @@ func (p *QscConv) MakeNewPoem(id int) {
 	poemId := fmt.Sprintf("%d-%d", poetId, id)
 
 	cp := CreateQscPoem(poemId, p.curPoet, p.curTitle, p.curContent, p.curComment)
+
+	if runRhyme {
+		cp.analyseRhyme()
+	}
 	p.allPoems.AddPoem(cp)
 
 	p.ClearCurrent()
@@ -255,42 +280,6 @@ func (p *QscConv) analyseCipai(srcFile string) {
 	fmt.Println("-----------------")
 
 	k2lines.DemoPrint()
-}
-
-func (p *QscConv) isPossibleCipai(s string) bool {
-	chsize := ChcharLen(s)
-
-	if chsize < 2 {
-		return false
-	}
-
-	if IsCommentLine(s) {
-		return false
-	}
-
-	pos := strings.Index(s, " ")
-	if pos != -1 {
-		// contains blank
-		leftpart := s[:pos]
-		return p.allCipais.HasActualCipai(leftpart)
-	}
-
-	pos = strings.Index(s, "（")
-	if pos != -1 {
-		// contains blank
-		leftpart := s[:pos]
-		return p.allCipais.HasActualCipai(leftpart)
-	}
-
-	if chsize <= 5 {
-		if p.allpoets.IsPoet(s) {
-			return false
-		}
-
-		return p.allCipais.HasActualCipai(s)
-	} else {
-		return false
-	}
 }
 
 func (p *QscConv) isCipaiMissed(s string) (bool, string) {
@@ -338,6 +327,65 @@ func (p *QscConv) isCipaiMissed(s string) (bool, string) {
 	}
 }
 
+func (p *QscConv) PrintRhyme() {
+	for _, v := range p.allPoems.ID2Poems {
+		fmt.Printf("[%s]: %s\n", v.Rhyme, SubChineseString(v.AllText, 0, 15))
+	}
+}
+
+func (p *QscConv) FindByCiPai(cipai string) {
+	for _, v := range p.allPoems.ID2Poems {
+		if v.Title == cipai {
+			fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 15))
+		}
+	}
+}
+
+func (p *QscConv) FindByYayun(yayun string) {
+	for _, v := range p.allPoems.ID2Poems {
+		if v.Rhyme == yayun {
+			fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 65))
+		}
+	}
+}
+
+func (p *QscConv) FindByCiPaiYayun(cipai, yayun string) {
+	for _, v := range p.allPoems.ID2Poems {
+		if (v.Rhyme == yayun) && (v.Title == cipai) {
+			fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 75))
+		}
+	}
+}
+
+func (p *QscConv) FindSentense(qc *QueryCondition) {
+	for _, v := range p.allPoems.ID2Poems {
+		for _, sentence := range v.Sentences {
+			if qc.ZhLen > 0 {
+				if qc.ZhLen != ChcharLen(sentence) {
+					continue
+				}
+			}
+
+			switch qc.Pos {
+			case POS_PREFIX:
+				if strings.HasPrefix(sentence, qc.KeywordStr) {
+					fmt.Printf("%s [%s]\n", sentence, v.toDesc())
+				}
+			case POS_SUFFIX:
+				if strings.HasSuffix(sentence, qc.KeywordStr) {
+					fmt.Printf("%s [%s]\n", sentence, v.toDesc())
+				}
+			case POS_ANY:
+				if strings.Contains(sentence, qc.KeywordStr) {
+					fmt.Printf("%s [%s]\n", sentence, v.toDesc())
+				}
+			default:
+
+			}
+		}
+	}
+}
+
 func CreateQscPoem(id, author, title, content, comment string) *ChinesePoem {
 	cp := new(ChinesePoem)
 	cp.ID = id
@@ -350,30 +398,7 @@ func CreateQscPoem(id, author, title, content, comment string) *ChinesePoem {
 	}
 
 	cp.ParseSentences()
+	//cp.analyseRhyme()
 
 	return cp
-}
-
-func (p *QscConv) analyseStrangeEncoding(srcFile string) {
-	lines := ReadTxtFile(srcFile)
-
-	p.allCipais.Init("CiPai.txt")
-	p.allpoets.Init("SongPoets.txt")
-
-	var k2lines Keyword2Lines
-	k2lines.Init()
-
-	for idx, line := range lines {
-		linenew := strings.TrimSpace(line)
-
-		arr := FindFirstStrangeEncoding(linenew)
-
-		for _, oneCh := range arr {
-			k2lines.AddLine(oneCh, idx+1)
-		}
-	}
-
-	fmt.Println("-----------------")
-
-	k2lines.DemoPrint()
 }

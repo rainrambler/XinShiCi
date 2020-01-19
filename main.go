@@ -49,7 +49,23 @@ func main() {
 	var qc QscConv
 	qc.Init()
 
+	//missedChars.rhy2Count = make(map[string]int)
+
+	//g_Rhymes.Init()
+	//g_Rhymes.ImportFile("ShiYunXinBian.txt")
+	g_ZhRhymes.Init()
+
 	//qc.analyseStrangeEncoding("qsc.txt")
 	//qc.analyseCipai("qsc.txt")
 	qc.convertFile("qsc.txt")
+
+	//qc.PrintRhyme()
+	//qc.FindByCiPai("踏莎行")
+	qc.FindByYayun("14")
+	//qc.FindByYayun("2")
+	//qc.FindByCiPaiYayun("临江仙", "15")
+	//qc.FindByCiPaiYayun("鹊桥仙", "14")
+	//qc.FindSentense(createQuery("艳似", POS_ANY, 0))
+
+	//missedChars.DbgPrint()
 }

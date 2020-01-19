@@ -28,7 +28,10 @@ func SplitPoem(r rune) bool {
 }
 
 func (p *ChinesePoem) analyseRhyme() {
+	lastwords := p.collectLastWords()
+	s := g_ZhRhymes.AnalyseRhyme(lastwords)
 
+	p.Rhyme = s
 }
 
 func (p *ChinesePoem) collectLastWords() []string {
