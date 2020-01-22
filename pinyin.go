@@ -96,3 +96,19 @@ func SplitPinyin(s string) (Shengmu, Yunmu string) {
 	Yunmu = ""
 	return
 }
+
+func (p *Pinyin) GetPingze() int {
+	switch p.Shengdiao {
+	case "0", "1", "2":
+		return PingZePing
+	case "3", "4":
+		return PingZeZe
+	default:
+		log.Printf("DBG: Cannot get pingze: %s\n", p.Shengdiao)
+		return PingZeUnknown
+	}
+}
+
+func (p *Pinyin) toDesc() string {
+	return "[" + p.Shengmu + p.Yunmu + p.Shengdiao + "]"
+}

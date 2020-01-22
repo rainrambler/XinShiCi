@@ -61,8 +61,12 @@ func main() {
 
 	//qc.PrintRhyme()
 	//qc.FindByCiPai("踏莎行")
+
 	//qc.FindByYayun("12") // ou
-	qc.FindByYayunLength("12", 4)
+	//qc.FindByYayunLength("12", 4)
+	qc.FindByYayunLengthPingze("12", 4, PingZePing)
+	//qc.FindByYayunLength("12", 7)
+
 	//qc.FindByYayun("2")
 	//qc.FindByCiPaiYayun("临江仙", "15")
 	//qc.FindByCiPaiYayun("鹊桥仙", "14")

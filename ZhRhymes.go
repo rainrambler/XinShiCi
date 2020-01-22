@@ -4,6 +4,13 @@ import (
 	"log"
 )
 
+const (
+	PingZePing    = 1
+	PingZeZe      = 2
+	PingZeAny     = 0
+	PingZeUnknown = -1
+)
+
 var g_ZhRhymes ZhRhymes
 
 type ZhRhymes struct {
@@ -47,6 +54,7 @@ func (p *ZhRhymes) AnalyseRhyme(lastwords []string) string {
 	return rhy2count.FindTop1()
 }
 
+// `闲` ==> `14` (ian)
 func (p *ZhRhymes) findRhyme(chword string) string {
 	pystr := p.pyf.FindPinyin(chword)
 
@@ -59,6 +67,37 @@ func (p *ZhRhymes) findRhyme(chword string) string {
 	if pyval == nil {
 		log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n", chword, pystr)
 		return ""
+	}
+
+	if curRhyme, ok := p.ZhChar2Rhyme[pyval.Yunmu]; ok {
+		return curRhyme
+	} else {
+		return ""
+	}
+}
+
+// eg: Input: (`闲`, PingZePing), Output:  `14` (ian)
+// eg: Input: (`闲`, PingZeZe), Output:  ``
+func (p *ZhRhymes) findRhymePingze(chword string, pztype int) string {
+	pystr := p.pyf.FindPinyin(chword)
+
+	if pystr == "" {
+		//log.Printf("DBG: Cannot find pinyin for %s!\n", chword)
+		return ""
+	}
+
+	pyval := CreatePinyin(pystr)
+	if pyval == nil {
+		log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n", chword, pystr)
+		return ""
+	}
+
+	if pztype != PingZeAny {
+		if pyval.GetPingze() != pztype {
+			//fmt.Printf("DBG: Pingze not match: [%s] to [%d]!\n", pyval.toDesc(),
+			//	pztype)
+			return ""
+		}
 	}
 
 	if curRhyme, ok := p.ZhChar2Rhyme[pyval.Yunmu]; ok {

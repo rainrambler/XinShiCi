@@ -69,6 +69,26 @@ func (p *ChinesePoem) FindByYayunLength(yayun string, chlen int) []string {
 	return arr
 }
 
+func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
+	chlen, pztype int) []string {
+	arr := []string{}
+
+	for _, sentence := range p.Sentences {
+		curlen := ChcharLen(sentence)
+		if curlen != chlen {
+			continue
+		}
+
+		lastchar := getLastZhChar(sentence)
+		curRhyme := g_ZhRhymes.findRhymePingze(lastchar, pztype)
+		if curRhyme == yayun {
+			arr = append(arr, sentence)
+		}
+	}
+
+	return arr
+}
+
 func getLastZhChar(s string) string {
 	return SubChineseString(s, ChcharLen(s)-1, 1)
 }

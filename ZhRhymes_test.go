@@ -23,3 +23,15 @@ func TestAnalyseZhRhyme1(t *testing.T) {
 		t.Errorf(" failed: %v, want: %v", rhyval, wanted)
 	}
 }
+
+func TestFindRhymePingze1(t *testing.T) {
+	var cr ZhRhymes
+	cr.Init()
+
+	val := cr.findRhymePingze(`酒`, PingZePing)
+	want := ""
+
+	if val != want {
+		t.Errorf("failed: %v, want: %v", val, want)
+	}
+}

@@ -368,6 +368,16 @@ func (p *QscConv) FindByYayunLength(yayun string, chlen int) {
 	}
 }
 
+func (p *QscConv) FindByYayunLengthPingze(yayun string, chlen, pztype int) {
+	for _, v := range p.allPoems.ID2Poems {
+		arr := v.FindByYayunLengthPingze(yayun, chlen, pztype)
+
+		for id, item := range arr {
+			fmt.Printf("[%d][%s][%s]\n", id, v.Title, item)
+		}
+	}
+}
+
 func (p *QscConv) FindSentense(qc *QueryCondition) {
 	for _, v := range p.allPoems.ID2Poems {
 		for _, sentence := range v.Sentences {

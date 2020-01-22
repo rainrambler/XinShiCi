@@ -8,7 +8,7 @@ func TestPinyin1(t *testing.T) {
 	s := `壽丘惟舊跡，酆邑乃前基。`
 
 	var pyf PinyinFinder
-	pyf.Init("/Users/anyu/goproj/Xindict/zht2py.txt")
+	pyf.Init("zht2py.txt")
 	//fmt.Printf("Total Hanzi: %d\n", len(pyf.hz2pinyin))
 
 	pinyinstr := ""
