@@ -35,27 +35,35 @@ func (p *ZhRhymes) Init() {
 }
 
 func (p *ZhRhymes) AnalyseRhyme(lastwords []string) string {
-
 	var rhy2count Rhyme2Count
 	rhy2count.Init()
 
 	for _, wd := range lastwords {
-		pystr := p.pyf.FindPinyin(wd)
-
-		if pystr == "" {
-			//log.Printf("DBG: Cannot find pinyin for %s!\n", wd)
-			continue
-		}
-
-		pyval := CreatePinyin(pystr)
-		if pyval == nil {
-			log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n", wd, pystr)
-			continue
-		}
-
-		if curRhyme, ok := p.ZhChar2Rhyme[pyval.Yunmu]; ok {
+		curRhyme := p.findRhyme(wd)
+		if len(curRhyme) != 0 {
 			rhy2count.Add(curRhyme)
 		}
 	}
 	return rhy2count.FindTop1()
+}
+
+func (p *ZhRhymes) findRhyme(chword string) string {
+	pystr := p.pyf.FindPinyin(chword)
+
+	if pystr == "" {
+		//log.Printf("DBG: Cannot find pinyin for %s!\n", chword)
+		return ""
+	}
+
+	pyval := CreatePinyin(pystr)
+	if pyval == nil {
+		log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n", chword, pystr)
+		return ""
+	}
+
+	if curRhyme, ok := p.ZhChar2Rhyme[pyval.Yunmu]; ok {
+		return curRhyme
+	} else {
+		return ""
+	}
 }

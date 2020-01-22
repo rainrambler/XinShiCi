@@ -55,23 +55,14 @@ func (p *ChinesePoem) FindByYayunLength(yayun string, chlen int) []string {
 
 	for _, sentence := range p.Sentences {
 		curlen := ChcharLen(sentence)
-
 		if curlen != chlen {
 			continue
 		}
 
 		lastchar := getLastZhChar(sentence)
-		pystr := g_ZhRhymes.pyf.FindPinyin(lastchar)
-
-		pyval := CreatePinyin(pystr)
-		if pyval == nil {
-			continue
-		}
-
-		if curRhyme, ok := g_ZhRhymes.ZhChar2Rhyme[pyval.Yunmu]; ok {
-			if curRhyme == yayun {
-				arr = append(arr, sentence)
-			}
+		curRhyme := g_ZhRhymes.findRhyme(lastchar)
+		if curRhyme == yayun {
+			arr = append(arr, sentence)
 		}
 	}
 
