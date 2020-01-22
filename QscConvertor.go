@@ -344,7 +344,8 @@ func (p *QscConv) FindByCiPai(cipai string) {
 func (p *QscConv) FindByYayun(yayun string) {
 	for _, v := range p.allPoems.ID2Poems {
 		if v.Rhyme == yayun {
-			fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 65))
+			fmt.Printf("[%s]: %s\n", v.toDesc(), v.AllText)
+			//fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 65))
 		}
 	}
 }
@@ -353,6 +354,16 @@ func (p *QscConv) FindByCiPaiYayun(cipai, yayun string) {
 	for _, v := range p.allPoems.ID2Poems {
 		if (v.Rhyme == yayun) && (v.Title == cipai) {
 			fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 75))
+		}
+	}
+}
+
+func (p *QscConv) FindByYayunLength(yayun string, chlen int) {
+	for _, v := range p.allPoems.ID2Poems {
+		arr := v.FindByYayunLength(yayun, chlen)
+
+		for id, item := range arr {
+			fmt.Printf("[%d][%s][%s]\n", id, v.Title, item)
 		}
 	}
 }
