@@ -61,16 +61,22 @@ func main() {
 
 	//qc.PrintRhyme()
 	//qc.FindByCiPai("踏莎行")
+	//qc.FindByCiPai(`鹊桥仙`)
+
+	//qc.countCiPai()
 
 	//qc.FindByYayun("12") // ou
 	//qc.FindByYayunLength("12", 4)
-	qc.FindByYayunLengthPingze("12", 4, PingZePing)
-	//qc.FindByYayunLength("12", 7)
+	//qc.FindByYayunLengthPingze("8", 7, PingZeZe)
+	//qc.FindByYayunLength("8", 6)
 
-	//qc.FindByYayun("2")
+	//qc.FindByYayun("8")
 	//qc.FindByCiPaiYayun("临江仙", "15")
-	//qc.FindByCiPaiYayun("鹊桥仙", "14")
+	//qc.FindByCiPaiYayun("鹊桥仙", "8")
+
 	//qc.FindSentense(createQuery("艳似", POS_ANY, 0))
+	//qc.FindSentense(createQuery("新年", POS_ANY, 0))
+	qc.FindSentense(createQuery("至", POS_SUFFIX, 0))
 
 	//missedChars.DbgPrint()
 }

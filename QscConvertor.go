@@ -227,7 +227,7 @@ func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
 		return
 	}
 	if p.curContent == "" {
-		fmt.Printf("DBG: Cannot find content in line: %d\n", id)
+		log.Printf("DBG: Cannot find content in line: %d\n", id)
 		return
 	}
 	poetId := p.allpoets.FindPoet(p.curPoet)
@@ -237,7 +237,7 @@ func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
 	}
 
 	if p.curLineNum > 2 {
-		fmt.Printf("DBG: [%d][%s] Lines: (%d): %s\n", id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
+		log.Printf("DBG: [%d][%s] Lines: (%d): %s\n", id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
 	}
 
 	poemId := fmt.Sprintf("%d-%d", poetId, id)

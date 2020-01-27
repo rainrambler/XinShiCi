@@ -23,6 +23,10 @@ func (p *ChinesePoem) toDesc() string {
 	return p.ID + "|" + p.Author + "|" + p.Title + "|" + SubChineseString(p.AllText, 0, 5)
 }
 
+func (p *ChinesePoem) toFullDesc() string {
+	return p.ID + "|" + p.Author + "|" + p.Title + "|" + p.AllText
+}
+
 func SplitPoem(r rune) bool {
 	return r == '；' || r == '，' || r == '。' || r == '！' || r == '？' || r == '、'
 }
