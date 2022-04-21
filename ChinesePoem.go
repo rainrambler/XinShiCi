@@ -20,7 +20,7 @@ func (p *ChinesePoem) ParseSentences() {
 }
 
 func (p *ChinesePoem) toDesc() string {
-	return p.ID + "|" + p.Author + "|" + p.Title + "|" + SubChineseString(p.AllText, 0, 5)
+	return p.ID + "|" + p.Author + "|" + p.Title + "|" + SubChineseString(p.AllText, 0, 20)
 }
 
 func (p *ChinesePoem) toFullDesc() string {
@@ -79,7 +79,8 @@ func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
 
 	for _, sentence := range p.Sentences {
 		curlen := ChcharLen(sentence)
-		if curlen != chlen {
+
+		if (curlen != chlen) && (chlen != 0) {
 			continue
 		}
 
@@ -95,4 +96,61 @@ func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
 
 func getLastZhChar(s string) string {
 	return SubChineseString(s, ChcharLen(s)-1, 1)
+}
+
+func (p *ChinesePoem) hasRepeatChar() bool {
+	if len(p.Sentences) == 0 {
+		return false
+	}
+
+	for _, sentence := range p.Sentences {
+		if isRepeatChar(sentence) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func isRepeatChar(sentense string) bool {
+	rs := []rune(sentense)
+
+	totallen := len(rs)
+	for i := 0; i < totallen-1; i++ {
+		if rs[i] == rs[i+1] {
+			return true
+		}
+	}
+
+	return false
+}
+
+func hasErrorTitle(poem *ChinesePoem) bool {
+	if strings.Contains(poem.Title, `《`) {
+		return true
+	}
+
+	if strings.Contains(poem.Title, `》`) {
+		return true
+	}
+
+	return false
+}
+
+// English and number chars in Chinese text
+func hasErrorText(text string) bool {
+	return strings.ContainsAny(text, `abcdefghijklmnopqrstuvwxyz`+
+		`ABCDEFGHIJKLMNOPQRSTUVWXYZ`+`0123456789`)
+}
+
+// English and number chars in Chinese text
+func findErrorText(poem *ChinesePoem) string {
+	res := ""
+	for _, line := range poem.Sentences {
+		if hasErrorText(line) {
+			res = line + "#"
+		}
+	}
+
+	return res
 }
