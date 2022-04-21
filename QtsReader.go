@@ -19,7 +19,7 @@ func readQts() {
 	//qtsInst.findLongNTitle(50) // Top 50
 	//qtsInst.findRepeatChar()
 	//qtsInst.dbgPrintMaxId()
-	qtsInst.findMalformedText()
+	qtsInst.findMalformedText2()
 	//qtsInst.exportTitles(`D:\qtstitles.txt`)
 	//qtsInst.exportAuthors(`D:\qtsauthors.txt`)
 }
@@ -106,6 +106,22 @@ func (p *Qts) findMalformedText() {
 	}
 }
 
+// Find malformed poems
+func (p *Qts) findMalformedText2() {
+	k2count := make(map[string]int)
+	for _, poem := range p.ID2Poems {
+		arr, res := findAllErrorText(poem)
+		for _, v := range arr {
+			k2count[v] = k2count[v] + 1
+		}
+
+		if res != "" {
+			fmt.Println(res + "|" + poem.toDesc())
+		}
+	}
+	printSortedMapByValue(k2count)
+}
+
 // format: Author|Title
 func (p *Qts) exportTitles(filename string) {
 	lines := []string{}
@@ -120,7 +136,6 @@ func (p *Qts) exportAuthors(filename string) {
 	lines := []string{}
 	authors := make(map[string]int)
 	for _, poem := range p.ID2Poems {
-		//lines = append(lines, poem.Author+"|"+poem.Title)
 		if poem.Author != "" {
 			authors[poem.Author] = 1
 		}
