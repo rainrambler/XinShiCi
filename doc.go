@@ -1,8 +1,3 @@
-// Xindict project doc.go
-
-/*
-Xindict document
-*/
 package main
 
 import (
