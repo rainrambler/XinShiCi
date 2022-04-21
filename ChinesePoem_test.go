@@ -31,3 +31,39 @@ func CreateFakePoem() *ChinesePoem {
 
 	return cp
 }
+
+func TestParseAllErrorText1(t *testing.T) {
+	s := "  aa bb"
+
+	arr := parseAllErrorText(s)
+	res := len(arr)
+	expected := 2
+
+	if res != expected {
+		t.Errorf("Result: %v, want: %v", res, expected)
+	}
+
+	res1 := arr[1]
+	expected1 := "bb"
+	if res1 != expected1 {
+		t.Errorf("Result: %v, want: %v", res1, expected1)
+	}
+}
+
+func TestParseAllErrorText2(t *testing.T) {
+	s := "  aa bb  "
+
+	arr := parseAllErrorText(s)
+	res := len(arr)
+	expected := 2
+
+	if res != expected {
+		t.Errorf("Result: %v, want: %v", res, expected)
+	}
+
+	res1 := arr[1]
+	expected1 := "bb"
+	if res1 != expected1 {
+		t.Errorf("Result: %v, want: %v", res1, expected1)
+	}
+}
