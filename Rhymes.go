@@ -175,30 +175,3 @@ func (p *Rhyme2Count) DbgPrint() {
 	}
 	fmt.Println("<--End")
 }
-
-// https://stackoverflow.com/questions/18695346/how-to-sort-a-mapstringint-by-its-values
-func sortMapByValue() {
-	m := map[string]int{
-		"something": 10,
-		"yo":        20,
-		"blah":      20,
-	}
-
-	type kv struct {
-		Key   string
-		Value int
-	}
-
-	var ss []kv
-	for k, v := range m {
-		ss = append(ss, kv{k, v})
-	}
-
-	sort.Slice(ss, func(i, j int) bool {
-		return ss[i].Value > ss[j].Value
-	})
-
-	for _, kv := range ss {
-		fmt.Printf("%s, %d\n", kv.Key, kv.Value)
-	}
-}
