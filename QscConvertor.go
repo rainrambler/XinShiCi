@@ -368,6 +368,8 @@ func (p *QscConv) FindByYayunLength(yayun string, chlen int) {
 	}
 }
 
+// see: ZhRhymes
+// chlen: 0 means any
 func (p *QscConv) FindByYayunLengthPingze(yayun string, chlen, pztype int) {
 	for _, v := range p.allPoems.ID2Poems {
 		arr := v.FindByYayunLengthPingze(yayun, chlen, pztype)
