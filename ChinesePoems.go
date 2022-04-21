@@ -23,9 +23,10 @@ func (p *ChinesePoems) AddPoem(poem *ChinesePoem) {
 		return
 	}
 	// https://stackoverflow.com/questions/2050391/how-to-check-if-a-map-contains-a-key-in-go
-	if _, ok := p.ID2Poems[poem.ID]; ok {
+	if res, ok := p.ID2Poems[poem.ID]; ok {
 		// exists
-		log.Printf("WARN: AddPoem: exists ID: %s, Line: %d\n", poem.ID, poem.LineNumber)
+		log.Printf("WARN: AddPoem: exists ID: %s, Line: %d whith Line: %d\n",
+			poem.ID, poem.LineNumber, res.LineNumber)
 		return
 	}
 	p.ID2Poems[poem.ID] = poem
