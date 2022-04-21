@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
@@ -270,4 +271,27 @@ const ZH_CHAR_LEN = 3
 func ChcharLen(s string) int {
 	rs := []rune(s)
 	return len(rs)
+}
+
+// https://stackoverflow.com/questions/18695346/how-to-sort-a-mapstringint-by-its-values
+func printSortedMapByValue(m map[string]int) {
+	type kv struct {
+		Key   string
+		Value int
+	}
+
+	var ss []kv
+	for k, v := range m {
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
+
+	fmt.Println("===>")
+	for _, kv := range ss {
+		fmt.Printf("%s:%d\n", kv.Key, kv.Value)
+	}
+	fmt.Println("<===")
 }
