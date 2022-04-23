@@ -32,20 +32,7 @@ func readDictFile() {
 	fmt.Printf("Hanzi Count: %d\n", singlecount)
 }
 
-func readQts() {
-	var qtsInst Qts
-	qtsInst.Init()
-	qtsInst.ReadFile("/Users/anyu/goproj/Xindict/qtszht.txt")
-
-	var pyf PinyinFinder
-	pyf.Init("/Users/anyu/goproj/Xindict/zht2py.txt")
-
-}
-
-func main() {
-	//readQts()
-	//convertHanzi2Pinyin()
-
+func analyseQsc() {
 	var qc QscConv
 	qc.Init()
 
@@ -61,22 +48,39 @@ func main() {
 
 	//qc.PrintRhyme()
 	//qc.FindByCiPai("踏莎行")
-	//qc.FindByCiPai(`鹊桥仙`)
+	//qc.FindByCiPai(`阮郎归`)
+	//qc.FindByCiPai(`醉桃源`)
+	//qc.FindByCiPai(`碧桃春`)
 
 	//qc.countCiPai()
 
 	//qc.FindByYayun("12") // ou
+	//qc.FindByYayun("10") // ou
 	//qc.FindByYayunLength("12", 4)
-	//qc.FindByYayunLengthPingze("8", 7, PingZeZe)
-	//qc.FindByYayunLength("8", 6)
+	//qc.FindByYayunLengthPingze("19", 7, PingZeZe)
+	//qc.FindByYayunLength("8", 7)
+	//qc.FindByYayunLengthPingze("17", 0, PingZePing)
 
 	//qc.FindByYayun("8")
 	//qc.FindByCiPaiYayun("临江仙", "15")
 	//qc.FindByCiPaiYayun("鹊桥仙", "8")
 
-	//qc.FindSentense(createQuery("艳似", POS_ANY, 0))
-	//qc.FindSentense(createQuery("新年", POS_ANY, 0))
-	qc.FindSentense(createQuery("至", POS_SUFFIX, 0))
-
+	//qc.FindSentense(createQuery("玉壶", POS_ANY, 0))
+	//qc.FindSentense(createQuery("媚", POS_ANY, 0))
+	//qc.FindSentense(createQuery("美", POS_SUFFIX, 0))
+	//qc.FindSentense(createQuery("屏", POS_SUFFIX, 7))
+	//qc.FindSentense(createQuery("风", POS_SUFFIX, 7))
+	//qc.FindSentense(createQuery("峰", POS_SUFFIX, 7))
+	//qc.FindSentense(createQuery("锋", POS_SUFFIX, 7))
+	//qc.FindSentense(createQuery("晶", POS_SUFFIX, 7))
+	//qc.FindSentense(createQuery("平", POS_SUFFIX, 0))
 	//missedChars.DbgPrint()
+}
+
+func main() {
+	//readQts()
+	//loadPoetryFile(`./quantangshi/005.json`)
+	//loadFileDemo(`./quantangshi/005.json`)
+	LoadPoetries(`./quantangshi/`)
+	//printHans(`allhans.txt`)
 }
