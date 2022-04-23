@@ -97,19 +97,10 @@ func (p *Qts) findMalformed() {
 }
 
 // Find malformed poems
-func (p *Qts) findMalformedText() {
-	for _, poem := range p.ID2Poems {
-		res := findErrorText(poem)
-		if res != "" {
-			fmt.Println(res + "|" + poem.toDesc())
-		}
-	}
-}
-
-// Find malformed poems
 func (p *Qts) findMalformedText2() {
 	k2count := make(map[string]int)
-	for _, poem := range p.ID2Poems {
+	poem2number := make(map[string]int)
+	for id, poem := range p.ID2Poems {
 		arr, res := findAllErrorText(poem)
 		for _, v := range arr {
 			k2count[v] = k2count[v] + 1
@@ -118,8 +109,13 @@ func (p *Qts) findMalformedText2() {
 		if res != "" {
 			fmt.Println(res + "|" + poem.toDesc())
 		}
+
+		if len(arr) > 0 {
+			poem2number[id] = len(arr)
+		}
 	}
 	printSortedMapByValue(k2count)
+	printSortedMapByValue(poem2number)
 }
 
 // format: Author|Title
