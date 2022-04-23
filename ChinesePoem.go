@@ -16,7 +16,7 @@ type ChinesePoem struct {
 }
 
 func (p *ChinesePoem) ParseSentences() {
-	p.Sentences = strings.FieldsFunc(p.AllText, SplitPoem)
+	p.Sentences = strings.FieldsFunc(p.AllText, IsPunctuation)
 }
 
 func (p *ChinesePoem) toDesc() string {
@@ -27,7 +27,7 @@ func (p *ChinesePoem) toFullDesc() string {
 	return p.ID + "|" + p.Author + "|" + p.Title + "|" + p.AllText
 }
 
-func SplitPoem(r rune) bool {
+func IsPunctuation(r rune) bool {
 	return r == '；' || r == '，' || r == '。' || r == '！' || r == '？' || r == '、'
 }
 
