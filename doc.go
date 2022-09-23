@@ -34,6 +34,11 @@ func (p *ChineseWord) IsSingle() bool {
 	return wdlen == ZH_CHAR_LEN
 }
 
+func (p *ChineseWord) IsSingle2() bool {
+	rs := []rune(p.Chs)
+	return (len(rs) == 1) && (len(p.Chs) > 1) // filter "a", "1", etc.
+}
+
 type ChineseDict struct {
 	chs2Word map[string]*ChineseWord
 }
@@ -180,20 +185,6 @@ func SplitEngMeans(line string) []string {
 
 	arr = strings.Split(part, "/")
 	return arr
-
-	/*
-		arrnoempty := []string{}
-
-		for _, item := range arr {
-			itemNew := strings.TrimSpace(item)
-
-			if itemNew != "" {
-				arrnoempty = append(arrnoempty, itemNew)
-			}
-		}
-
-		return arrnoempty
-	*/
 }
 
 func ReadDict(filename string, cd *ChineseDict) {
@@ -222,18 +213,42 @@ func check(e error) {
 func convertHanzi2Pinyin() {
 	var cd ChineseDict
 	cd.Init()
-	ReadDict("/Users/anyu/goproj/Xindict/cedict.u8", &cd)
+	ReadDict("cedict.u8", &cd)
 
 	var singles string
 	for _, cw := range cd.chs2Word {
 
-		if cw.IsSingle() {
+		if cw.IsSingle2() {
 			singles += cw.Chs + "|" + cw.Pinyin + "\n"
 		}
 	}
 
 	bs := []byte(singles)
-	err := ioutil.WriteFile("hanzi2pinyin", bs, 0644)
+	err := ioutil.WriteFile("zhs2py", bs, 0644)
+	check(err)
+}
+
+func convertHanzi2Pinyin2() {
+	var singles string
+	lines := ReadTxtFile("cedict.u8")
+
+	for idx, line := range lines {
+		if IsCommentLine(line) {
+			continue
+		}
+		cw := ParseLine(line)
+
+		if cw != nil {
+			if cw.IsSingle2() {
+				singles += cw.Chs + "|" + cw.Pinyin + "\n"
+			}
+		} else {
+			log.Printf("WARN: Err reading line: [%d]\n", idx)
+		}
+	}
+
+	bs := []byte(singles)
+	err := ioutil.WriteFile("zhs2py", bs, 0644)
 	check(err)
 }
 
