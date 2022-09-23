@@ -1,4 +1,3 @@
-// QscConvertor
 package main
 
 import (
