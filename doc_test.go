@@ -10,7 +10,7 @@ func TestWordSingle(t *testing.T) {
 	var cw ChineseWord
 	cw.Chs = s
 
-	if !cw.IsSingle() {
+	if !cw.IsSingle2() {
 		t.Errorf("TestWordSingle failed: %v", cw.Chs)
 	}
 }
