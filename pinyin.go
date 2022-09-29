@@ -97,14 +97,16 @@ func SplitPinyin(s string) (Shengmu, Yunmu string) {
 	return
 }
 
-func (p *Pinyin) GetPingze() int {
-	switch p.Shengdiao {
+func GetPingze(shengdiao string) int {
+	switch shengdiao {
 	case "0", "1", "2":
 		return PingZePing
+	case "5":
+		return PingZePing // ?
 	case "3", "4":
 		return PingZeZe
 	default:
-		log.Printf("DBG: Cannot get pingze: %s\n", p.Shengdiao)
+		log.Printf("DBG: Cannot get pingze: %s\n", shengdiao)
 		return PingZeUnknown
 	}
 }
