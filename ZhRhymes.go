@@ -11,6 +11,10 @@ const (
 	PingZeUnknown = -1
 )
 
+func isFreePingze(pzval int) bool {
+	return pzval == PingZeAny
+}
+
 var g_ZhRhymes ZhRhymes
 
 type ZhRhymes struct {
@@ -40,6 +44,12 @@ func (p *ZhRhymes) Init() {
 		"ong": "18", "iong": "18",
 	}
 }
+
+const (
+	Yun_Ao  = "13"
+	Yun_Ian = "14"
+	Yun_Ing = "17"
+)
 
 func (p *ZhRhymes) AnalyseRhyme(lastwords []string) string {
 	var rhy2count Rhyme2Count
@@ -93,7 +103,7 @@ func (p *ZhRhymes) findRhymePingze(chword string, pztype int) string {
 	}
 
 	if pztype != PingZeAny {
-		if pyval.GetPingze() != pztype {
+		if GetPingze(pyval.Shengdiao) != pztype {
 			//fmt.Printf("DBG: Pingze not match: [%s] to [%d]!\n", pyval.toDesc(),
 			//	pztype)
 			return ""
