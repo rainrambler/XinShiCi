@@ -9,7 +9,8 @@ func cipaiDemo() {
 	var cp CipaiParser
 	cp.Load(`Cipai/CipaiGelv.txt`)
 	//cp.Match(`冰肌玉骨，自清凉无汗`)
-	cp.Match(`冰肌玉骨，自清凉无汗`)
+	cp.Match(`玉骨冰肌，自清凉无汗`)
+	//cp.Match(`扬帆路远且徐行，但愿海波平`)
 	//cp.DbgPrint()
 }
 
