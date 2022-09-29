@@ -23,7 +23,7 @@ func readDictFile() {
 	singlecount := 0
 	for _, cw := range cd.chs2Word {
 
-		if cw.IsSingle() {
+		if cw.IsSingle2() {
 			//fmt.Println(cw.toDesc())
 			singlecount++
 		}
@@ -57,7 +57,7 @@ func analyseQsc() {
 	//qc.FindByYayun("12") // ou
 	//qc.FindByYayun("10") // ou
 	//qc.FindByYayunLength("12", 4)
-	//qc.FindByYayunLengthPingze("19", 7, PingZeZe)
+	//qc.FindByYayunLengthPingze(Yun_Ing, 0, PingZePing)
 	//qc.FindByYayunLength("8", 7)
 	//qc.FindByYayunLengthPingze("17", 0, PingZePing)
 
@@ -70,10 +70,10 @@ func analyseQsc() {
 	//qc.FindSentense(createQuery("美", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("屏", POS_SUFFIX, 7))
 	//qc.FindSentense(createQuery("风", POS_SUFFIX, 7))
-	//qc.FindSentense(createQuery("峰", POS_SUFFIX, 7))
+	//qc.FindSentense(createQuery("溶", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("锋", POS_SUFFIX, 7))
-	//qc.FindSentense(createQuery("晶", POS_SUFFIX, 7))
-	//qc.FindSentense(createQuery("平", POS_SUFFIX, 0))
+	qc.FindSentense(createQuery("盛世", POS_ANY, 0))
+	//qc.FindSentense(createQuery("明", POS_SUFFIX, 6))
 	//missedChars.DbgPrint()
 }
 
@@ -81,6 +81,9 @@ func main() {
 	//readQts()
 	//loadPoetryFile(`./quantangshi/005.json`)
 	//loadFileDemo(`./quantangshi/005.json`)
-	LoadPoetries(`./quantangshi/`)
+	//LoadPoetries(`./quantangshi/`)
 	//printHans(`allhans.txt`)
+	//analyseQsc()
+	//convertHanzi2Pinyin2()
+	cipaiDemo()
 }
