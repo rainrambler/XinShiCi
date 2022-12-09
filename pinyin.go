@@ -106,7 +106,7 @@ func GetPingze(shengdiao string) int {
 	case "3", "4":
 		return PingZeZe
 	default:
-		log.Printf("DBG: Cannot get pingze: %s\n", shengdiao)
+		//log.Printf("DBG: Cannot get pingze: [%s]\n", shengdiao)
 		return PingZeUnknown
 	}
 }
