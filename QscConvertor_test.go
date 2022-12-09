@@ -13,27 +13,27 @@ func TestHasCipai2(t *testing.T) {
 
 	allCipai.Init("CiPai.txt")
 
-	if hascipai, retval := allCipai.HasCipai2(s); !hascipai {
+	if hascipai, retval := allCipai.HasCipai(s); !hascipai {
 		t.Errorf("TestHasCipai2 failed: %v, parsed: %s", s, retval)
 	}
 
 	s = `临江仙（冬日即事）`
-	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
+	if hascipai, _ := allCipai.HasCipai(s); !hascipai {
 		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 
 	s = `戚氏（此词始终指意，言周穆王宾于西王母事）`
-	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
+	if hascipai, _ := allCipai.HasCipai(s); !hascipai {
 		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 
 	s = `卜算子`
-	if hascipai, _ := allCipai.HasCipai2(s); !hascipai {
+	if hascipai, _ := allCipai.HasCipai(s); !hascipai {
 		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 
 	s = `春事阑珊芳草歇。`
-	if hascipai, _ := allCipai.HasCipai2(s); hascipai {
+	if hascipai, _ := allCipai.HasCipai(s); hascipai {
 		t.Errorf("TestHasCipai2 failed: %v", s)
 	}
 }
