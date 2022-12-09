@@ -49,6 +49,7 @@ const (
 	Yun_Ao  = "13"
 	Yun_Ian = "14"
 	Yun_Ing = "17"
+	Yun_U   = "10"
 )
 
 func (p *ZhRhymes) AnalyseRhyme(lastwords []string) string {
