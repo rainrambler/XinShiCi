@@ -76,7 +76,7 @@ func (p *Cipais) Count() int {
 	return len(p.item2id)
 }
 
-func (p *Cipais) HasCipai2(line string) (bool, string) {
+func (p *Cipais) HasCipai(line string) (bool, string) {
 	s := line
 	chsize := ChcharLen(s)
 	if chsize < 2 {
@@ -101,7 +101,7 @@ func (p *Cipais) HasCipai2(line string) (bool, string) {
 
 	pos = strings.Index(s, "（")
 	if pos != -1 {
-		// contains blank
+		// contains bracket
 		leftpart := s[:pos]
 		if ChcharLen(leftpart) > CIPAI_MAX {
 			return false, leftpart
@@ -177,8 +177,9 @@ func (p *QscConv) convertLines(lines []string, runRhyme bool) {
 			continue
 		}
 
-		hascipai, title := p.allCipais.HasCipai2(linenew)
+		hascipai, title := p.allCipais.HasCipai(linenew)
 		if hascipai {
+			// Start a new poem
 			p.MakeNewPoem(i, runRhyme)
 
 			p.curTitle = title
@@ -236,7 +237,7 @@ func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
 		return
 	}
 
-	if p.curLineNum > 2 {
+	if p.curLineNum > 3 {
 		log.Printf("DBG: [%d][%s] Lines: (%d): %s\n", id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
 	}
 
