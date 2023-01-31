@@ -46,7 +46,7 @@ func (p *Qts) findLongTitle(maxLength int) {
 		if ChcharLen(poem.Title) > maxLength {
 			fmt.Printf("[%d][%s]: %s\n",
 				len(poem.Title),
-				poem.Title, SubChineseString(poem.AllText, 0, 20))
+				poem.Title, poem.LeftChars(20))
 		}
 	}
 }
