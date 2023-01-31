@@ -330,33 +330,43 @@ func (p *QscConv) isCipaiMissed(s string) (bool, string) {
 
 func (p *QscConv) PrintRhyme() {
 	for _, v := range p.allPoems.ID2Poems {
-		fmt.Printf("[%s]: %s\n", v.Rhyme, SubChineseString(v.AllText, 0, 15))
+		fmt.Printf("[%s]: %s\n", v.Rhyme, v.LeftChars(50))
 	}
 }
 
 func (p *QscConv) FindByCiPai(cipai string) {
+	resultcount := 0
 	for _, v := range p.allPoems.ID2Poems {
 		if v.Title == cipai {
-			fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 15))
+			fmt.Printf("[%s]: %s\n", v.title(), v.LeftChars(75))
+			resultcount++
 		}
 	}
+
+	fmt.Printf("Total %d results.\n", resultcount)
 }
 
 func (p *QscConv) FindByYayun(yayun string) {
+	resultcount := 0
 	for _, v := range p.allPoems.ID2Poems {
 		if v.Rhyme == yayun {
-			fmt.Printf("[%s]: %s\n", v.toDesc(), v.AllText)
-			//fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 65))
+			fmt.Printf("[%s]: %s\n", v.title(), v.LeftChars(50))
+			resultcount++
+			//fmt.Printf("[%s]: %s\n", v.title(), SubChineseString(v.AllText, 0, 65))
 		}
 	}
+	fmt.Printf("Total %d results.\n", resultcount)
 }
 
 func (p *QscConv) FindByCiPaiYayun(cipai, yayun string) {
+	resultcount := 0
 	for _, v := range p.allPoems.ID2Poems {
 		if (v.Rhyme == yayun) && (v.Title == cipai) {
-			fmt.Printf("[%s]: %s\n", v.toDesc(), SubChineseString(v.AllText, 0, 75))
+			fmt.Printf("[%s]: %s\n", v.toDesc(), v.LeftChars(75))
+			resultcount++
 		}
 	}
+	fmt.Printf("Total %d results.\n", resultcount)
 }
 
 func (p *QscConv) FindByYayunLength(yayun string, chlen int) {
@@ -383,28 +393,33 @@ func (p *QscConv) FindByYayunLengthPingze(yayun string, chlen, pztype int) {
 
 func (p *QscConv) FindSentense(qc *QueryCondition) {
 	for _, v := range p.allPoems.ID2Poems {
-		for _, sentence := range v.Sentences {
+		for pos, sentence := range v.Sentences {
 			if qc.ZhLen > 0 {
 				if qc.ZhLen != ChcharLen(sentence) {
 					continue
 				}
 			}
 
+			founded := false
 			switch qc.Pos {
 			case POS_PREFIX:
 				if strings.HasPrefix(sentence, qc.KeywordStr) {
-					fmt.Printf("%s [%s]\n", sentence, v.toDesc())
+					founded = true
 				}
 			case POS_SUFFIX:
 				if strings.HasSuffix(sentence, qc.KeywordStr) {
-					fmt.Printf("%s [%s]\n", sentence, v.toDesc())
+					founded = true
 				}
 			case POS_ANY:
 				if strings.Contains(sentence, qc.KeywordStr) {
-					fmt.Printf("%s [%s]\n", sentence, v.toDesc())
+					founded = true
 				}
 			default:
 
+			}
+
+			if founded {
+				fmt.Printf("%s [%s]: %s\n", sentence, v.title(), v.FindContext(pos))
 			}
 		}
 	}
