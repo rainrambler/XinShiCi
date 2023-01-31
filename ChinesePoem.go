@@ -20,7 +20,15 @@ func (p *ChinesePoem) ParseSentences() {
 }
 
 func (p *ChinesePoem) toDesc() string {
-	return p.ID + "|" + p.Author + "|" + p.Title + "|" + SubChineseString(p.AllText, 0, 20)
+	return p.ID + "|" + p.Author + "|" + p.Title + "|" + p.LeftChars(20)
+}
+
+func (p *ChinesePoem) title() string {
+	s := p.ID + "|" + p.Author + "|" + p.Title
+	if len(p.Sentences) > 0 {
+		s += "|" + p.Sentences[0]
+	}
+	return s
 }
 
 func (p *ChinesePoem) toFullDesc() string {
@@ -92,6 +100,42 @@ func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
 	}
 
 	return arr
+}
+
+func (p *ChinesePoem) LeftChars(n int) string {
+	if len(p.AllText) <= n {
+		return p.AllText
+	}
+	return SubChineseString(p.AllText, 0, n) + ".."
+}
+
+// [StartPos, EndPos]
+func (p *ChinesePoem) FindContext(id int) string {
+	startPos := id - 2
+	endPos := id + 2
+	if startPos < 0 {
+		startPos = 0
+		endPos = startPos + 5
+	}
+	if endPos >= len(p.Sentences) {
+		endPos = len(p.Sentences) - 1
+
+		startPos = endPos - 5
+		if startPos < 0 {
+			startPos = 0
+		}
+	}
+
+	s := ""
+	for i := startPos; i <= endPos; i++ {
+		s += p.Sentences[i] + ","
+	}
+
+	if len(s) <= 1 {
+		return s
+	}
+
+	return s[:len(s)-1]
 }
 
 func getLastZhChar(s string) string {
