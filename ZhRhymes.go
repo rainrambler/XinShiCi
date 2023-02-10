@@ -52,6 +52,7 @@ const (
 	Yun_Ei  = "8" // 北
 	Yun_U   = "10"
 	Yun_Ong = "18"
+	Yun_Ou3 = "12" // 丑，守
 )
 
 func (p *ZhRhymes) AnalyseRhyme(lastwords []string) string {
