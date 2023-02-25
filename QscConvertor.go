@@ -238,11 +238,13 @@ func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
 	}
 
 	if p.curLineNum > 3 {
-		log.Printf("DBG: [%d][%s] Lines: (%d): %s\n", id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
+		if getPartNumber(p.curTitle) <= 2 {
+			log.Printf("DBG: [%d][%s] Lines: (%d): %s\n",
+				id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
+		}
 	}
 
 	poemId := fmt.Sprintf("%d-%d", poetId, id)
-
 	cp := CreateQscPoem(poemId, p.curPoet, p.curTitle, p.curContent, p.curComment)
 
 	if runRhyme {
@@ -251,6 +253,19 @@ func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
 	p.allPoems.AddPoem(cp)
 
 	p.ClearCurrent()
+}
+
+func getPartNumber(cipai string) int {
+	switch cipai {
+	case "莺啼序":
+		return 4
+	case "瑞龙吟":
+		return 4
+	case "十样花":
+		return 7
+	default:
+		return 2
+	}
 }
 
 func (p *QscConv) ClearCurrent() {
@@ -352,7 +367,6 @@ func (p *QscConv) FindByYayun(yayun string) {
 		if v.Rhyme == yayun {
 			fmt.Printf("[%s]: %s\n", v.title(), v.LeftChars(50))
 			resultcount++
-			//fmt.Printf("[%s]: %s\n", v.title(), SubChineseString(v.AllText, 0, 65))
 		}
 	}
 	fmt.Printf("Total %d results.\n", resultcount)
@@ -382,16 +396,21 @@ func (p *QscConv) FindByYayunLength(yayun string, chlen int) {
 // see: ZhRhymes
 // chlen: 0 means any
 func (p *QscConv) FindByYayunLengthPingze(yayun string, chlen, pztype int) {
+	totalResults := 0
 	for _, v := range p.allPoems.ID2Poems {
 		arr := v.FindByYayunLengthPingze(yayun, chlen, pztype)
 
 		for id, item := range arr {
 			fmt.Printf("[%d][%s][%s]\n", id, v.Title, item)
+			totalResults++
 		}
 	}
+	fmt.Printf("Total %d results.\n", totalResults)
 }
 
 func (p *QscConv) FindSentense(qc *QueryCondition) {
+	totalResults := 0
+
 	for _, v := range p.allPoems.ID2Poems {
 		for pos, sentence := range v.Sentences {
 			if qc.ZhLen > 0 {
@@ -420,9 +439,12 @@ func (p *QscConv) FindSentense(qc *QueryCondition) {
 
 			if founded {
 				fmt.Printf("%s [%s]: %s\n", sentence, v.title(), v.FindContext(pos))
+				totalResults++
 			}
 		}
 	}
+
+	fmt.Printf("Total %d results.\n", totalResults)
 }
 
 func CreateQscPoem(id, author, title, content, comment string) *ChinesePoem {
