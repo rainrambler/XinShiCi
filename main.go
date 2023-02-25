@@ -62,25 +62,31 @@ func analyseQsc() {
 	//qc.FindByYayunLengthPingze(Yun_Ei, 0, PingZeZe)
 	//qc.FindByYayunLength("8", 7)
 	//qc.FindByYayunLengthPingze(Yun_U, 7, PingZeZe)
-	//qc.FindByYayunLengthPingze(Yun_Ei, 6, PingZeZe)
+	//qc.FindByYayunLengthPingze(Yun_Ou3, 4, PingZeZe)
 
 	//qc.FindByYayun("8")
 	//qc.FindByCiPaiYayun("临江仙", "15")
+	//qc.FindByCiPaiYayun("青玉案", Yun_Ou3)
+
 	//qc.FindByCiPaiYayun("醉花阴", Yun_U)
 	//qc.FindByCiPaiYayun("采桑子", Yun_Ong)
 
-	//qc.FindSentense(createQuery("玉壶", POS_ANY, 0))
+	//qc.FindSentense(createQuery("笙歌", POS_ANY, 0))
 	//qc.FindSentense(createQuery("媚", POS_ANY, 0))
 	//qc.FindSentense(createQuery("美", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("屏", POS_SUFFIX, 7))
-	//qc.FindSentense(createQuery("风", POS_SUFFIX, 7))
+	//qc.FindSentense(createQuery("秀", POS_SUFFIX, 4))
+	//qc.FindSentense(createQuery("酒", POS_SUFFIX, 7))
 	//qc.FindSentense(createQuery("翠", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("桐", POS_SUFFIX, 0))
-	//qc.FindSentense(createQuery("锋", POS_SUFFIX, 7))
-	//qc.FindSentense(createQuery("登高", POS_ANY, 0))
+	//qc.FindSentense(createQuery("柳", POS_SUFFIX, 0))
+	//qc.FindSentense(createQuery("暖", POS_ANY, 4))
 	//qc.FindSentense(createQuery("染", POS_ANY, 0))
 	//qc.FindSentense(createQuery("路", POS_SUFFIX, 5))
 	//missedChars.DbgPrint()
+}
+
+func FindSentence(keyword string, mode int, charcount int) {
 }
 
 func main() {
@@ -89,7 +95,10 @@ func main() {
 	//loadFileDemo(`./quantangshi/005.json`)
 	//LoadPoetries(`./quantangshi/`)
 	//printHans(`allhans.txt`)
-	analyseQsc()
+	//analyseQsc()
 	//convertHanzi2Pinyin2()
+
 	//cipaiDemo()
+
+	ExportQsc(`D:\Projects\GitHubSync\XinShiCi\qsc.txt`, `D:\tmp\xsc`)
 }
