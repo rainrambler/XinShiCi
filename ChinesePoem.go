@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -148,7 +149,8 @@ func (p *ChinesePoem) hasRepeatChar() bool {
 	}
 
 	for _, sentence := range p.Sentences {
-		if isRepeatChar(sentence) {
+		// eg: 梨花院落 溶溶 月
+		if HasRepeatChars(sentence) {
 			return true
 		}
 	}
@@ -156,13 +158,54 @@ func (p *ChinesePoem) hasRepeatChar() bool {
 	return false
 }
 
-func isRepeatChar(sentense string) bool {
+func HasRepeatChars(sentense string) bool {
 	rs := []rune(sentense)
 
 	totallen := len(rs)
 	for i := 0; i < totallen-1; i++ {
 		if rs[i] == rs[i+1] {
 			return true
+		}
+	}
+
+	return false
+}
+
+func (p *ChinesePoem) hasRepeatWords() bool {
+	if len(p.Sentences) == 0 {
+		return false
+	}
+
+	for _, sentence := range p.Sentences {
+		// eg: 昨夜 星辰 昨夜 风
+		if HasRepeatWordsZh(sentence) {
+			fmt.Println(sentence)
+			return true
+		}
+	}
+
+	return false
+}
+
+// Not for Chinese string
+func HasRepeatWords(sentense string) bool {
+	totallen := len(sentense)
+	if totallen <= 3 {
+		return false
+	}
+	maxlen := totallen / 2
+	for i := 0; i < maxlen-1; i++ {
+		for j := maxlen; j > i; j-- {
+			substr := sentense[i:j]
+			if len(substr) <= 1 {
+				return false
+			}
+
+			remain := sentense[j+1:]
+			if strings.Contains(remain, substr) {
+				//fmt.Printf("[%d:%d]: Sub: %s, Remain: %s\n", i, j, substr, remain)
+				return true
+			}
 		}
 	}
 
