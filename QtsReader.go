@@ -19,7 +19,8 @@ func readQts() {
 	//qtsInst.findLongNTitle(50) // Top 50
 	//qtsInst.findRepeatChar()
 	//qtsInst.dbgPrintMaxId()
-	qtsInst.findMalformedText2()
+	//qtsInst.findMalformedText()
+	qtsInst.findRepeatWords()
 	//qtsInst.exportTitles(`D:\qtstitles.txt`)
 	//qtsInst.exportAuthors(`D:\qtsauthors.txt`)
 }
@@ -87,17 +88,18 @@ func (p *Qts) findRepeatChar() {
 	}
 }
 
-// Find malformed poems
-func (p *Qts) findMalformed() {
+// Find repeat Chinese words in sentence (eg: 昨夜星辰昨夜风)
+func (p *Qts) findRepeatWords() {
 	for _, poem := range p.ID2Poems {
-		if hasErrorTitle(poem) {
-			fmt.Println(poem.toDesc())
+
+		if poem.hasRepeatWords() {
+			fmt.Println(poem.toFullDesc())
 		}
 	}
 }
 
 // Find malformed poems
-func (p *Qts) findMalformedText2() {
+func (p *Qts) findMalformedText() {
 	k2count := make(map[string]int)
 	poem2number := make(map[string]int)
 	for id, poem := range p.ID2Poems {
