@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -29,4 +30,109 @@ func FindFirstStrangeEncoding(s string) []string {
 	}
 
 	return results
+}
+
+func SubChineseString(s string, beginPos, size int) string {
+	rs := []rune(s)
+	slen := len(rs)
+
+	if beginPos >= slen {
+		return ""
+	}
+
+	if beginPos+size >= slen {
+		return string(rs[beginPos:])
+	}
+
+	return string(rs[beginPos : beginPos+size])
+}
+
+const ZH_CHAR_LEN = 3
+
+func ChcharLen(s string) int {
+	rs := []rune(s)
+	return len(rs)
+}
+
+func HasRepeatWordsZh(sentense string) bool {
+	rs := []rune(sentense)
+	rlen := len(rs)
+
+	maxlen := rlen / 2
+	for i := 0; i < maxlen-1; i++ {
+		for j := maxlen; j > i; j-- {
+			subrs := rs[i:j]
+			if len(subrs) <= 1 {
+				return false
+			}
+
+			remain := rs[j+1:]
+			if ContainsRunes(remain, subrs) {
+				fmt.Printf("[%d:%d]: Sub: %s, Remain: %s\n", i, j, string(subrs), string(remain))
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func ContainsRunes(r1, subr1 []rune) bool {
+	return IndexRunes(r1, subr1) != -1
+}
+
+/*
+func ContainsRunes(r1, subr1 []rune) bool {
+	l1 := len(r1)
+	l2 := len(subr1)
+
+	switch {
+	case l2 == 0:
+		return true
+	case l2 == 1:
+		return ContainsRune(r1, subr1[0])
+	case l2 == l1:
+		return SameRunes(r1, subr1)
+	case l2 > l1:
+		return false
+
+	}
+}
+*/
+
+// https://github.com/tinygo-org/tinygo/blob/release/src/internal/bytealg/bytealg.go
+// Index finds the base index of the first instance of the byte sequence b in a.
+// If a does not contain b, this returns -1.
+func IndexRunes(a, b []rune) int {
+	for i := 0; i <= len(a)-len(b); i++ {
+		if EqualRunes(a[i:i+len(b)], b) {
+			return i
+		}
+	}
+	return -1
+}
+
+func ContainsRune(r1 []rune, c1 rune) bool {
+	for _, v := range r1 {
+		if v == c1 {
+			return true
+		}
+	}
+
+	return false
+}
+
+// https://github.com/tinygo-org/tinygo/blob/release/src/internal/bytealg/bytealg.go
+func EqualRunes(a, b []rune) bool {
+	if len(a) != len(b) {
+		return false
+	}
+
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+
+	return true
 }
