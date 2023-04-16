@@ -90,12 +90,16 @@ func (p *Qts) findRepeatChar() {
 
 // Find repeat Chinese words in sentence (eg: 昨夜星辰昨夜风)
 func (p *Qts) findRepeatWords() {
+	results := 0
 	for _, poem := range p.ID2Poems {
 
 		if poem.hasRepeatWords() {
 			fmt.Println(poem.toFullDesc())
+			results++
 		}
 	}
+
+	fmt.Printf("Total %d results.\n", results)
 }
 
 // Find malformed poems
