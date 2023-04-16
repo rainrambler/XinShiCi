@@ -129,9 +129,8 @@ func writeOnePoem(lines []string, fullpath string) {
 
 	firstline := lines[0]
 	firstold := oldlines[0]
-	if prefixCharSame(firstline, firstold, 3) {
-		fmt.Printf("Repeat poem in %s!\n", fullpath)
-		return
+	if headZhCharSame(firstline, firstold, 3) {
+		fmt.Printf("[INFO]Repeat %s: [%s] vs [%s]!\n", fullpath, firstline, firstold)
 	}
 
 	curId := findPoemId(fullpath)
@@ -139,6 +138,7 @@ func writeOnePoem(lines []string, fullpath string) {
 		return
 	}
 
+	// TODO map
 	maxfilename := ""
 	for {
 		maxfilename = combineNewFile(fullpath, curId+1)
@@ -167,6 +167,30 @@ func prefixCharSame(str1, str2 string, nchar int) bool {
 
 	for i := 0; i < actualLen; i++ {
 		if str1[i] != str2[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func headZhCharSame(str1, str2 string, nchar int) bool {
+	r1 := []rune(str1)
+	r2 := []rune(str2)
+	actualLen := nchar
+	if actualLen > len(r1) {
+		actualLen = len(r1)
+	}
+	if actualLen > len(r2) {
+		actualLen = len(r2)
+	}
+	if actualLen == 0 {
+		// ?
+		return false
+	}
+
+	for i := 0; i < actualLen; i++ {
+		if r1[i] != r2[i] {
 			return false
 		}
 	}
