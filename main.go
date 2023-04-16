@@ -86,11 +86,8 @@ func analyseQsc() {
 	//missedChars.DbgPrint()
 }
 
-func FindSentence(keyword string, mode int, charcount int) {
-}
-
 func main() {
-	//readQts()
+	readQts()
 	//loadPoetryFile(`./quantangshi/005.json`)
 	//loadFileDemo(`./quantangshi/005.json`)
 	//LoadPoetries(`./quantangshi/`)
@@ -100,5 +97,7 @@ func main() {
 
 	//cipaiDemo()
 
-	ExportQsc(`D:\Projects\GitHubSync\XinShiCi\qsc.txt`, `D:\tmp\xsc`)
+	//ExportPoetry(`D:\tmp\poem\chinese-poetry-master\ci`, `D:\tmp\poem\exportdemo`)
+
+	//ExportQsc(`D:\Projects\GitHubSync\XinShiCi\qsc.txt`, `D:\tmp\xsc`)
 }
