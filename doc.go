@@ -267,28 +267,6 @@ func SubString(s string, beginPos, size int) string {
 	return s[beginPos : beginPos+size]
 }
 
-func SubChineseString(s string, beginPos, size int) string {
-	rs := []rune(s)
-	slen := len(rs)
-
-	if beginPos >= slen {
-		return ""
-	}
-
-	if beginPos+size >= slen {
-		return string(rs[beginPos:])
-	}
-
-	return string(rs[beginPos : beginPos+size])
-}
-
-const ZH_CHAR_LEN = 3
-
-func ChcharLen(s string) int {
-	rs := []rune(s)
-	return len(rs)
-}
-
 // https://stackoverflow.com/questions/18695346/how-to-sort-a-mapstringint-by-its-values
 func printSortedMapByValue(m map[string]int) {
 	type kv struct {
