@@ -67,3 +67,47 @@ func TestParseAllErrorText2(t *testing.T) {
 		t.Errorf("Result: %v, want: %v", res1, expected1)
 	}
 }
+
+func TestHasRepeatWords1(t *testing.T) {
+	s1 := `abcdeabcd`
+
+	val := HasRepeatWords(s1)
+	want := true
+
+	if val != want {
+		t.Errorf("failed: %v, want: %v", val, want)
+	}
+}
+
+func TestHasRepeatWords2(t *testing.T) {
+	s1 := `abcdefgabchhh`
+
+	val := HasRepeatWords(s1)
+	want := true
+
+	if val != want {
+		t.Errorf("failed: %v, want: %v", val, want)
+	}
+}
+
+func TestHasRepeatWords3(t *testing.T) {
+	s1 := `abcdefghijklmn`
+
+	val := HasRepeatWords(s1)
+	want := false
+
+	if val != want {
+		t.Errorf("failed: %v, want: %v", val, want)
+	}
+}
+
+func TestHasRepeatWords4(t *testing.T) {
+	s1 := `昨夜星辰昨夜风`
+
+	val := HasRepeatWords(s1)
+	want := true
+
+	if val != want {
+		t.Errorf("failed: %v, want: %v", val, want)
+	}
+}
