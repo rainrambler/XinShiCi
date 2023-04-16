@@ -73,6 +73,22 @@ func iterContent(content interface{}) {
 	}
 }
 
+/*
+{
+    "title": "登驪山高頂寓目",
+    "author": "李顯",
+    "biography": "",
+    "paragraphs": [
+        "四郊秦漢國，八水帝王都。閶闔雄裏閈，城闕壯規模。",
+        "貫渭稱天邑，含岐實奧區。金門披玉館，因此識皇圖。"
+    ],
+    "notes": [
+        ""
+    ],
+    "volume": "卷二",
+    "no#": 10
+}
+*/
 type Poetry struct {
 	Title      string   `json:"title"`
 	Author     string   `json:"author"`
@@ -137,7 +153,7 @@ type Poetries struct {
 
 func (p *Poetries) loadPoetryFile(filename string) {
 	jsonFile, err := os.Open(filename)
-	// if we os.Open returns an error then handle it
+	// if os.Open returns an error then handle it
 	if err != nil {
 		fmt.Println(err)
 	}
