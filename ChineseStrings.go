@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -68,7 +67,7 @@ func HasRepeatWordsZh(sentense string) bool {
 
 			remain := rs[j+1:]
 			if ContainsRunes(remain, subrs) {
-				fmt.Printf("[%d:%d]: Sub: %s, Remain: %s\n", i, j, string(subrs), string(remain))
+				//fmt.Printf("[%d:%d]: Sub: %s, Remain: %s\n", i, j, string(subrs), string(remain))
 				return true
 			}
 		}
