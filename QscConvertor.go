@@ -384,7 +384,7 @@ func (p *QscConv) CountPoemChars(qc *QueryCondition) {
 	}
 
 	fmt.Printf("Total %d results.\n", totalResults)
-	c2c.r2c.DbgPrint()
+	c2c.r2c.PrintSorted()
 }
 
 type ZhCharCount struct {
