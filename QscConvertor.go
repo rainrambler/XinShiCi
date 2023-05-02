@@ -7,85 +7,6 @@ import (
 	"strings"
 )
 
-const (
-	CIPAI_MAX = 7
-)
-
-type Cipais struct {
-	item2id map[string]int
-}
-
-func (p *Cipais) Init(filename string) {
-	p.item2id = make(map[string]int)
-
-	lines := ReadTxtFile(filename)
-
-	id := 100
-	for _, line := range lines {
-		if len(line) > 0 {
-			p.item2id[line] = id + 2
-		}
-	}
-
-	fmt.Printf("INFO: Total CiPai: %d\n", len(p.item2id))
-}
-
-func (p *Cipais) Exists(nm string) bool {
-	if _, ok := p.item2id[nm]; ok {
-		return true
-	}
-	return false
-}
-
-func (p *Cipais) Count() int {
-	return len(p.item2id)
-}
-
-func (p *Cipais) HasCipai(line string) (bool, string) {
-	s := line
-	chsize := ChcharLen(s)
-	if chsize < 2 {
-		return false, s
-	}
-
-	if IsCommentLine(s) {
-		return false, s
-	}
-
-	pos := strings.Index(s, " ")
-	if pos != -1 {
-		// contains blank
-		leftpart := s[:pos]
-
-		if ChcharLen(leftpart) > CIPAI_MAX {
-			return false, s
-		}
-
-		return p.HasActualCipai(leftpart), leftpart
-	}
-
-	pos = strings.Index(s, "（")
-	if pos != -1 {
-		// contains bracket
-		leftpart := s[:pos]
-		if ChcharLen(leftpart) > CIPAI_MAX {
-			return false, leftpart
-		}
-
-		return p.HasActualCipai(leftpart), leftpart
-	}
-
-	if chsize > CIPAI_MAX {
-		return false, s
-	}
-
-	return p.HasActualCipai(s), s
-}
-
-func (p *Cipais) HasActualCipai(line string) bool {
-	return p.Exists(line)
-}
-
 type QscConv struct {
 	curPoet    string
 	curTitle   string
@@ -421,6 +342,67 @@ func (p *QscConv) FindSentense(qc *QueryCondition) {
 	}
 
 	fmt.Printf("Total %d results.\n", totalResults)
+}
+
+func (p *QscConv) CountPoemChars(qc *QueryCondition) {
+	totalResults := 0
+	var c2c ZhCharCount
+	c2c.Init()
+
+	for _, v := range p.allPoems.ID2Poems {
+		for _, sentence := range v.Sentences {
+			if qc.ZhLen > 0 {
+				if qc.ZhLen != ChcharLen(sentence) {
+					continue
+				}
+			}
+
+			founded := false
+			switch qc.Pos {
+			case POS_PREFIX:
+				if strings.HasPrefix(sentence, qc.KeywordStr) {
+					founded = true
+				}
+			case POS_SUFFIX:
+				if strings.HasSuffix(sentence, qc.KeywordStr) {
+					founded = true
+				}
+			case POS_ANY:
+				if strings.Contains(sentence, qc.KeywordStr) {
+					founded = true
+				}
+			default:
+
+			}
+
+			if founded {
+				//fmt.Printf("%s [%s]: %s\n", sentence, v.title(), v.FindContext(pos))
+				c2c.AddPoem(v)
+				totalResults++
+			}
+		}
+	}
+
+	fmt.Printf("Total %d results.\n", totalResults)
+	c2c.r2c.DbgPrint()
+}
+
+type ZhCharCount struct {
+	r2c Rhyme2Count
+}
+
+func (p *ZhCharCount) Init() {
+	p.r2c.Init()
+}
+
+func (p *ZhCharCount) AddPoem(poem *ChinesePoem) {
+	for _, s := range poem.Sentences {
+		rs := []rune(s)
+		for _, r := range rs {
+			onechar := string(r)
+			p.r2c.Add(onechar)
+		}
+	}
 }
 
 func CreateQscPoem(id, author, title, content, comment string) *ChinesePoem {
