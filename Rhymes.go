@@ -166,12 +166,14 @@ func (p *Rhyme2Count) FindTop1() string {
 	return kvs[0].Key
 }
 
-func (p *Rhyme2Count) DbgPrint() {
+func (p *Rhyme2Count) PrintSorted() {
 	kvs := p.SortByValue()
 
 	fmt.Println("-->Start")
 	for _, kv := range kvs {
-		fmt.Printf("DBG: [%s] count: %d\n", kv.Key, kv.Value)
+		if kv.Value > 1 {
+			fmt.Printf("[%s] count: %d\n", kv.Key, kv.Value)
+		}
 	}
 	fmt.Println("<--End")
 }
