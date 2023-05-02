@@ -398,9 +398,9 @@ func (p *ZhCharCount) Init() {
 func (p *ZhCharCount) AddPoem(poem *ChinesePoem) {
 	for _, s := range poem.Sentences {
 		rs := []rune(s)
-		for _, r := range rs {
-			onechar := string(r)
-			p.r2c.Add(onechar)
+		for i := 0; i < len(rs)-1; i++ {
+			chpair := []rune{rs[i], rs[i+1]}
+			p.r2c.Add(string(chpair))
 		}
 	}
 }
