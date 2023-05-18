@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -94,40 +93,6 @@ func (p *WordCloud) PrintResult() {
 type Char2Count struct {
 	Title  string `json:"name"`
 	Number int    `json:"value"`
-}
-
-// "箭":2,"篆":8,
-func (p *WordCloud) ConvertJson() {
-	filtered := make(map[string]int)
-	for k, v := range p.char2count {
-		if v > 1 {
-			filtered[k] = v
-		}
-	}
-
-	// https://stackoverflow.com/questions/24652775/convert-go-map-to-json
-	j, err := json.Marshal(filtered)
-	if err != nil {
-		fmt.Println("Json format error!")
-		return
-	}
-	fmt.Println(string(j))
-}
-
-func (p *WordCloud) ConvertJson2() {
-	filtered := []Char2Count{}
-	for k, v := range p.char2count {
-		if v > 6 {
-			filtered = append(filtered, Char2Count{Title: k, Number: v * 50})
-		}
-	}
-
-	j, err := json.Marshal(filtered)
-	if err != nil {
-		fmt.Println("Json format error!")
-		return
-	}
-	fmt.Println(string(j))
 }
 
 func (p *WordCloud) ConvertJsonHardCode(margin int) string {
