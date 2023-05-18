@@ -120,8 +120,8 @@ func (p *Qts) findMalformedText() {
 			poem2number[id] = len(arr)
 		}
 	}
-	printSortedMapByValue(k2count)
-	printSortedMapByValue(poem2number)
+	PrintSortedMapByValue(k2count)
+	PrintSortedMapByValue(poem2number)
 }
 
 // format: Author|Title
