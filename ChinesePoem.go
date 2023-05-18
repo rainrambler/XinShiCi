@@ -40,6 +40,19 @@ func IsPunctuation(r rune) bool {
 	return r == '；' || r == '，' || r == '。' || r == '！' || r == '？' || r == '、'
 }
 
+func IsPunctuationAll(r rune) bool {
+	if IsPunctuation(r) {
+		return true
+	}
+
+	switch r {
+	case ';', ',', '（', '）', '《', '》', '(', ')':
+		return true
+	default:
+		return false
+	}
+}
+
 func (p *ChinesePoem) analyseRhyme() {
 	lastwords := p.collectLastWords()
 	s := g_ZhRhymes.AnalyseRhyme(lastwords)
