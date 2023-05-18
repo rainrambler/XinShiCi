@@ -80,25 +80,6 @@ func ContainsRunes(r1, subr1 []rune) bool {
 	return IndexRunes(r1, subr1) != -1
 }
 
-/*
-func ContainsRunes(r1, subr1 []rune) bool {
-	l1 := len(r1)
-	l2 := len(subr1)
-
-	switch {
-	case l2 == 0:
-		return true
-	case l2 == 1:
-		return ContainsRune(r1, subr1[0])
-	case l2 == l1:
-		return SameRunes(r1, subr1)
-	case l2 > l1:
-		return false
-
-	}
-}
-*/
-
 // https://github.com/tinygo-org/tinygo/blob/release/src/internal/bytealg/bytealg.go
 // Index finds the base index of the first instance of the byte sequence b in a.
 // If a does not contain b, this returns -1.
