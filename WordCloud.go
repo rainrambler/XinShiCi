@@ -42,7 +42,11 @@ func (p *WordCloud) parseLines(lines []string) {
 }
 
 func (p *WordCloud) parseOneLine(line string) {
-	arr := strings.FieldsFunc(line, SplitSentence)
+	linenew := strings.TrimSpace(line)
+	if len(linenew) == 0 {
+		return
+	}
+	arr := strings.FieldsFunc(linenew, SplitSentence)
 	sencount := len(arr)
 	if sencount == 0 {
 		fmt.Printf("Err format: %s\n", line)
@@ -95,11 +99,13 @@ type Char2Count struct {
 	Number int    `json:"value"`
 }
 
-func (p *WordCloud) ConvertJsonHardCode(margin int) string {
+const Multiply = 30
+
+func ConvertJsonHardCode(s2c map[string]int, margin int) string {
 	s := ""
-	for k, v := range p.word2count {
+	for k, v := range s2c {
 		if v > margin {
-			line := fmt.Sprintf(`{name:"%s",value:%d},`, k, v*30)
+			line := fmt.Sprintf(`{name:"%s",value:%d},`, k, v)
 			s += line
 			//filtered = append(filtered, Char2Count{Title: k, Number: v * 50})
 		}
@@ -118,9 +124,16 @@ func (p *WordCloud) SaveFile(filename string) {
 	}
 
 	for i := 4; i < 30; i++ {
-		s := p.ConvertJsonHardCode(i)
+		s := ConvertJsonHardCode(p.char2count, i)
 		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
-		fullfname := fmt.Sprintf("%s%d.html", filename, i)
+		fullfname := fmt.Sprintf("%s_1_%d.html", filename, i)
+		WriteTextFile(fullfname, content)
+	}
+
+	for i := 4; i < 30; i++ {
+		s := ConvertJsonHardCode(p.word2count, i)
+		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
+		fullfname := fmt.Sprintf("%s_2_%d.html", filename, i)
 		WriteTextFile(fullfname, content)
 	}
 }
