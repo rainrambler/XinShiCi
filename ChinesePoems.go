@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"strings"
 )
 
 type ChinesePoems struct {
@@ -52,4 +54,25 @@ func (p *ChinesePoems) GetPoem(id string) *ChinesePoem {
 	}
 
 	return nil
+}
+
+func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
+	var cp ChinesePoems
+	cp.Init()
+
+	for _, poem := range p.ID2Poems {
+		if poem.Contains(keywords) {
+			cp.AddPoem(poem)
+		}
+	}
+
+	return &cp
+}
+
+func (p *ChinesePoems) FindKeywords(keywords string) {
+	arr := strings.FieldsFunc(keywords, SplitLine)
+	cp := p.findByKeywords(arr)
+	for _, v := range cp.ID2Poems {
+		fmt.Printf("%s\n", v.toFullDesc())
+	}
 }
