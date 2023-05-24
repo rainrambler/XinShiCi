@@ -225,6 +225,19 @@ func HasRepeatWords(sentense string) bool {
 	return false
 }
 
+func (p *ChinesePoem) Contains(keywords []string) bool {
+	for _, key := range keywords {
+		if len(key) == 0 {
+			continue
+		}
+		if !strings.Contains(p.AllText, key) {
+			return false
+		}
+	}
+
+	return true
+}
+
 func hasErrorTitle(poem *ChinesePoem) bool {
 	if strings.Contains(poem.Title, `《`) {
 		return true
