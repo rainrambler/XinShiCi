@@ -56,6 +56,7 @@ func (p *ChinesePoems) GetPoem(id string) *ChinesePoem {
 	return nil
 }
 
+// "白日依山尽", ["白", "山"] ==> true
 func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
 	var cp ChinesePoems
 	cp.Init()
@@ -69,10 +70,29 @@ func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
 	return &cp
 }
 
+// "白日依山尽", ["白", "山"] ==> true
 func (p *ChinesePoems) FindKeywords(keywords string) {
 	arr := strings.FieldsFunc(keywords, SplitLine)
 	cp := p.findByKeywords(arr)
 	for _, v := range cp.ID2Poems {
 		fmt.Printf("%s\n", v.toFullDesc())
 	}
+}
+
+func (p *ChinesePoems) FindRepeatDiffs(resultfile string) {
+	allRes := []string{}
+	totalResults := 0
+	for id, v := range p.ID2Poems {
+		arr := v.FindRepeatDiffs2()
+		if len(arr) > 0 {
+			//fmt.Printf("[%s][%s][%s]\n", id, v.Title, v.toDesc())
+			desc := fmt.Sprintf("[%s][%s][%s]", id, v.Title, v.toDesc())
+			allRes = append(allRes, desc)
+			allRes = append(allRes, arr...)
+			allRes = append(allRes, "")
+			totalResults += len(arr)
+		}
+	}
+	fmt.Printf("Total %d results.\n", totalResults)
+	WriteLines(allRes, resultfile)
 }
