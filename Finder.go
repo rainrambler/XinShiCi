@@ -29,6 +29,7 @@ func analyseQsc() {
 	qc.convertFile("qsc.txt")
 
 	//qc.FindRepeatWords()
+	//qc.FindRepeatDiffs()
 
 	//qc.PrintRhyme()
 	//qc.FindByCiPai("踏莎行")
@@ -66,8 +67,22 @@ func analyseQsc() {
 	//qc.FindSentense(createQuery("柳", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("暖", POS_ANY, 4))
 	//qc.FindSentense(createQuery("染", POS_ANY, 0))
-	qc.FindSentense(createQuery("自由", POS_ANY, 0))
+	//qc.FindSentense(createQuery("自由", POS_ANY, 0))
 	//missedChars.DbgPrint()
 
 	//qc.CountPoemChars(createQuery("黄叶", POS_ANY, 0))
+}
+
+func findRepeatChChars() {
+	var qtsInst Qts
+	qtsInst.Init()
+	qtsInst.ReadFile("qts_zht.txt")
+
+	qtsInst.FindRepeatDiffs("repdiff_qts.txt")
+
+	var qc QscConv
+	qc.Init()
+	qc.convertFile("qsc.txt")
+
+	qc.allPoems.FindRepeatDiffs("repdiff_qsc.txt")
 }
