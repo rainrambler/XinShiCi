@@ -53,6 +53,7 @@ func ChcharLen(s string) int {
 	return len(rs)
 }
 
+// 昨夜 星辰 昨夜 风 ==> true
 func HasRepeatWordsZh(sentense string) bool {
 	rs := []rune(sentense)
 	rlen := len(rs)
@@ -70,6 +71,26 @@ func HasRepeatWordsZh(sentense string) bool {
 				//fmt.Printf("[%d:%d]: Sub: %s, Remain: %s\n", i, j, string(subrs), string(remain))
 				return true
 			}
+		}
+	}
+
+	return false
+}
+
+// 花 未 全开月 未 圆 ==> true
+func HasRepeatCharsZh(sentense string) bool {
+	rs := []rune(sentense)
+	c2pos := make(map[rune]int)
+	for i := 0; i < len(rs); i++ {
+		curChar := rs[i]
+
+		pos, exists := c2pos[curChar]
+		if exists {
+			if pos != i-1 {
+				return true
+			}
+		} else {
+			c2pos[curChar] = i
 		}
 	}
 
