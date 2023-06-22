@@ -5,16 +5,18 @@ func findKeywords(keywords string) {
 	qtsInst.Init()
 	qtsInst.ReadFile("qts_zht.txt")
 
-	qtsInst.FindKeywords(keywords)
+	cp := qtsInst.FindKeywords(keywords)
+	cp.PrintResults()
 
 	var qc QscConv
 	qc.Init()
 	qc.convertFile("qsc.txt")
 
-	qc.allPoems.FindKeywords(keywords)
+	cp = qc.allPoems.FindKeywords(keywords)
+	cp.PrintResults()
 }
 
-func analyseQsc() {
+func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	var qc QscConv
 	qc.Init()
 
@@ -54,13 +56,13 @@ func analyseQsc() {
 	//qc.FindByCiPaiYayun("青玉案", Yun_Ou3)
 
 	//qc.FindByCiPaiYayun("醉花阴", Yun_U)
-	//qc.FindByCiPaiYayun("采桑子", Yun_Ong)
+	//qc.FindByCiPaiYayun("诉衷情", Yun_Ong)
 
-	//qc.FindSentense(createQuery("笙歌", POS_ANY, 0))
+	qc.FindSentense(createQuery(keyword, pattern, length))
 	//qc.FindSentense(createQuery("媚", POS_ANY, 0))
 	//qc.FindSentense(createQuery("美", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("屏", POS_SUFFIX, 7))
-	//qc.FindSentense(createQuery("秀", POS_SUFFIX, 4))
+	//qc.FindSentense(createQuery("风", POS_SUFFIX, 4))
 	//qc.FindSentense(createQuery("酒", POS_SUFFIX, 7))
 	//qc.FindSentense(createQuery("翠", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("桐", POS_SUFFIX, 0))
@@ -85,4 +87,18 @@ func findRepeatChChars() {
 	qc.convertFile("qsc.txt")
 
 	qc.allPoems.FindRepeatDiffs("repdiff_qsc.txt")
+}
+
+func findRelated(keyword string, verbmode int) {
+	var qtsInst Qts
+	qtsInst.Init()
+	qtsInst.ReadFile("qts_zht.txt")
+
+	qtsInst.FindRelatedWords(keyword)
+
+	var qc QscConv
+	qc.Init()
+	qc.convertFile("qsc.txt")
+
+	qc.allPoems.FindRelatedWords(keyword)
 }
