@@ -62,7 +62,7 @@ func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
 	cp.Init()
 
 	for _, poem := range p.ID2Poems {
-		if poem.Contains(keywords) {
+		if poem.ContainsAll(keywords) {
 			cp.AddPoem(poem)
 		}
 	}
@@ -70,12 +70,16 @@ func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
 	return &cp
 }
 
-// "白日依山尽", ["白", "山"] ==> true
-func (p *ChinesePoems) FindKeywords(keywords string) {
+// "白日依山尽", "白 山" ==> true
+func (p *ChinesePoems) FindKeywords(keywords string) *ChinesePoems {
 	arr := strings.FieldsFunc(keywords, SplitLine)
 	cp := p.findByKeywords(arr)
-	for _, v := range cp.ID2Poems {
-		fmt.Printf("%s\n", v.toFullDesc())
+	return cp
+}
+
+func (p *ChinesePoems) PrintResults() {
+	for _, v := range p.ID2Poems {
+		fmt.Println(v.toFullDesc())
 	}
 }
 
@@ -95,4 +99,18 @@ func (p *ChinesePoems) FindRepeatDiffs(resultfile string) {
 	}
 	fmt.Printf("Total %d results.\n", totalResults)
 	WriteLines(allRes, resultfile)
+}
+
+func (p *ChinesePoems) FindRelatedWords(keyword string) {
+	cp := p.FindKeywords(keyword)
+
+	var wc WordCloud
+	wc.InitParams()
+	for _, poem := range cp.ID2Poems {
+		for _, oneLine := range poem.Sentences {
+			wc.parseMultiLine(oneLine)
+		}
+	}
+
+	wc.PrintResult(100)
 }
