@@ -306,6 +306,9 @@ func (p *QscConv) FindRepeatWords() {
 }
 
 func (p *QscConv) FindSentense(qc *QueryCondition) {
+	if qc == nil {
+		return
+	}
 	totalResults := 0
 
 	for _, v := range p.allPoems.ID2Poems {
