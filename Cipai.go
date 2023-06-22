@@ -63,7 +63,7 @@ func (p *Cipai) compareArr(arr []string) bool {
 		partSentences := p.AllSentences[startPos : startPos+len(arr)]
 
 		if compareArrSameSize(arr, partSentences) {
-			fmt.Printf("Found in %s\n", p.Title)
+			fmt.Printf("Found in %s (%d)\n", p.Title, p.CharSize())
 			fmt.Println("----------------------------")
 			return true
 		}
@@ -89,6 +89,14 @@ func compareArrSameSize(arr []string, sens []*Sentence) bool {
 	}
 
 	return true
+}
+
+func (p *Cipai) CharSize() int {
+	totallen := 0
+	for _, v := range p.AllSentences {
+		totallen += v.Length()
+	}
+	return totallen
 }
 
 // See IsPunctuation()
