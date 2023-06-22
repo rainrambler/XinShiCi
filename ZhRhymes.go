@@ -108,8 +108,6 @@ func (p *ZhRhymes) findRhymePingze(chword string, pztype int) string {
 
 	if pztype != PingZeAny {
 		if GetPingze(pyval.Shengdiao) != pztype {
-			//fmt.Printf("DBG: Pingze not match: [%s] to [%d]!\n", pyval.toDesc(),
-			//	pztype)
 			return ""
 		}
 	}
