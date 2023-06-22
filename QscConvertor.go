@@ -125,8 +125,11 @@ func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
 
 	if p.curLineNum > 3 {
 		if getPartNumber(p.curTitle) <= 2 {
-			log.Printf("DBG: [%d][%s] Lines: (%d): %s\n",
-				id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
+			/*
+				// TODO confirm
+				log.Printf("DBG: [%d][%s] Lines: (%d): %s\n",
+					id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
+			*/
 		}
 	}
 
