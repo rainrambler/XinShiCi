@@ -8,6 +8,7 @@ const (
 	POS_PREFIX = 1
 	POS_SUFFIX = 2
 	POS_ANY    = 3
+	PosUnknown = 0
 )
 
 type QueryCondition struct {
