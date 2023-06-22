@@ -290,6 +290,35 @@ func PrintSortedMapByValue(m map[string]int) {
 	fmt.Println("<===")
 }
 
+// Print Top N values (sorted by value), -1 means all
+func PrintMapByValueTop(m map[string]int, topn int) {
+	type kv struct {
+		Key   string
+		Value int
+	}
+
+	var ss []kv
+	for k, v := range m {
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
+
+	total := 0
+	fmt.Println("===>")
+	for _, kv := range ss {
+		fmt.Printf("%s:%d\n", kv.Key, kv.Value)
+		total++
+
+		if (total >= topn) && (topn > 0) {
+			break
+		}
+	}
+	fmt.Println("<===")
+}
+
 func PrintSortedMapByValueInt(m map[int]int) {
 	type kv struct {
 		Key   int
