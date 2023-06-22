@@ -5,14 +5,14 @@ import (
 	"strings"
 )
 
-func LoadTxt(filename string) {
+func GenerateWordCloud(filename string) {
 	lines, err := ReadLines(filename)
 	if err != nil {
 		fmt.Printf("Cannot load file: %s!\n", filename)
 		return
 	}
 
-	var wc WordCloud
+	var wc CiCloud
 	wc.Init()
 	wc.parseLines(lines)
 
@@ -25,23 +25,30 @@ func LoadTxt(filename string) {
 type WordCloud struct {
 	char2count map[string]int
 	word2count map[string]int
-	allCipais  Cipais
 }
 
-func (p *WordCloud) Init() {
+func (p *WordCloud) InitParams() {
 	p.char2count = make(map[string]int)
 	p.word2count = make(map[string]int)
+}
 
+type CiCloud struct {
+	WordCloud
+	allCipais Cipais
+}
+
+func (p *CiCloud) Init() {
+	p.InitParams()
 	p.allCipais.Init("CiPai.txt")
 }
 
-func (p *WordCloud) parseLines(lines []string) {
+func (p *CiCloud) parseLines(lines []string) {
 	for _, line := range lines {
 		p.parseOneLine(line)
 	}
 }
 
-func (p *WordCloud) parseOneLine(line string) {
+func (p *CiCloud) parseOneLine(line string) {
 	linenew := strings.TrimSpace(line)
 	if len(linenew) == 0 {
 		return
@@ -59,6 +66,28 @@ func (p *WordCloud) parseOneLine(line string) {
 		}
 
 		// Do NOT use title or subtitle
+		return
+	}
+
+	for _, item := range arr {
+		p.parseSentence(item)
+	}
+}
+
+func (p *WordCloud) parseMultiLine(line string) {
+	linenew := strings.TrimSpace(line)
+	if len(linenew) == 0 {
+		return
+	}
+	arr := strings.FieldsFunc(linenew, SplitSentence)
+	sencount := len(arr)
+	if sencount == 0 {
+		fmt.Printf("Err format: %s\n", line)
+		return
+	}
+
+	if sencount == 1 {
+		p.parseSentence(line)
 		return
 	}
 
@@ -89,9 +118,10 @@ func (p *WordCloud) AddWord(s string) {
 	p.word2count[s] = p.word2count[s] + 1
 }
 
-func (p *WordCloud) PrintResult() {
-	PrintSortedMapByValue(p.char2count)
-	PrintSortedMapByValue(p.word2count)
+// Print Top N values (sorted by value), -1 means all
+func (p *WordCloud) PrintResult(topn int) {
+	PrintMapByValueTop(p.char2count, topn)
+	PrintMapByValueTop(p.word2count, topn)
 }
 
 type Char2Count struct {
@@ -116,7 +146,7 @@ func ConvertJsonHardCode(s2c map[string]int, margin int) string {
 	return s
 }
 
-func (p *WordCloud) SaveFile(filename string) {
+func (p *CiCloud) SaveFile(filename string) {
 	tmpl, err := ReadTextFile(`./doc/wordcloudtempl.html`)
 	if err != nil {
 		fmt.Println("Cannot read template file!")
