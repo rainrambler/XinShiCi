@@ -86,7 +86,7 @@ func (p *ChinesePoem) FindByYayunLength(yayun string, chlen int) []string {
 		}
 
 		lastchar := getLastZhChar(sentence)
-		curRhyme := g_ZhRhymes.findRhyme(lastchar)
+		curRhyme := g_ZhRhymes.FindRhyme(lastchar)
 		if curRhyme == yayun {
 			arr = append(arr, sentence)
 		}
@@ -258,7 +258,7 @@ func HasRepeatWords(sentense string) bool {
 	return false
 }
 
-func (p *ChinesePoem) Contains(keywords []string) bool {
+func (p *ChinesePoem) ContainsAll(keywords []string) bool {
 	for _, key := range keywords {
 		if len(key) == 0 {
 			continue
