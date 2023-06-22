@@ -37,7 +37,6 @@ func (p *WordRank) AddChar(r rune) {
 }
 
 func (p *WordRank) PrintResult() {
-	//PrintSortedMapByValue(p.char2count)
 	type kv struct {
 		Key   rune
 		Value int
@@ -72,7 +71,7 @@ func IsInvalidChar(r rune) bool {
 	return strings.ContainsRune(s, r)
 }
 
-func qtsRank() {
+func qscRank() {
 	filename := `D:\Projects\GitHubSync\XinShiCi\qsc.txt`
 	var wr WordRank
 	wr.Init()
