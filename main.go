@@ -46,7 +46,8 @@ const (
 func findQscByChars() {
 	if len(os.Args) <= 1 {
 		fmt.Printf("Usage: %s --find \"keyword\" --length [d] "+
-			" --pattern [d] [--v] [--vv]\n", os.Args[0])
+			" -p [d] [--v] [--vv]\n", os.Args[0])
+		fmt.Println("-p: pattern (1: Prefix, 2: Suffix, 3: Any, Other: invalid)")
 		return
 	}
 
