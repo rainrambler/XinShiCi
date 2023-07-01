@@ -41,7 +41,7 @@ func (p *PinyinFinder) SetPingze(zhchar string, pzval int) {
 	}
 
 	if pzval == PingZeUnknown {
-		log.Printf("[DBG]Possible unknown Pingze for %s: %d\n", zhchar, pzval)
+		log.Printf("[DBG]Possible unknown Pingze for %s\n", zhchar)
 		return
 	}
 
