@@ -66,16 +66,6 @@ func (p *PinyinFinder) FindPinyin(zhchar string) string {
 	return "" // empty
 }
 
-func (p *PinyinFinder) FindPingze(zhchar string) int {
-	if py, ok := p.hz2pinyin[zhchar]; ok {
-		shengdiao := py[len(py)-1:]
-
-		return GetPingze(shengdiao)
-	}
-
-	return PingZeUnknown
-}
-
 func (p *PinyinFinder) FindPingze2(zhchar string) int {
 	if py, ok := p.hz2pingze[zhchar]; ok {
 		return py
