@@ -2271,7 +2271,6 @@
 峀|xiu4
 橜|jue2
 籑|zhuan4
-ACG|A C G
 攤|tan1
 泭|fu1
 魄|po4
@@ -3524,7 +3523,6 @@ ACG|A C G
 湍|tuan1
 災|zai1
 軀|qu1
-cos|c o s
 京|jing1
 箋|jian1
 愷|kai3
