@@ -189,5 +189,5 @@ func (p *Sentence) ToDesc() string {
 var pinyinInst PinyinFinder
 
 func init() {
-	pinyinInst.Init(`zhs2py.txt`)
+	pinyinInst.Init(`zht2py.txt`)
 }
