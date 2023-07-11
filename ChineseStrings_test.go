@@ -67,3 +67,25 @@ func TestFindFirstStrangeEncoding1(t *testing.T) {
 		t.Errorf("TestFindFirstStrangeEncoding1 failed: %v", arr[1])
 	}
 }
+
+func TestContainsChPunctions1(t *testing.T) {
+	s := `城上風光鶯語亂。城下煙波春拍岸。`
+
+	res := ContainsChPunctions(s)
+	expected := true
+
+	if res != expected {
+		t.Errorf("Result: %v, want: %v", res, expected)
+	}
+}
+
+func TestContainsChPunctions2(t *testing.T) {
+	s := `踏莎行 `
+
+	res := ContainsChPunctions(s)
+	expected := false
+
+	if res != expected {
+		t.Errorf("Result: %v, want: %v", res, expected)
+	}
+}
