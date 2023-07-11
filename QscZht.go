@@ -15,9 +15,10 @@ type QscZht struct {
 	allPoems  ChinesePoems
 	runRhyme  bool
 
-	curContent string
-	curComment string
-	curLineNum int
+	curContent   string
+	curComment   string
+	curLineNum   int
+	titleLineNum int
 }
 
 func (p *QscZht) convertFile(srcFile string) {
@@ -30,7 +31,7 @@ func (p *QscZht) convertFile(srcFile string) {
 	p.runRhyme = true
 	p.convertLines(lines)
 
-	p.allPoems.PrintResults()
+	//p.allPoems.PrintResults()
 }
 
 func (p *QscZht) convertLines(lines []string) {
@@ -41,12 +42,11 @@ func (p *QscZht) convertLines(lines []string) {
 
 		if IsCommentLine(line) {
 			p.MakeNewPoem(i)
-			p.curContent = ""
 			// # 林逋
 			linenew := strings.Trim(line, "\t #")
 			p.curPoet = linenew
 			if !p.allpoets.IsPoet(linenew) {
-				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", line, i)
+				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", linenew, i)
 			}
 			continue
 		}
@@ -57,15 +57,20 @@ func (p *QscZht) convertLines(lines []string) {
 			if p.allCipais.HasActualCipai(linenew) {
 				//fmt.Printf("Line %d: Cipai %s\n", i, line)
 				p.MakeNewPoem(i)
-				p.curContent = ""
 				p.curTitle = linenew
-				fmt.Printf("[DBG1][%d]%s\n", i, linenew)
+				p.titleLineNum = i
 			} else {
-				p.curContent += linenew
-				fmt.Printf("[DBG2][%d]%s\n", i, linenew)
+				if ContainsChPunctions(linenew) {
+					p.curContent += linenew
+				} else {
+					if i-1 == p.titleLineNum {
+						p.curComment = linenew
+					} else {
+						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
+					}
+				}
 			}
 		} else {
-			fmt.Printf("[DBG3][%d]%s\n", i, line)
 		}
 	}
 
@@ -87,17 +92,17 @@ func (p *QscZht) MakeNewPoem(id int) {
 	}
 	poetId := p.allpoets.FindPoet(p.curPoet)
 	if poetId < 0 {
-		log.Printf("DBG: [%d]Cannot find poet: %s\n", id, p.curPoet)
+		fmt.Printf("DBG: [%d]Cannot find poet: %s\n", id, p.curPoet)
 		return
 	}
 
 	if p.curLineNum > 3 {
 		if getPartNumber(p.curTitle) <= 2 {
-			/*
-				// TODO confirm
-				log.Printf("DBG: [%d][%s] Lines: (%d): %s\n",
-					id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
-			*/
+
+			// TODO confirm
+			log.Printf("DBG: [%d][%s] Lines: (%d): %s\n",
+				id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
+
 		}
 	}
 
@@ -115,5 +120,7 @@ func (p *QscZht) MakeNewPoem(id int) {
 func (p *QscZht) ClearCurrent() {
 	p.curContent = ""
 	p.curTitle = ""
+	p.curComment = ""
 	p.curLineNum = 0
+	p.titleLineNum = 0
 }
