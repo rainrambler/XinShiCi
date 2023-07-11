@@ -1,4 +1,3 @@
-// QscConvertor
 package main
 
 import (
@@ -50,7 +49,6 @@ func (p *QscConv) convertLines(lines []string, runRhyme bool) {
 				prevBlank = true
 				continue
 			}
-
 		}
 
 		if prevBlank {
