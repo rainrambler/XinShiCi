@@ -10,7 +10,6 @@ import (
 type QscZht struct {
 	curPoet   string
 	curTitle  string
-	isPoet    bool
 	allCipais Cipais
 	allpoets  Poets
 	allPoems  ChinesePoems
@@ -30,6 +29,8 @@ func (p *QscZht) convertFile(srcFile string) {
 	lines := ReadTxtFile(srcFile)
 	p.runRhyme = true
 	p.convertLines(lines)
+
+	p.allPoems.PrintResults()
 }
 
 func (p *QscZht) convertLines(lines []string) {
@@ -39,32 +40,36 @@ func (p *QscZht) convertLines(lines []string) {
 		line := lines[i]
 
 		if IsCommentLine(line) {
+			p.MakeNewPoem(i)
+			p.curContent = ""
 			// # 林逋
 			linenew := strings.Trim(line, "\t #")
 			p.curPoet = linenew
-			p.isPoet = true
-
 			if !p.allpoets.IsPoet(linenew) {
 				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", line, i)
 			}
 			continue
 		}
 
-		if p.isPoet && (len(line) != 0) {
+		if len(line) != 0 {
 			// Poet Desc?
 			linenew := strings.Trim(line, " 	\r\n")
 			if p.allCipais.HasActualCipai(linenew) {
 				//fmt.Printf("Line %d: Cipai %s\n", i, line)
 				p.MakeNewPoem(i)
+				p.curContent = ""
+				p.curTitle = linenew
 				fmt.Printf("[DBG1][%d]%s\n", i, linenew)
 			} else {
+				p.curContent += linenew
 				fmt.Printf("[DBG2][%d]%s\n", i, linenew)
 			}
-			p.isPoet = false
 		} else {
 			fmt.Printf("[DBG3][%d]%s\n", i, line)
 		}
 	}
+
+	p.MakeNewPoem(totallines)
 }
 
 func (p *QscZht) MakeNewPoem(id int) {
