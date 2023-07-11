@@ -44,7 +44,7 @@ func (p *QscCleaner) convertLines(lines []string, tofile string) {
 			// Poet Desc?
 			linenew := strings.Trim(line, " 	\r\n")
 			if p.allCipais.HasActualCipai(linenew) {
-				fmt.Printf("Line %d: Cipai %s\n", i, line)
+				//fmt.Printf("Line %d: Cipai %s\n", i, line)
 				arr = append(arr, line)
 			} else {
 				desc := fmt.Sprintf("[%d] %s", i, line)
