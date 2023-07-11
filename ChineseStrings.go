@@ -137,3 +137,16 @@ func EqualRunes(a, b []rune) bool {
 
 	return true
 }
+
+func ContainsChPunctions(s string) bool {
+	puncs := []rune("，。")
+	arr := []rune(s)
+
+	for _, onepunc := range puncs {
+		if ContainsRune(arr, onepunc) {
+			return true
+		}
+	}
+
+	return false
+}
