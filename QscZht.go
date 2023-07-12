@@ -52,7 +52,6 @@ func (p *QscZht) convertLines(lines []string) {
 		}
 
 		if len(line) != 0 {
-			// Poet Desc?
 			linenew := strings.Trim(line, " 	\r\n")
 			if p.allCipais.HasActualCipai(linenew) {
 				//fmt.Printf("Line %d: Cipai %s\n", i, line)
@@ -77,6 +76,52 @@ func (p *QscZht) convertLines(lines []string) {
 	p.MakeNewPoem(totallines)
 }
 
+func (p *QscZht) parseLines(lines []string, tofile string) {
+	arr := []string{}
+	totallines := len(lines)
+	for i := 0; i < totallines; i++ {
+		line := lines[i]
+
+		if IsCommentLine(line) {
+			p.MakeNewPoem(i)
+			// # 林逋
+			linenew := strings.Trim(line, "\t #")
+			p.curPoet = linenew
+			if !p.allpoets.IsPoet(linenew) {
+				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", linenew, i)
+			}
+
+			arr = append(arr, line)
+			continue
+		}
+
+		if len(line) != 0 {
+			linenew := strings.Trim(line, " 	\r\n")
+			if p.allCipais.HasActualCipai(linenew) {
+				//fmt.Printf("Line %d: Cipai %s\n", i, line)
+				p.MakeNewPoem(i)
+				p.curTitle = linenew
+				p.titleLineNum = i
+				arr = append(arr, `【`+line+`】`)
+			} else {
+				if ContainsChPunctions(linenew) {
+					p.curContent += linenew
+				} else {
+					if i-1 == p.titleLineNum {
+						p.curComment = linenew
+					} else {
+						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
+					}
+				}
+			}
+		} else {
+			arr = append(arr, line)
+		}
+	}
+
+	p.MakeNewPoem(totallines)
+}
+
 func (p *QscZht) MakeNewPoem(id int) {
 	if p.curPoet == "" {
 		//fmt.Printf("DBG: Cannot find author in line: %d\n", id)
@@ -94,16 +139,6 @@ func (p *QscZht) MakeNewPoem(id int) {
 	if poetId < 0 {
 		fmt.Printf("DBG: [%d]Cannot find poet: %s\n", id, p.curPoet)
 		return
-	}
-
-	if p.curLineNum > 3 {
-		if getPartNumber(p.curTitle) <= 2 {
-
-			// TODO confirm
-			log.Printf("DBG: [%d][%s] Lines: (%d): %s\n",
-				id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
-
-		}
 	}
 
 	poemId := fmt.Sprintf("%d-%d", poetId, id)
