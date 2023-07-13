@@ -24,7 +24,7 @@ func TestPinyin1(t *testing.T) {
 
 func TestFindPingze2(t *testing.T) {
 	s := `基`
-	res := pyf.FindPingze2(s)
+	res := pyf.FindPingze(s)
 	expected := PingZePing
 
 	if res != expected {
@@ -34,7 +34,7 @@ func TestFindPingze2(t *testing.T) {
 
 func TestFindPingze3(t *testing.T) {
 	s := `海`
-	res := pyf.FindPingze2(s)
+	res := pyf.FindPingze(s)
 	expected := PingZeZe
 
 	if res != expected {
