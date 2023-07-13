@@ -123,8 +123,6 @@ func (p *Sentence) Parse(s string) {
 			log.Printf("[DBG]Unknown char in pos %d of %s!\n", i, s)
 		}
 	}
-
-	//fmt.Printf("[DBG]Arr: %+v\n", p.pingzeArr)
 }
 
 func (p *Sentence) Length() int {
@@ -132,20 +130,21 @@ func (p *Sentence) Length() int {
 }
 
 func (p *Sentence) Match(s string) bool {
-	//fmt.Printf("[DBG]Compare %s...\n", s)
 	rs := []rune(s)
 	if len(rs) != len(p.pingzeArr) {
+		fmt.Printf("[DBG]Diff size in Sentence match: %d vs %d\n", len(rs), len(p.pingzeArr))
 		return false
 	}
 
 	arr := []int{}
 	for _, r := range rs {
-		pzval := pinyinInst.FindPingze2(string(r))
+		pzval := pinyinInst.FindPingze(string(r))
 		arr = append(arr, pzval)
 	}
 
 	for i := 0; i < len(arr); i++ {
 		if arr[i] == PingZeUnknown {
+			fmt.Printf("[DBG]Unknown in pos %d of %v\n", i, arr)
 			return false
 		}
 
@@ -160,8 +159,8 @@ func (p *Sentence) Match(s string) bool {
 		}
 
 		if p.pingzeArr[i] != arr[i] {
-			//fmt.Printf("[DBG]Not match: %v vs %v at %d\n",
-			//	p.pingzeArr[i], arr[i], i)
+			fmt.Printf("[DBG]Not match: %v vs %v at %d\n",
+				p.pingzeArr[i], arr[i], i)
 			return false
 		}
 	}
