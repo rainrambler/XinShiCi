@@ -1,5 +1,9 @@
 package main
 
+import (
+	"strings"
+)
+
 type Poets struct {
 	poet2id map[string]int
 }
@@ -12,7 +16,8 @@ func (p *Poets) Init(filename string) {
 	id := 100
 	for _, line := range lines {
 		if len(line) > 0 {
-			p.poet2id[line] = id + 2
+			poetname := getPoetName(line)
+			p.poet2id[poetname] = id + 2
 		}
 	}
 }
@@ -33,4 +38,14 @@ func (p *Poets) FindPoet(nm string) int {
 
 func (p *Poets) Count() int {
 	return len(p.poet2id)
+}
+
+// 衛芳華 // 詞綜 (四庫全書本)卷25
+func getPoetName(line string) string {
+	pos := strings.Index(line, `//`)
+	if pos == -1 {
+		return line
+	}
+
+	return strings.TrimSpace(line[:pos])
 }
