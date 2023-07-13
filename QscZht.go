@@ -14,6 +14,7 @@ type QscZht struct {
 	allpoets  Poets
 	allPoems  ChinesePoems
 	runRhyme  bool
+	prevPoet  bool
 
 	curContent   string
 	curComment   string
@@ -29,7 +30,8 @@ func (p *QscZht) convertFile(srcFile string) {
 
 	lines := ReadTxtFile(srcFile)
 	p.runRhyme = true
-	p.convertLines(lines)
+	p.parseLines(lines, srcFile+".txt")
+	//p.convertLines(lines)
 
 	//p.allPoems.PrintResults()
 }
@@ -87,6 +89,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 			// # 林逋
 			linenew := strings.Trim(line, "\t #")
 			p.curPoet = linenew
+			p.prevPoet = true
 			if !p.allpoets.IsPoet(linenew) {
 				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", linenew, i)
 			}
@@ -102,15 +105,24 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 				p.MakeNewPoem(i)
 				p.curTitle = linenew
 				p.titleLineNum = i
-				arr = append(arr, `【`+line+`】`)
+				arr = append(arr, `【`+linenew+`】`) // Title
 			} else {
-				if ContainsChPunctions(linenew) {
+				if p.prevPoet {
+					arr = append(arr, `* `+line) // Author Desc
+					p.prevPoet = false
+				} else if ContainsChPunctions(linenew) {
 					p.curContent += linenew
+					arr = append(arr, line)
 				} else {
 					if i-1 == p.titleLineNum {
 						p.curComment = linenew
+						arr = append(arr, `$ `+line) // sub-title
 					} else {
-						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
+						if isSequenceCipai(linenew) {
+							arr = append(arr, `【`+linenew+`】`) // Title
+						} else {
+							fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
+						}
 					}
 				}
 			}
@@ -120,6 +132,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 	}
 
 	p.MakeNewPoem(totallines)
+	WriteLines(arr, tofile)
 }
 
 func (p *QscZht) MakeNewPoem(id int) {
@@ -158,4 +171,20 @@ func (p *QscZht) ClearCurrent() {
 	p.curComment = ""
 	p.curLineNum = 0
 	p.titleLineNum = 0
+}
+
+func isSequenceCipai(cipainame string) bool {
+	if cipainame == `又` {
+		return true
+	}
+
+	arr := []string{`一`, `二`, `三`, `四`, `五`, `六`, `七`, `八`, `九`}
+	for _, item := range arr {
+		s := `其` + item
+		if cipainame == s {
+			return true
+		}
+	}
+
+	return false
 }
