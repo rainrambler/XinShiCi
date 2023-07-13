@@ -10,7 +10,7 @@ func TestMatch2(t *testing.T) {
 	var sen Sentence
 	sen.Parse(s)
 
-	res := sen.Match(`平山栏烂倚晴翁`)
+	res := sen.Match(`平山闌檻倚晴風`)
 	expected := true
 
 	if res != expected {
@@ -46,7 +46,7 @@ func TestMatch1(t *testing.T) {
 		t.Errorf("Result: %v, want: %v", res, expected)
 	}
 
-	res = cp.Match(`平山栏槛倚晴翁，山色有无风`)
+	res = cp.Match(`平山闌檻倚晴風，山色有無風`)
 	if res != expected {
 		t.Errorf("Result: %v, want: %v", res, expected)
 	}
