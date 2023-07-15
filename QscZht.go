@@ -84,7 +84,17 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 	for i := 0; i < totallines; i++ {
 		line := lines[i]
 
-		if IsCommentLine(line) {
+		if len(line) == 0 {
+			arr = append(arr, line)
+			continue
+		}
+
+		if strings.HasPrefix(line, "!") {
+			arr = append(arr, line)
+			continue
+		}
+
+		if strings.HasPrefix(line, "#") {
 			p.MakeNewPoem(i)
 			// # 林逋
 			linenew := strings.Trim(line, "\t #")
@@ -98,38 +108,34 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 			continue
 		}
 
-		if len(line) != 0 {
-			linenew := strings.Trim(line, " 	\r\n")
-			if p.allCipais.HasActualCipai(linenew) {
-				//fmt.Printf("Line %d: Cipai %s\n", i, line)
-				p.MakeNewPoem(i)
-				p.curTitle = linenew
-				p.titleLineNum = i
-				arr = append(arr, `【`+linenew+`】`) // Title
+		linenew := strings.Trim(line, " 	\r\n")
+		if p.allCipais.HasActualCipai(linenew) {
+			//fmt.Printf("Line %d: Cipai %s\n", i, line)
+			p.MakeNewPoem(i)
+			p.curTitle = linenew
+			p.titleLineNum = i
+			arr = append(arr, `【`+linenew+`】`) // Title
+		} else {
+			if p.prevPoet {
+				arr = append(arr, `* `+line) // Author Desc
+				p.prevPoet = false
+			} else if ContainsChPunctions(linenew) {
+				p.curContent += linenew
+				arr = append(arr, line)
 			} else {
-				if p.prevPoet {
-					arr = append(arr, `* `+line) // Author Desc
-					p.prevPoet = false
-				} else if ContainsChPunctions(linenew) {
-					p.curContent += linenew
-					arr = append(arr, line)
+				if i-1 == p.titleLineNum {
+					p.curComment = linenew
+					arr = append(arr, `$ `+line) // sub-title
 				} else {
-					if i-1 == p.titleLineNum {
-						p.curComment = linenew
-						arr = append(arr, `$ `+line) // sub-title
+					if isSequenceCipai(linenew) {
+						arr = append(arr, `【`+linenew+`】`) // Title
+						p.curTitle = linenew
+						p.titleLineNum = i
 					} else {
-						if isSequenceCipai(linenew) {
-							arr = append(arr, `【`+linenew+`】`) // Title
-							p.curTitle = linenew
-							p.titleLineNum = i
-						} else {
-							fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
-						}
+						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
 					}
 				}
 			}
-		} else {
-			arr = append(arr, line)
 		}
 	}
 
