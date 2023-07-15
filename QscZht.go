@@ -120,6 +120,8 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 					} else {
 						if isSequenceCipai(linenew) {
 							arr = append(arr, `【`+linenew+`】`) // Title
+							p.curTitle = linenew
+							p.titleLineNum = i
 						} else {
 							fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
 						}
