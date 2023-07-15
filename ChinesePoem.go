@@ -152,10 +152,6 @@ func (p *ChinesePoem) FindContext(id int) string {
 	return s[:len(s)-1]
 }
 
-func getLastZhChar(s string) string {
-	return SubChineseString(s, ChcharLen(s)-1, 1)
-}
-
 func (p *ChinesePoem) hasRepeatChar() bool {
 	if len(p.Sentences) == 0 {
 		return false
