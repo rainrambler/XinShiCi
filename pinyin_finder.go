@@ -65,8 +65,8 @@ func (p *PinyinFinder) SetPingze2(zhchar rune, pzval int) {
 	p.hz2pz[zhchar] = PingZeAny
 }
 
-func (p *PinyinFinder) FindPinyin(zhchar string) string {
-	if py, ok := p.hz2pinyin[zhchar]; ok {
+func (p *PinyinFinder) FindPinyin2(zhchar rune) string {
+	if py, ok := p.hz2py[zhchar]; ok {
 		return py
 	}
 
