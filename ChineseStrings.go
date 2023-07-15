@@ -158,3 +158,11 @@ func GetFirstRune(s string) rune {
 	rs := []rune(s)
 	return rs[0]
 }
+
+func GetLastRune(s string) rune {
+	if len(s) == 0 {
+		return 0
+	}
+	rs := []rune(s)
+	return rs[len(rs)-1] // last
+}
