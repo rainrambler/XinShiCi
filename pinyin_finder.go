@@ -7,16 +7,12 @@ import (
 
 type PinyinFinder struct {
 	hz2pinyin map[string]string
-	hz2pingze map[string]int
-
-	hz2py map[rune]string
-	hz2pz map[rune]int
+	hz2py     map[rune]string
+	hz2pz     map[rune]int
 }
 
 func (p *PinyinFinder) Init(filename string) {
 	p.hz2pinyin = make(map[string]string)
-	p.hz2pingze = make(map[string]int)
-
 	p.hz2py = make(map[rune]string)
 	p.hz2pz = make(map[rune]int)
 
@@ -40,44 +36,19 @@ func (p *PinyinFinder) Init(filename string) {
 
 		shengdiao := zhPy[len(zhPy)-1:] // last char
 		pingze := GetPingze(shengdiao)
-
-		p.SetPingze(zhchar, pingze)
 		p.SetPingze2(zhr, pingze)
 	}
 }
 
-func (p *PinyinFinder) SetPingze(zhchar string, pzval int) {
-	if pzval == PingZeAny {
-		log.Printf("[DBG]Possible error Pingze for %s: %d\n", zhchar, pzval)
-		return
-	}
-
-	if pzval == PingZeUnknown {
-		log.Printf("[DBG]Possible unknown Pingze for %s\n", zhchar)
-		return
-	}
-
-	v, exists := p.hz2pingze[zhchar]
-	if !exists {
-		p.hz2pingze[zhchar] = pzval
-		return
-	}
-
-	if v == pzval {
-		return
-	}
-
-	p.hz2pingze[zhchar] = PingZeAny
-}
-
 func (p *PinyinFinder) SetPingze2(zhchar rune, pzval int) {
 	if pzval == PingZeAny {
-		log.Printf("[DBG]Possible error Pingze for %s: %d\n", zhchar, pzval)
+		log.Printf("[DBG]Possible error Pingze for %s: %d\n",
+			string(zhchar), pzval)
 		return
 	}
 
 	if pzval == PingZeUnknown {
-		log.Printf("[DBG]Possible unknown Pingze for %s\n", zhchar)
+		log.Printf("[DBG]Possible unknown Pingze for %s\n", string(zhchar))
 		return
 	}
 
@@ -102,8 +73,8 @@ func (p *PinyinFinder) FindPinyin(zhchar string) string {
 	return "" // empty
 }
 
-func (p *PinyinFinder) FindPingze(zhchar string) int {
-	if py, ok := p.hz2pingze[zhchar]; ok {
+func (p *PinyinFinder) FindPingze2(zhchar rune) int {
+	if py, ok := p.hz2pz[zhchar]; ok {
 		return py
 	}
 
