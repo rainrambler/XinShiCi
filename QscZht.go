@@ -122,6 +122,10 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 			} else if ContainsChPunctions(linenew) {
 				p.curContent += linenew
 				arr = append(arr, line)
+
+				if !strings.HasSuffix(linenew, "。") {
+					fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
+				}
 			} else {
 				if i-1 == p.titleLineNum {
 					p.curComment = linenew
