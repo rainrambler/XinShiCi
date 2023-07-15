@@ -23,7 +23,7 @@ type ZhRhymes struct {
 }
 
 func (p *ZhRhymes) Init() {
-	p.pyf.Init("zhs2py.txt")
+	p.pyf.Init("zht2py.txt")
 
 	p.ZhChar2Rhyme = map[string]string{"a": "1", "ia": "1", "ua": "1",
 		"o": "2", "uo": "2",
@@ -55,12 +55,12 @@ const (
 	Yun_Ou3 = "12" // 丑，守
 )
 
-func (p *ZhRhymes) AnalyseRhyme(lastwords []string) string {
+func (p *ZhRhymes) AnalyseRhyme(lastwords []rune) string {
 	var rhy2count Rhyme2Count
 	rhy2count.Init()
 
 	for _, wd := range lastwords {
-		curRhyme := p.FindRhyme(wd)
+		curRhyme := p.FindRhyme2(wd)
 		if len(curRhyme) != 0 {
 			rhy2count.Add(curRhyme)
 		}
@@ -69,8 +69,8 @@ func (p *ZhRhymes) AnalyseRhyme(lastwords []string) string {
 }
 
 // `闲` ==> `14` (ian)
-func (p *ZhRhymes) FindRhyme(chword string) string {
-	pystr := p.pyf.FindPinyin(chword)
+func (p *ZhRhymes) FindRhyme2(chword rune) string {
+	pystr := p.pyf.FindPinyin2(chword)
 
 	if pystr == "" {
 		//log.Printf("DBG: Cannot find pinyin for %s!\n", chword)
@@ -79,7 +79,8 @@ func (p *ZhRhymes) FindRhyme(chword string) string {
 
 	pyval := CreatePinyin(pystr)
 	if pyval == nil {
-		log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n", chword, pystr)
+		log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n",
+			string(chword), pystr)
 		return ""
 	}
 
@@ -92,8 +93,8 @@ func (p *ZhRhymes) FindRhyme(chword string) string {
 
 // eg: Input: (`闲`, PingZePing), Output:  `14` (ian)
 // eg: Input: (`闲`, PingZeZe), Output:  ``
-func (p *ZhRhymes) findRhymePingze(chword string, pztype int) string {
-	pystr := p.pyf.FindPinyin(chword)
+func (p *ZhRhymes) findRhymePingze(chword rune, pztype int) string {
+	pystr := p.pyf.FindPinyin2(chword)
 
 	if pystr == "" {
 		//log.Printf("DBG: Cannot find pinyin for %s!\n", chword)
@@ -102,7 +103,8 @@ func (p *ZhRhymes) findRhymePingze(chword string, pztype int) string {
 
 	pyval := CreatePinyin(pystr)
 	if pyval == nil {
-		log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n", chword, pystr)
+		log.Printf("DBG: Cannot convert pinyin for %s! Pinyin: %s\n",
+			string(chword), pystr)
 		return ""
 	}
 
