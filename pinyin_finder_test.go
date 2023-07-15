@@ -8,7 +8,7 @@ func TestPinyin1(t *testing.T) {
 	s := `壽丘惟舊跡，酆邑乃前基。`
 	pinyinstr := ""
 	for _, ch := range s {
-		res := pyf.FindPinyin(string(ch))
+		res := pyf.FindPinyin2(ch)
 
 		if len(res) > 0 {
 			pinyinstr += res + " "
@@ -24,7 +24,8 @@ func TestPinyin1(t *testing.T) {
 
 func TestFindPingze2(t *testing.T) {
 	s := `基`
-	res := pyf.FindPingze(s)
+	r := GetFirstRune(s)
+	res := pyf.FindPingze2(r)
 	expected := PingZePing
 
 	if res != expected {
@@ -34,7 +35,8 @@ func TestFindPingze2(t *testing.T) {
 
 func TestFindPingze3(t *testing.T) {
 	s := `海`
-	res := pyf.FindPingze(s)
+	r := GetFirstRune(s)
+	res := pyf.FindPingze2(r)
 	expected := PingZeZe
 
 	if res != expected {
