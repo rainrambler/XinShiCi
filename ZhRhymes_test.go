@@ -7,15 +7,11 @@ import (
 
 func TestAnalyseZhRhyme1(t *testing.T) {
 	rs := []rune("下中翁动守风空梦")
-	strs := []string{}
-	for _, zhch := range rs {
-		strs = append(strs, string(zhch))
-	}
 
 	var cr ZhRhymes
 	cr.Init()
 
-	rhyval := cr.AnalyseRhyme(strs)
+	rhyval := cr.AnalyseRhyme(rs)
 	fmt.Printf("TestAnalyseZhRhyme1 Result: %s\n", rhyval)
 
 	wanted := "18"
@@ -28,7 +24,8 @@ func TestFindRhymePingze1(t *testing.T) {
 	var cr ZhRhymes
 	cr.Init()
 
-	val := cr.findRhymePingze(`酒`, PingZePing)
+	r := GetFirstRune(`酒`)
+	val := cr.findRhymePingze(r, PingZePing)
 	want := ""
 
 	if val != want {
