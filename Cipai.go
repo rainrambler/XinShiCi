@@ -138,7 +138,7 @@ func (p *Sentence) Match(s string) bool {
 
 	arr := []int{}
 	for _, r := range rs {
-		pzval := pinyinInst.FindPingze(string(r))
+		pzval := pinyinInst.FindPingze2(r)
 		arr = append(arr, pzval)
 	}
 
@@ -159,8 +159,8 @@ func (p *Sentence) Match(s string) bool {
 		}
 
 		if p.pingzeArr[i] != arr[i] {
-			fmt.Printf("[DBG]Not match: %v vs %v at %d\n",
-				p.pingzeArr[i], arr[i], i)
+			//fmt.Printf("[DBG]Not match: %v vs %v at %d\n",
+			//	p.pingzeArr[i], arr[i], i)
 			return false
 		}
 	}
