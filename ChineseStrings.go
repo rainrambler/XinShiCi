@@ -166,3 +166,8 @@ func GetLastRune(s string) rune {
 	rs := []rune(s)
 	return rs[len(rs)-1] // last
 }
+
+// `# aa` ==> true
+func StartWithSharp(s string) bool {
+	return strings.HasPrefix(s, "#")
+}
