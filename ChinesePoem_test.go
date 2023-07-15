@@ -15,12 +15,12 @@ func TestCollectLastWords(t *testing.T) {
 		t.Errorf("TestPinyin1 failed: %v, want: 8", arrlen)
 	}
 
-	s := ""
+	arr := []rune{}
 	for _, wd := range lastwords {
-		s += wd
+		arr = append(arr, wd)
 	}
 
-	fmt.Println(s)
+	fmt.Println(string(arr))
 }
 
 func CreateFakePoem() *ChinesePoem {
