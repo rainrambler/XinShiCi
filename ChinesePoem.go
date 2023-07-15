@@ -60,15 +60,15 @@ func (p *ChinesePoem) analyseRhyme() {
 	p.Rhyme = s
 }
 
-func (p *ChinesePoem) collectLastWords() []string {
+func (p *ChinesePoem) collectLastWords() []rune {
 	if len(p.Sentences) == 0 {
-		return []string{}
+		return []rune{}
 	}
 
-	lastwords := []string{}
+	lastwords := []rune{}
 
 	for _, sentence := range p.Sentences {
-		lastchar := getLastZhChar(sentence)
+		lastchar := GetLastRune(sentence)
 
 		lastwords = append(lastwords, lastchar)
 	}
@@ -85,8 +85,8 @@ func (p *ChinesePoem) FindByYayunLength(yayun string, chlen int) []string {
 			continue
 		}
 
-		lastchar := getLastZhChar(sentence)
-		curRhyme := g_ZhRhymes.FindRhyme(lastchar)
+		lastchar := GetLastRune(sentence)
+		curRhyme := g_ZhRhymes.FindRhyme2(lastchar)
 		if curRhyme == yayun {
 			arr = append(arr, sentence)
 		}
@@ -106,7 +106,7 @@ func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
 			continue
 		}
 
-		lastchar := getLastZhChar(sentence)
+		lastchar := GetLastRune(sentence)
 		curRhyme := g_ZhRhymes.findRhymePingze(lastchar, pztype)
 		if curRhyme == yayun {
 			arr = append(arr, sentence)
