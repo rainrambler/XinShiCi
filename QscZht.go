@@ -124,7 +124,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 				arr = append(arr, line)
 
 				if !strings.HasSuffix(linenew, "。") {
-					fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
+					//fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
 				}
 			} else {
 				if i-1 == p.titleLineNum {
@@ -190,10 +190,17 @@ func isSequenceCipai(cipainame string) bool {
 		return true
 	}
 
-	arr := []string{`一`, `二`, `三`, `四`, `五`, `六`, `七`, `八`, `九`}
+	arr := []string{`一`, `二`, `三`, `四`, `五`, `六`, `七`, `八`, `九`, `十`}
 	for _, item := range arr {
 		s := `其` + item
 		if cipainame == s {
+			return true
+		}
+	}
+
+	// 二、三、……
+	for i := 1; i < len(arr); i++ {
+		if cipainame == arr[i] {
 			return true
 		}
 	}
