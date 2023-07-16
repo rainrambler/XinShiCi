@@ -20,6 +20,8 @@ type QscZht struct {
 	curComment   string
 	curLineNum   int
 	titleLineNum int
+
+	cipai2count Rhyme2Count
 }
 
 func (p *QscZht) convertFile(srcFile string) {
@@ -28,12 +30,16 @@ func (p *QscZht) convertFile(srcFile string) {
 	p.allPoems.Init()
 	fmt.Printf("INFO: Total poets: %d\n", p.allpoets.Count())
 
+	p.cipai2count.Init()
+
 	lines := ReadTxtFile(srcFile)
 	p.runRhyme = true
 	p.parseLines(lines, srcFile+".txt")
 	//p.convertLines(lines)
 
 	//p.allPoems.PrintResults()
+
+	p.cipai2count.PrintSorted()
 }
 
 func (p *QscZht) convertLines(lines []string) {
@@ -68,6 +74,7 @@ func (p *QscZht) convertLines(lines []string) {
 						p.curComment = linenew
 					} else {
 						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
+						p.cipai2count.Add(linenew)
 					}
 				}
 			}
@@ -137,6 +144,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 						p.titleLineNum = i
 					} else {
 						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
+						p.cipai2count.Add(linenew)
 					}
 				}
 			}
