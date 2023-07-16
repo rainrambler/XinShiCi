@@ -206,5 +206,20 @@ func isSequenceCipai(cipainame string) bool {
 		}
 	}
 
+	// 第二
+	for _, item := range arr {
+		s := `第` + item
+		if cipainame == s {
+			return true
+		}
+	}
+
+	for _, item := range arr {
+		s := `右` + item
+		if cipainame == s {
+			return true
+		}
+	}
+
 	return false
 }
