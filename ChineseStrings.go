@@ -171,3 +171,12 @@ func GetLastRune(s string) rune {
 func StartWithSharp(s string) bool {
 	return strings.HasPrefix(s, "#")
 }
+
+func SplitBlank(s string) []string {
+	a := strings.FieldsFunc(s, SplitBlankFunc)
+	return a
+}
+
+func SplitBlankFunc(r rune) bool {
+	return r == ' ' || r == '\t'
+}
