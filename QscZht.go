@@ -138,8 +138,9 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 					p.curComment = linenew
 					arr = append(arr, `$ `+line) // sub-title
 				} else {
-					if isSequenceCipai(linenew) {
-						arr = append(arr, `【`+linenew+`】`) // Title
+					iscipai, cipai := isLineSequenceCipai(linenew)
+					if iscipai {
+						arr = append(arr, `【`+cipai+`】`) // Title
 						p.curTitle = linenew
 						p.titleLineNum = i
 					} else {
@@ -194,6 +195,9 @@ func (p *QscZht) ClearCurrent() {
 }
 
 func isSequenceCipai(cipainame string) bool {
+	if cipainame == "" {
+		return false
+	}
 	if cipainame == `又` {
 		return true
 	}
@@ -234,4 +238,24 @@ func isSequenceCipai(cipainame string) bool {
 	}
 
 	return false
+}
+
+// `第三 蓬萊景` ==> true
+func isLineSequenceCipai(line string) (bool, string) {
+	arr := SplitBlank(line)
+	cipai := ""
+	switch len(arr) {
+	case 0:
+		fmt.Printf("Err empty line: %s\n", line)
+		return false, line
+	case 1:
+		cipai = line
+	case 2:
+		cipai = arr[0]
+	default:
+		fmt.Printf("Err line: %s\n", line)
+		return false, line
+	}
+
+	return isSequenceCipai(cipai), cipai
 }
