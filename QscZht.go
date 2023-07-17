@@ -117,7 +117,6 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 
 		linenew := strings.Trim(line, " 	\r\n")
 		if p.allCipais.HasActualCipai(linenew) {
-			//fmt.Printf("Line %d: Cipai %s\n", i, line)
 			p.MakeNewPoem(i)
 			p.curTitle = linenew
 			p.titleLineNum = i
@@ -141,6 +140,9 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 					iscipai, cipai := isLineSequenceCipai(linenew)
 					if iscipai {
 						arr = append(arr, `【`+cipai+`】`) // Title
+						if linenew != cipai {
+							arr = append(arr, `! `+line) // convert to comment
+						}
 						p.curTitle = linenew
 						p.titleLineNum = i
 					} else {
