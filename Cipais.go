@@ -22,7 +22,8 @@ func (p *Cipais) Init(filename string) {
 	id := 100
 	for _, line := range lines {
 		if len(line) > 0 {
-			p.item2id[line] = id + 2
+			cipai := getCipaiName(line)
+			p.item2id[cipai] = id + 2
 		}
 	}
 
@@ -83,4 +84,14 @@ func (p *Cipais) HasCipai(line string) (bool, string) {
 
 func (p *Cipais) HasActualCipai(line string) bool {
 	return p.Exists(line)
+}
+
+// `词牌名 // 备注`
+func getCipaiName(line string) string {
+	pos := strings.Index(line, `//`)
+	if pos == -1 {
+		return line
+	}
+
+	return strings.TrimSpace(line[:pos])
 }
