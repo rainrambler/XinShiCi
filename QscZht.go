@@ -40,8 +40,6 @@ func (p *QscZht) convertFile(srcFile string) {
 	//p.allPoems.PrintResults()
 
 	p.cipai2count.PrintSorted()
-
-	p.MatchCipais(`CipaiWords_ZH.txt`)
 }
 
 func (p *QscZht) convertLines(lines []string) {
@@ -196,34 +194,6 @@ func (p *QscZht) ClearCurrent() {
 	p.curComment = ""
 	p.curLineNum = 0
 	p.titleLineNum = 0
-}
-
-func (p *QscZht) MatchCipais(cipaifile string) {
-	lines, err := ReadLines(cipaifile)
-	if err != nil {
-		fmt.Printf("WARN: Cannot read file: %s!\n", cipaifile)
-		return
-	}
-
-	name2words := make(map[string]int)
-	for _, line := range lines {
-		arr := strings.Split(line, " ")
-
-		if len(arr) == 2 {
-			cipai := arr[0]
-			name2words[cipai] = 1
-		}
-	}
-
-	fmt.Println("==>Confirmed")
-	for k, _ := range p.cipai2count.rhy2Count {
-		_, exists := name2words[k]
-
-		if exists {
-			fmt.Println(k)
-		}
-	}
-	fmt.Println("<==Confirmed")
 }
 
 func isSequenceCipai(cipainame string) bool {
