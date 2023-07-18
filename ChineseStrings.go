@@ -195,15 +195,7 @@ func IsCommentLine(line string) bool {
 }
 
 func IsEmptyLine(line string) bool {
-	rs := []rune(line)
-	s := " \t"
-	for _, r := range rs {
-		if strings.ContainsRune(s, r) {
-			return false
-		}
-	}
+	s := strings.Trim(line, " \t")
 
-	return true
-	//linenew := strings.TrimSpace(line)
-	//return len(linenew) > 0
+	return len(s) == 0
 }
