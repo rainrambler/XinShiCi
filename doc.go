@@ -86,19 +86,6 @@ func ReadTxtFile(filename string) []string {
 	return linearr
 }
 
-// Line start with '#' or '%' is comment line
-func IsCommentLine(line string) bool {
-	if strings.HasPrefix(line, "#") {
-		return true
-	}
-
-	if strings.HasPrefix(line, "%") {
-		return true
-	}
-
-	return false
-}
-
 // Format: cht chs [pinyin] /Eng1/Eng2/
 func ParseLine(line string) *ChineseWord {
 
