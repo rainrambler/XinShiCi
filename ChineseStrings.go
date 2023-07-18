@@ -180,3 +180,30 @@ func SplitBlank(s string) []string {
 func SplitBlankFunc(r rune) bool {
 	return r == ' ' || r == '\t'
 }
+
+// Line start with '#' or '%' is comment line
+func IsCommentLine(line string) bool {
+	if strings.HasPrefix(line, "#") {
+		return true
+	}
+
+	if strings.HasPrefix(line, "%") {
+		return true
+	}
+
+	return false
+}
+
+func IsEmptyLine(line string) bool {
+	rs := []rune(line)
+	s := " \t"
+	for _, r := range rs {
+		if strings.ContainsRune(s, r) {
+			return false
+		}
+	}
+
+	return true
+	//linenew := strings.TrimSpace(line)
+	//return len(linenew) > 0
+}
