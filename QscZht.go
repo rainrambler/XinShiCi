@@ -21,8 +21,6 @@ type QscZht struct {
 	curComment   string
 	curLineNum   int
 	titleLineNum int
-
-	cipai2count Rhyme2Count
 }
 
 func (p *QscZht) convertFile(srcFile string) {
@@ -31,16 +29,12 @@ func (p *QscZht) convertFile(srcFile string) {
 	p.allPoems.Init()
 	fmt.Printf("INFO: Total poets: %d\n", p.allpoets.Count())
 
-	p.cipai2count.Init()
-
 	lines := ReadTxtFile(srcFile)
 	p.runRhyme = true
 	p.parseLines(lines, srcFile+".txt")
 	//p.convertLines(lines)
 
 	//p.allPoems.PrintResults()
-
-	p.cipai2count.PrintSorted()
 }
 
 func (p *QscZht) convertLines(lines []string) {
@@ -75,7 +69,6 @@ func (p *QscZht) convertLines(lines []string) {
 						p.curComment = linenew
 					} else {
 						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
-						p.cipai2count.Add(linenew)
 					}
 				}
 			}
@@ -107,6 +100,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 			// # 林逋
 			linenew := strings.Trim(line, "\t #")
 			p.curPoet = linenew
+			//fmt.Printf("DBG: Poet: %s\n", p.curPoet)
 			p.prevPoet = true
 			if !p.allpoets.IsPoet(linenew) {
 				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", linenew, i)
@@ -118,28 +112,35 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 
 		linenew := strings.Trim(line, " 	\r\n")
 		if p.allCipais.HasActualCipai(linenew) {
+			//fmt.Printf("DBG: Actual Cipai: %s\n", linenew)
 			p.MakeNewPoem(i)
 			p.setNewTitle(i, linenew)
 			arr = append(arr, `【`+linenew+`】`) // Title
 		} else {
 			if p.prevPoet {
 				arr = append(arr, `* `+line) // Author Desc
+				//fmt.Printf("DBG: Author desc: %s\n", line)
 				p.prevPoet = false
+				p.preTitle = false
 			} else if ContainsChPunctions(linenew) {
+				//fmt.Printf("DBG: content: %s\n", linenew)
 				p.curContent += linenew
 				arr = append(arr, line)
 
 				if !strings.HasSuffix(linenew, "。") {
 					//fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
 				}
+				p.preTitle = false
 			} else {
 				if p.preTitle {
+					//fmt.Printf("DBG: sub-title in line %d: %s\n", i+1, line)
 					p.curComment = linenew
 					arr = append(arr, `$ `+line) // sub-title
 					p.preTitle = false
 				} else {
 					iscipai, cipai := isLineSequenceCipai(linenew)
 					if iscipai {
+						//fmt.Printf("DBG: Parsed Cipai: %s in %s\n", cipai, linenew)
 						arr = append(arr, `【`+cipai+`】`) // Title
 						if linenew != cipai {
 							arr = append(arr, `! `+line) // convert to comment
@@ -147,7 +148,6 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 						p.setNewTitle(i, linenew)
 					} else {
 						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
-						p.cipai2count.Add(linenew)
 						arr = append(arr, line) // TODO confirm
 					}
 				}
