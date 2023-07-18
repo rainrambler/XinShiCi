@@ -85,7 +85,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 	for i := 0; i < totallines; i++ {
 		line := lines[i]
 
-		if len(line) == 0 {
+		if IsEmptyLine(line) {
 			arr = append(arr, line)
 			continue
 		}
