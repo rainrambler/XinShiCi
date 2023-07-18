@@ -15,6 +15,7 @@ type QscZht struct {
 	allPoems  ChinesePoems
 	runRhyme  bool
 	prevPoet  bool
+	preTitle  bool
 
 	curContent   string
 	curComment   string
@@ -118,8 +119,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 		linenew := strings.Trim(line, " 	\r\n")
 		if p.allCipais.HasActualCipai(linenew) {
 			p.MakeNewPoem(i)
-			p.curTitle = linenew
-			p.titleLineNum = i
+			p.setNewTitle(i, linenew)
 			arr = append(arr, `【`+linenew+`】`) // Title
 		} else {
 			if p.prevPoet {
@@ -133,9 +133,10 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 					//fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
 				}
 			} else {
-				if i-1 == p.titleLineNum {
+				if p.preTitle {
 					p.curComment = linenew
 					arr = append(arr, `$ `+line) // sub-title
+					p.preTitle = false
 				} else {
 					iscipai, cipai := isLineSequenceCipai(linenew)
 					if iscipai {
@@ -143,11 +144,11 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 						if linenew != cipai {
 							arr = append(arr, `! `+line) // convert to comment
 						}
-						p.curTitle = linenew
-						p.titleLineNum = i
+						p.setNewTitle(i, linenew)
 					} else {
 						fmt.Printf("Possible cipai in %d: %s\n", i, linenew)
 						p.cipai2count.Add(linenew)
+						arr = append(arr, line) // TODO confirm
 					}
 				}
 			}
@@ -156,6 +157,12 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 
 	p.MakeNewPoem(totallines)
 	WriteLines(arr, tofile)
+}
+
+func (p *QscZht) setNewTitle(pos int, line string) {
+	p.curTitle = line
+	p.titleLineNum = pos
+	p.preTitle = true
 }
 
 func (p *QscZht) MakeNewPoem(id int) {
