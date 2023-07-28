@@ -96,7 +96,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 				arr = append(arr, line)
 
 				if !strings.HasSuffix(linenew, "。") {
-					//fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
+					fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
 				}
 				p.preTitle = false
 			} else {
