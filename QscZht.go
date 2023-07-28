@@ -40,16 +40,15 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 	totallines := len(lines)
 	for i := 0; i < totallines; i++ {
 		line := lines[i]
-		fmt.Printf("[DBG][%d]: %s\n", i+1, line)
+		//fmt.Printf("[DBG][%d]: %s\n", i+1, line)
 
 		if IsEmptyLine(line) {
-			fmt.Printf("Empty line at %d\n", i+1)
 			arr = append(arr, line)
 			continue
 		}
 
 		if strings.HasPrefix(line, "!") {
-			fmt.Printf("Comment line at %d\n", i+1)
+			//fmt.Printf("Comment line at %d\n", i+1)
 			arr = append(arr, line)
 			continue
 		}
@@ -59,7 +58,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 			// # 林逋
 			linenew := strings.Trim(line, "\t #")
 			p.curPoet = linenew
-			fmt.Printf("DBG: Poet: %s in line: %d\n", p.curPoet, i+1)
+			//fmt.Printf("DBG: Poet: %s in line: %d\n", p.curPoet, i+1)
 			p.prevPoet = true
 			if !p.allpoets.IsPoet(linenew) {
 				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", linenew, i)
@@ -71,14 +70,15 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 
 		linenew := strings.Trim(line, " 	\r\n")
 		if p.allCipais.HasActualCipai(linenew) {
+			p.prevPoet = false
 			if p.preTitle {
 				fmt.Printf("Line: [%d] repeat title: %s\n", i, line)
-				fmt.Printf("DBG: subtitle in line %d: %s\n", i+1, line)
+				//fmt.Printf("DBG: subtitle in line %d: %s\n", i+1, line)
 				p.curComment = linenew
 				arr = append(arr, `$ `+line) // sub-title
 				p.preTitle = false
 			} else {
-				fmt.Printf("DBG: Actual Cipai: %s\n", linenew)
+				//fmt.Printf("DBG: Actual Cipai: %s\n", linenew)
 				p.MakeNewPoem(i)
 				p.setNewTitle(i, linenew)
 				arr = append(arr, `【`+linenew+`】`) // Title
@@ -87,28 +87,28 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 		} else {
 			if p.prevPoet {
 				arr = append(arr, `* `+line) // Author Desc
-				fmt.Printf("DBG: Author desc: %s\n", line)
+				//fmt.Printf("DBG: Author desc: %s\n", line)
 				p.prevPoet = false
 				p.preTitle = false
 			} else if ContainsChPunctions(linenew) {
-				fmt.Printf("DBG: content: %s\n", linenew)
+				//fmt.Printf("DBG: content: %s\n", linenew)
 				p.curContent += linenew
 				arr = append(arr, line)
 
 				if !strings.HasSuffix(linenew, "。") {
-					fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
+					//fmt.Printf("Frag Line %d: %s\n", i+1, linenew)
 				}
 				p.preTitle = false
 			} else {
 				if p.preTitle {
-					fmt.Printf("DBG: sub-title in line %d: %s\n", i+1, line)
+					//fmt.Printf("DBG: sub-title in line %d: %s\n", i+1, line)
 					p.curComment = linenew
 					arr = append(arr, `$ `+line) // sub-title
 					p.preTitle = false
 				} else {
 					iscipai, cipai := isLineSequenceCipai(linenew)
 					if iscipai {
-						fmt.Printf("DBG: Parsed Cipai: %s in %s\n", cipai, linenew)
+						//fmt.Printf("DBG: Parsed Cipai: %s in %s\n", cipai, linenew)
 						arr = append(arr, `【`+cipai+`】`) // Title
 						if linenew != cipai {
 							arr = append(arr, `! `+line) // convert to comment
