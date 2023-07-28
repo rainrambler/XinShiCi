@@ -36,14 +36,13 @@ func (p *QscZhtLoader) convertFile(srcFile string) {
 }
 
 func (p *QscZhtLoader) parseLines(lines []string, tofile string) {
-	arr := []string{}
 	totallines := len(lines)
 	for i := 0; i < totallines; i++ {
 		line := lines[i]
 		//fmt.Printf("[DBG][%d]: %s\n", i+1, line)
 
 		if IsEmptyLine(line) {
-			arr = append(arr, line)
+			p.curContent += "\r\n"
 			continue
 		}
 
@@ -51,6 +50,7 @@ func (p *QscZhtLoader) parseLines(lines []string, tofile string) {
 		switch firstchar {
 		case '#':
 			{
+				p.CommitPoem(i - 1)
 				p.beginNewPoet(line)
 			}
 		case '!':
@@ -68,16 +68,15 @@ func (p *QscZhtLoader) parseLines(lines []string, tofile string) {
 		case '【':
 			{
 				// title
+				p.CommitPoem(i - 1)
 				p.beginNewPoem(line)
 			}
 		default:
 			p.curContent += line + "\r\n"
 		}
-
 	}
 
 	p.CommitPoem(totallines)
-	WriteLines(arr, tofile)
 }
 
 func (p *QscZhtLoader) beginNewPoet(line string) {
@@ -92,11 +91,12 @@ func (p *QscZhtLoader) beginNewPoem(line string) {
 
 func (p *QscZhtLoader) CommitPoem(pos int) {
 	if p.curPoet == "" {
-		//fmt.Printf("DBG: Cannot find author in line: %d\n", pos)
+		fmt.Printf("DBG: Cannot find author in line: %d\n", pos)
 		return
 	}
 	if p.curTitle == "" {
-		//fmt.Printf("DBG: Cannot find title in line: %d\n", pos)
+		fmt.Printf("DBG: No title in line: %d, Poet: %s, [%s]%s\n", pos,
+			p.curPoet, p.curTitle, p.curContent)
 		return
 	}
 	if p.curContent == "" {
@@ -110,6 +110,7 @@ func (p *QscZhtLoader) CommitPoem(pos int) {
 	}
 
 	poemId := fmt.Sprintf("%d-%d", poetId, pos)
+
 	cp := CreateQscPoem(poemId, p.curPoet, p.curTitle, p.curContent, p.curComment)
 
 	if p.runRhyme {
