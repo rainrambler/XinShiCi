@@ -68,6 +68,7 @@ func (p *QscZhtLoader) parseLines(lines []string, tofile string) {
 		case '【':
 			{
 				// title
+				p.beginNewPoem(line)
 			}
 		default:
 			p.curContent += line + "\r\n"
