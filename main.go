@@ -139,7 +139,7 @@ func getCommandLine() string {
 func main() {
 	//findKeywords(`端午 客`)
 
-	//findRepeatChChars()
+	findRepeatChChars()
 
 	//findRelated(`黄叶`)
 	//findRelatedKeyword()
@@ -151,7 +151,7 @@ func main() {
 	//printHans(`allhans.txt`)
 
 	//analyseQsc()
-	findQscByChars()
+	//findQscByChars()
 
 	//cipaiDemo()
 
@@ -162,4 +162,11 @@ func main() {
 	//GenerateWordCloud(`D:\Projects\XinShiCi\qsc.txt`)
 
 	//qscRank()
+
+	//var qc QscZht
+	//qc.convertFile(`D:\Err2.txt`)
+	//qc.convertFile(`D:\Projects\GitHubSync\XinShiCi\qsc_zht.txt`)
+
+	//var qc QscZhtLoader
+	//qc.convertFile(`D:\Projects\GitHubSync\XinShiCi\qsc_zht_fmt.txt`)
 }
