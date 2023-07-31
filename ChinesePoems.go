@@ -86,15 +86,18 @@ func (p *ChinesePoems) PrintResults() {
 func (p *ChinesePoems) FindRepeatDiffs(resultfile string) {
 	allRes := []string{}
 	totalResults := 0
-	for id, v := range p.ID2Poems {
-		arr := v.FindRepeatDiffs2()
+	for _, v := range p.ID2Poems {
+		arr := v.FindRepeatDiffs()
 		if len(arr) > 0 {
 			//fmt.Printf("[%s][%s][%s]\n", id, v.Title, v.toDesc())
-			desc := fmt.Sprintf("[%s][%s][%s]", id, v.Title, v.toDesc())
-			allRes = append(allRes, desc)
-			allRes = append(allRes, arr...)
+			for _, founded := range arr {
+				desc := fmt.Sprintf("[%s]:[%d][%s][%s]", founded,
+					totalResults, v.Title, v.toDesc())
+				allRes = append(allRes, desc)
+				totalResults++
+			}
+
 			allRes = append(allRes, "")
-			totalResults += len(arr)
 		}
 	}
 	fmt.Printf("Total %d results.\n", totalResults)
