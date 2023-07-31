@@ -213,7 +213,7 @@ func (p *ChinesePoem) hasRepeatDiffs() bool {
 }
 
 // 花 未 全开月 未 圆
-func (p *ChinesePoem) FindRepeatDiffs2() []string {
+func (p *ChinesePoem) FindRepeatDiffs() []string {
 	arr := []string{}
 	if len(p.Sentences) == 0 {
 		return arr
