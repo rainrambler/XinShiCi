@@ -8,9 +8,11 @@ func findKeywords(keywords string) {
 	cp := qtsInst.FindKeywords(keywords)
 	cp.PrintResults()
 
-	var qc QscConv
-	qc.Init()
-	qc.convertFile("qsc.txt")
+	var qc QscZhtLoader
+	qc.convertFile(`qsc_zht_fmt.txt`)
+	//var qc QscConv
+	//qc.Init()
+	//qc.convertFile("qsc.txt")
 
 	cp = qc.allPoems.FindKeywords(keywords)
 	cp.PrintResults()
@@ -19,14 +21,8 @@ func findKeywords(keywords string) {
 func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	var qc QscConv
 	qc.Init()
-
-	//missedChars.rhy2Count = make(map[string]int)
-
-	//g_Rhymes.Init()
-	//g_Rhymes.ImportFile("ShiYunXinBian.txt")
 	g_ZhRhymes.Init()
 
-	//qc.analyseStrangeEncoding("qsc.txt")
 	//qc.analyseCipai("qsc.txt")
 	qc.convertFile("qsc.txt")
 
