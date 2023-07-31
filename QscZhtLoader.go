@@ -44,7 +44,7 @@ func (p *QscZhtLoader) parseLines(lines []string) {
 		//fmt.Printf("[DBG][%d]: %s\n", i+1, line)
 
 		if IsEmptyLine(line) {
-			p.curContent += "\r\n"
+			//p.curContent += "\r\n"
 			continue
 		}
 
@@ -74,11 +74,30 @@ func (p *QscZhtLoader) parseLines(lines []string) {
 				p.beginNewPoem(line)
 			}
 		default:
-			p.curContent += line + "\r\n"
+			p.addLine(i, line)
 		}
 	}
 
 	p.CommitPoem(totallines)
+}
+
+func (p *QscZhtLoader) addLine(pos int, line string) {
+	linenew := TrimBlank(line)
+	if len(linenew) == 0 {
+		return
+	}
+	//p.curContent += linenew + "\r\n" // TODO ??
+
+	lastchar := GetLastRune(linenew)
+	if !IsPunctuation(lastchar) {
+		fmt.Printf("[%d]Possible sub-title: %s\n", pos, line)
+		linenew += "。"
+	}
+	p.curContent += linenew
+}
+
+func TrimBlank(s string) string {
+	return strings.Trim(s, " \t\r\n")
 }
 
 func (p *QscZhtLoader) beginNewPoet(line string) {
