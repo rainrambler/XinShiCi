@@ -78,9 +78,11 @@ func findRepeatChChars() {
 
 	qtsInst.FindRepeatDiffs("repdiff_qts.txt")
 
-	var qc QscConv
-	qc.Init()
-	qc.convertFile("qsc.txt")
+	//var qc QscConv
+	//qc.Init()
+	//qc.convertFile("qsc.txt")
+	var qc QscZhtLoader
+	qc.convertFile(`qsc_zht_fmt.txt`)
 
 	qc.allPoems.FindRepeatDiffs("repdiff_qsc.txt")
 }
@@ -92,9 +94,12 @@ func findRelated(keyword string, verbmode int) {
 
 	qtsInst.FindRelatedWords(keyword)
 
-	var qc QscConv
-	qc.Init()
-	qc.convertFile("qsc.txt")
+	//var qc QscConv
+	//qc.Init()
+	//qc.convertFile("qsc.txt")
+
+	var qc QscZhtLoader
+	qc.convertFile(`qsc_zht_fmt.txt`)
 
 	qc.allPoems.FindRelatedWords(keyword)
 }
