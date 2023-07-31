@@ -31,11 +31,13 @@ func (p *QscZhtLoader) convertFile(srcFile string) {
 
 	lines := ReadTxtFile(srcFile)
 	p.runRhyme = true
-	p.parseLines(lines, srcFile+".txt")
+	p.parseLines(lines)
+
+	fmt.Printf("INFO: %d poems loaded.\n", p.allPoems.Count())
 	//p.allPoems.PrintResults()
 }
 
-func (p *QscZhtLoader) parseLines(lines []string, tofile string) {
+func (p *QscZhtLoader) parseLines(lines []string) {
 	totallines := len(lines)
 	for i := 0; i < totallines; i++ {
 		line := lines[i]
@@ -91,12 +93,12 @@ func (p *QscZhtLoader) beginNewPoem(line string) {
 
 func (p *QscZhtLoader) CommitPoem(pos int) {
 	if p.curPoet == "" {
-		fmt.Printf("DBG: Cannot find author in line: %d\n", pos)
+		//fmt.Printf("DBG: Cannot find author in line: %d\n", pos)
 		return
 	}
 	if p.curTitle == "" {
-		fmt.Printf("DBG: No title in line: %d, Poet: %s, [%s]%s\n", pos,
-			p.curPoet, p.curTitle, p.curContent)
+		//fmt.Printf("DBG: No title in line: %d, Poet: %s, [%s]%s\n", pos,
+		//	p.curPoet, p.curTitle, p.curContent)
 		return
 	}
 	if p.curContent == "" {
