@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fmt"
+)
+
 func findKeywords(keywords string) {
 	var qtsInst Qts
 	qtsInst.Init()
@@ -114,4 +118,12 @@ func AnalyseCipai() {
 	}
 
 	PrintSortedMapByValue(k2count)
+
+	for k, _ := range qc.allCipais.item2id {
+		_, exists := k2count[k]
+
+		if !exists {
+			fmt.Printf("No instance for: %s\n", k)
+		}
+	}
 }
