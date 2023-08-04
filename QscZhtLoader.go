@@ -23,7 +23,7 @@ type QscZhtLoader struct {
 	titleLineNum int
 }
 
-func (p *QscZhtLoader) convertFile(srcFile string) {
+func (p *QscZhtLoader) loadFile(srcFile string) {
 	p.allCipais.Init("CiPaiZh.txt")
 	p.allpoets.Init("SongPoetsZh.txt")
 	p.allPoems.Init()
