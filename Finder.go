@@ -9,7 +9,7 @@ func findKeywords(keywords string) {
 	cp.PrintResults()
 
 	var qc QscZhtLoader
-	qc.convertFile(`qsc_zht_fmt.txt`)
+	qc.loadFile(`qsc_zht_fmt.txt`)
 	//var qc QscConv
 	//qc.Init()
 	//qc.convertFile("qsc.txt")
@@ -82,7 +82,7 @@ func findRepeatChChars() {
 	//qc.Init()
 	//qc.convertFile("qsc.txt")
 	var qc QscZhtLoader
-	qc.convertFile(`qsc_zht_fmt.txt`)
+	qc.loadFile(`qsc_zht_fmt.txt`)
 
 	qc.allPoems.FindRepeatDiffs("repdiff_qsc.txt")
 }
@@ -99,7 +99,19 @@ func findRelated(keyword string, verbmode int) {
 	//qc.convertFile("qsc.txt")
 
 	var qc QscZhtLoader
-	qc.convertFile(`qsc_zht_fmt.txt`)
+	qc.loadFile(`qsc_zht_fmt.txt`)
 
 	qc.allPoems.FindRelatedWords(keyword)
+}
+
+func AnalyseCipai() {
+	var qc QscZhtLoader
+	qc.loadFile(`qsc_zht_fmt.txt`)
+
+	k2count := make(map[string]int)
+	for _, v := range qc.allPoems.ID2Poems {
+		k2count[v.Title] += 1
+	}
+
+	PrintSortedMapByValue(k2count)
 }
