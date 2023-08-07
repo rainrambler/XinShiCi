@@ -285,6 +285,7 @@ func (p *CipaiPurifier) parseTitle(line string) bool {
 	if cipai != line {
 		if !p.allCipais.HasActualCipai(cipai) {
 			fmt.Printf("Possible cipai: %s\n", cipai)
+			return false
 		}
 
 		p.allLines = append(p.allLines, packCipai(cipai))
@@ -293,6 +294,7 @@ func (p *CipaiPurifier) parseTitle(line string) bool {
 
 	title, _ := SplitZhString(line, '_')
 	if title != line {
+		//fmt.Printf("[DBG]%s to %s\n", line, title)
 		if p.allCipais.HasActualCipai(title) {
 			p.allLines = append(p.allLines, packCipai(title))
 			return true
@@ -302,13 +304,16 @@ func (p *CipaiPurifier) parseTitle(line string) bool {
 			return true
 		}
 
+		fmt.Printf("Cannot find title: %s\n", title)
+		p.allLines = append(p.allLines, packCipai(title))
+		return false
 	}
 
 	if StartWith(title, '其') {
 		if !OnlyContains(title, `其一二三四五六七八九十百`) {
-			fmt.Printf("Possible cipai: %s\n", line)
+			fmt.Printf("Possible content: %s\n", line)
 			p.allLines = append(p.allLines, line)
-			return true
+			return false
 		} else {
 			p.allLines = append(p.allLines, "【又】")
 			return true
