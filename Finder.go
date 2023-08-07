@@ -119,6 +119,8 @@ func AnalyseCipai() {
 
 	PrintSortedMapByValue(k2count)
 
+	fmt.Println("------------------------")
+
 	for k, _ := range qc.allCipais.item2id {
 		_, exists := k2count[k]
 
