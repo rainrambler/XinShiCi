@@ -43,7 +43,11 @@ func SubChineseString(s string, beginPos, size int) string {
 		return string(rs[beginPos:])
 	}
 
-	return string(rs[beginPos : beginPos+size])
+	if size < 0 {
+		return string(rs[beginPos:])
+	} else {
+		return string(rs[beginPos : beginPos+size])
+	}
 }
 
 const ZH_CHAR_LEN = 3
@@ -173,6 +177,15 @@ func StartWithSharp(s string) bool {
 	return strings.HasPrefix(s, "#")
 }
 
+func StartWith(s string, r rune) bool {
+	if len(s) == 0 {
+		return false
+	}
+
+	rs := []rune(s)
+	return rs[0] == r
+}
+
 func SplitBlank(s string) []string {
 	a := strings.FieldsFunc(s, SplitBlankFunc)
 	return a
@@ -199,4 +212,50 @@ func IsEmptyLine(line string) bool {
 	s := strings.Trim(line, " \t")
 
 	return len(s) == 0
+}
+
+// Return Leftpart, RightPart
+func SplitZhString(s string, splitR rune) (string, string) {
+	rs := []rune(s)
+
+	for i, r := range rs {
+		if r == splitR {
+			left := rs[:i]
+			right := rs[i+1:]
+
+			return string(left), string(right)
+		}
+	}
+
+	return s, ""
+}
+
+// Return Leftpart, RightPart
+func SplitZhStringMulti(s string, splitR string) (string, string) {
+	rs := []rune(s)
+	splits := []rune(splitR)
+
+	for i, r := range rs {
+		for _, tosplit := range splits {
+			if r == tosplit {
+				left := rs[:i]
+				right := rs[i+1:]
+
+				return string(left), string(right)
+			}
+		}
+	}
+
+	return s, ""
+}
+
+func OnlyContains(s, chars string) bool {
+	rs := []rune(s)
+	for _, r := range rs {
+		if !strings.ContainsRune(chars, r) {
+			return false
+		}
+	}
+
+	return true
 }
