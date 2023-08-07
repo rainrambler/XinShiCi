@@ -81,7 +81,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 				//fmt.Printf("DBG: Actual Cipai: %s\n", linenew)
 				p.MakeNewPoem(i)
 				p.setNewTitle(i, linenew)
-				arr = append(arr, `【`+linenew+`】`) // Title
+				arr = append(arr, packCipai(linenew)) // Title
 			}
 
 		} else {
@@ -109,7 +109,7 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 					iscipai, cipai := isLineSequenceCipai(linenew)
 					if iscipai {
 						//fmt.Printf("DBG: Parsed Cipai: %s in %s\n", cipai, linenew)
-						arr = append(arr, `【`+cipai+`】`) // Title
+						arr = append(arr, packCipai(cipai)) // Title
 						if linenew != cipai {
 							arr = append(arr, `! `+line) // convert to comment
 						}
