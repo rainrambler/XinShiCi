@@ -119,8 +119,7 @@ func (p *QscZhtConv) beginNewPoet(line string) {
 }
 
 func (p *QscZhtConv) beginNewPoem(line string) {
-	s := strings.Trim(line, " \t【】")
-	p.curTitle = s
+	p.curTitle = TrimTitle(line)
 }
 
 func (p *QscZhtConv) CommitPoem(pos int) {
@@ -167,4 +166,159 @@ func (p *QscZhtConv) ClearCurrent() {
 	p.curComment = ""
 	p.curLineNum = 0
 	p.titleLineNum = 0
+}
+
+func TrimTitle(s string) string {
+	return strings.Trim(s, " \t【】")
+}
+
+// '又'
+func ConvertRepeatCipai(filename string) {
+	lines, err := ReadLines(filename)
+	if err != nil {
+		fmt.Printf("[WARN]Cannot open file: %s!\n", filename)
+		return
+	}
+
+	linesnew := []string{}
+
+	curTitle := ""
+	for num, line := range lines {
+		firstchar := GetFirstRune(line)
+		switch firstchar {
+		case '【':
+			{
+				// title
+				curTitle = TrimTitle(line)
+				linesnew = append(linesnew, line)
+			}
+		case '又':
+			{
+				if ChcharLen(line) == 1 {
+					// repeated title
+					title := packCipai(curTitle)
+					linesnew = append(linesnew, title)
+				} else {
+					fmt.Printf("[%d]%s\n", num, line)
+					linesnew = append(linesnew, line)
+				}
+			}
+		default:
+			linesnew = append(linesnew, line)
+		}
+	}
+
+	WriteLines(linesnew, filename+".txt")
+}
+
+func ListCipai(filename string) {
+	lines, err := ReadLines(filename)
+	if err != nil {
+		fmt.Printf("[WARN]Cannot open file: %s!\n", filename)
+		return
+	}
+
+	for _, line := range lines {
+		firstchar := GetFirstRune(line)
+		switch firstchar {
+		case '【':
+			{
+				// title
+				fmt.Println(TrimTitle(line))
+			}
+
+		default:
+		}
+	}
+}
+
+type CipaiPurifier struct {
+	fromFile  string
+	allCipais Cipais
+
+	allLines []string
+}
+
+// Possible:
+// 其一百三十四
+// 其五_12
+// 鳳歸雲〈閨怨〉
+// 失調名（般涉）
+// 失調名_2
+// 又_15
+// 馬藥方·第三十
+func (p *CipaiPurifier) Purify(filename string) {
+	p.allCipais.Init("CiPaiZh.txt")
+	p.allLines = []string{}
+
+	p.fromFile = filename
+
+	lines, err := ReadLines(filename)
+	if err != nil {
+		fmt.Printf("[WARN]Cannot open file: %s!\n", filename)
+		return
+	}
+
+	for num, line := range lines {
+		firstchar := GetFirstRune(line)
+		switch firstchar {
+		case '【':
+			{
+				// title
+				title := TrimTitle(line)
+				if !p.parseTitle(title) {
+					fmt.Printf("[DBG]Cannot parse [%d] %s!\n", num, line)
+				}
+			}
+
+		default:
+			p.allLines = append(p.allLines, line)
+		}
+	}
+
+	WriteLines(p.allLines, filename+".txt")
+}
+
+func (p *CipaiPurifier) parseTitle(line string) bool {
+	//rs := []rune(line)
+	cipai, _ := SplitZhStringMulti(line, "〈（·")
+	if cipai != line {
+		if !p.allCipais.HasActualCipai(cipai) {
+			fmt.Printf("Possible cipai: %s\n", cipai)
+		}
+
+		p.allLines = append(p.allLines, packCipai(cipai))
+		return true
+	}
+
+	title, _ := SplitZhString(line, '_')
+	if title != line {
+		if p.allCipais.HasActualCipai(title) {
+			p.allLines = append(p.allLines, packCipai(title))
+			return true
+		}
+		if title == "又" {
+			p.allLines = append(p.allLines, packCipai(title))
+			return true
+		}
+
+	}
+
+	if StartWith(title, '其') {
+		if !OnlyContains(title, `其一二三四五六七八九十百`) {
+			fmt.Printf("Possible cipai: %s\n", line)
+			p.allLines = append(p.allLines, line)
+			return true
+		} else {
+			p.allLines = append(p.allLines, "【又】")
+			return true
+		}
+	}
+
+	p.allLines = append(p.allLines, packCipai(line))
+	return true
+}
+
+func packCipai(title string) string {
+	return "【" + title + "】"
 }
