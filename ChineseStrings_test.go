@@ -121,6 +121,25 @@ func TestSplitZhString2(t *testing.T) {
 	}
 }
 
+func TestSplitZhString3(t *testing.T) {
+	s := `竹枝_2`
+
+	l, r := SplitZhString(s, '_')
+	res := l
+	expected := `竹枝`
+
+	if res != expected {
+		t.Errorf("Result: %v, want: %v", res, expected)
+	}
+
+	res = r
+	expected = `2`
+
+	if res != expected {
+		t.Errorf("Result: %v, want: %v", res, expected)
+	}
+}
+
 func TestOnlyContains1(t *testing.T) {
 	tofind := `其一二三四五六七八九十百`
 	s := `其一百三十四`
