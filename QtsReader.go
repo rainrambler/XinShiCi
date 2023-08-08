@@ -224,3 +224,22 @@ func CreateQtsPoem(line string, idx int) *ChinesePoem {
 
 	return &poem
 }
+
+func convertQts(filename string) {
+	allLines, err := ReadLines(filename)
+	if err != nil {
+		fmt.Printf("WARN: Cannot parse file: %s: %v!\n", filename, err)
+		return
+	}
+
+	linesnew := []string{}
+	id := 1
+	for _, line := range allLines {
+		s := fmt.Sprintf("806_%d\t詩三百三首\t寒山\t%s", id, line)
+		id++
+
+		linesnew = append(linesnew, s)
+	}
+
+	WriteLines(linesnew, filename+".txt")
+}
