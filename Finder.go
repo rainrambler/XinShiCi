@@ -14,6 +14,7 @@ func findKeywords(keywords string) {
 
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
+	//qc.loadFile(`TangSongCiZh.txt`)
 	//var qc QscConv
 	//qc.Init()
 	//qc.convertFile("qsc.txt")
