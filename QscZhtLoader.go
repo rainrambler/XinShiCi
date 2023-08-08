@@ -11,7 +11,7 @@ type QscZhtLoader struct {
 	curPoet   string
 	curTitle  string
 	allCipais Cipais
-	allpoets  Poets
+	allpoets  AncientPoets
 	allPoems  ChinesePoems
 	runRhyme  bool
 	prevPoet  bool
@@ -25,7 +25,7 @@ type QscZhtLoader struct {
 
 func (p *QscZhtLoader) loadFile(srcFile string) {
 	p.allCipais.Init("CiPaiZh.txt")
-	p.allpoets.Init("SongPoetsZh.txt")
+	p.allpoets.Init(`Data/AncientAuthors.txt`)
 	p.allPoems.Init()
 	fmt.Printf("INFO: Total poets: %d\n", p.allpoets.Count())
 
