@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
-	"sort"
 	"strings"
 )
 
@@ -66,26 +63,6 @@ func (p *ChineseDict) FindChWord(chs string) *ChineseWord {
 	return p.chs2Word[chs]
 }
 
-func ReadTxtFile(filename string) []string {
-	linearr := []string{}
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		linearr = append(linearr, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
-
-	return linearr
-}
-
 // Format: cht chs [pinyin] /Eng1/Eng2/
 func ParseLine(line string) *ChineseWord {
 
@@ -132,34 +109,6 @@ func ParseLine(line string) *ChineseWord {
 	}
 
 	return cw
-}
-
-func SplitEngMeans2(line string) []string {
-	arr := []string{}
-	if line[0] != '/' {
-		log.Printf("WARN: Err Format in Eng Desc: [%s]\n", line)
-	}
-
-	part := line[1:] // remove the first / char
-	pos := strings.Index(part, "/")
-	if pos == -1 {
-		arr = append(arr, part)
-		return arr
-	} else if pos == len(part) {
-		tmp := part[:len(part)-1]
-		arr = append(arr, tmp)
-		return arr
-	}
-
-	leftpart := part[:pos]
-	arr = append(arr, leftpart)
-	part = part[pos+1:]
-
-	if len(part) == 0 {
-		return arr
-	}
-
-	return arr
 }
 
 func SplitEngMeans(line string) []string {
@@ -252,87 +201,4 @@ func SubString(s string, beginPos, size int) string {
 	}
 
 	return s[beginPos : beginPos+size]
-}
-
-// https://stackoverflow.com/questions/18695346/how-to-sort-a-mapstringint-by-its-values
-func PrintSortedMapByValue(m map[string]int) {
-	type kv struct {
-		Key   string
-		Value int
-	}
-
-	var ss []kv
-	for k, v := range m {
-		ss = append(ss, kv{k, v})
-	}
-
-	sort.Slice(ss, func(i, j int) bool {
-		return ss[i].Value > ss[j].Value
-	})
-
-	fmt.Println("===>")
-	for _, kv := range ss {
-		fmt.Printf("%s:%d\n", kv.Key, kv.Value)
-	}
-	fmt.Println("<===")
-}
-
-// Print Top N values (sorted by value), -1 means all
-func PrintMapByValueTop(m map[string]int, topn int) {
-	type kv struct {
-		Key   string
-		Value int
-	}
-
-	var ss []kv
-	for k, v := range m {
-		ss = append(ss, kv{k, v})
-	}
-
-	sort.Slice(ss, func(i, j int) bool {
-		return ss[i].Value > ss[j].Value
-	})
-
-	total := 0
-	fmt.Println("===>")
-	for _, kv := range ss {
-		fmt.Printf("%s:%d\n", kv.Key, kv.Value)
-		total++
-
-		if (total >= topn) && (topn > 0) {
-			break
-		}
-	}
-	fmt.Println("<===")
-}
-
-func PrintSortedMapByValueInt(m map[int]int) {
-	type kv struct {
-		Key   int
-		Value int
-	}
-
-	var ss []kv
-	for k, v := range m {
-		ss = append(ss, kv{k, v})
-	}
-
-	sort.Slice(ss, func(i, j int) bool {
-		return ss[i].Value > ss[j].Value
-	})
-
-	fmt.Println("===>")
-	for _, kv := range ss {
-		fmt.Printf("%d:%d\n", kv.Key, kv.Value)
-	}
-	fmt.Println("<===")
-}
-
-func PrintMapGroupByValue(m map[string]int) {
-	v2count := make(map[int]int)
-	for _, v := range m {
-		v2count[v] = v2count[v] + 1
-	}
-
-	PrintSortedMapByValueInt(v2count)
 }
