@@ -15,21 +15,21 @@ func findKeywords(keywords string) {
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
 	//qc.loadFile(`TangSongCiZh.txt`)
-	//var qc QscConv
-	//qc.Init()
-	//qc.convertFile("qsc.txt")
 
 	cp = qc.allPoems.FindKeywords(keywords)
 	cp.PrintResults()
 }
 
 func findQscKeyword(keyword string, pattern, length int, verbmode int) {
-	var qc QscConv
-	qc.Init()
+	//var qc QscConv
+	//qc.Init()
+	var qc QscZhtLoader
+	qc.loadFile(`qsc_zht_fmt.txt`)
+
 	g_ZhRhymes.Init()
 
 	//qc.analyseCipai("qsc.txt")
-	qc.convertFile("qsc.txt")
+	//qc.convertFile("qsc.txt")
 
 	//qc.FindRepeatWords()
 	//qc.FindRepeatDiffs()
@@ -59,7 +59,7 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.FindByCiPaiYayun("醉花阴", Yun_U)
 	//qc.FindByCiPaiYayun("诉衷情", Yun_Ong)
 
-	qc.FindSentense(createQuery(keyword, pattern, length))
+	qc.allPoems.FindSentense(createQuery(keyword, pattern, length))
 	//qc.FindSentense(createQuery("媚", POS_ANY, 0))
 	//qc.FindSentense(createQuery("美", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("屏", POS_SUFFIX, 7))
