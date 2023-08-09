@@ -66,6 +66,26 @@ func ReadTextFile(fullpath string) (string, error) {
 	return string(content), nil
 }
 
+func ReadTxtFile(filename string) []string {
+	linearr := []string{}
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		linearr = append(linearr, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return linearr
+}
+
 func WriteTextFile(fullpath, content string) error {
 	err := ioutil.WriteFile(fullpath, []byte(content), 0777)
 	if err != nil {
