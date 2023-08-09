@@ -233,13 +233,52 @@ func convertQts(filename string) {
 	}
 
 	linesnew := []string{}
-	id := 1
+	id := 100
 	for _, line := range allLines {
-		s := fmt.Sprintf("806_%d\t詩三百三首\t寒山\t%s", id, line)
+		if len(line) == 0 {
+			continue
+		}
+		s := fmt.Sprintf("798_%d\t宮詞\t花蕊夫人\t%s", id, line)
 		id++
 
 		linesnew = append(linesnew, s)
 	}
 
 	WriteLines(linesnew, filename+".txt")
+}
+
+func countPoemLength() {
+	var qtsInst Qts
+	qtsInst.Init()
+	qtsInst.ReadFile("qts_zht.txt")
+
+	poem2len := make(map[string]int)
+	for _, poem := range qtsInst.ChinesePoems.ID2Poems {
+		poem2len[poem.Title] = len(poem.AllText)
+	}
+
+	PrintMapByValueTop(poem2len, 50)
+}
+
+func AppendEntertoFile(filename string, splitChar rune) {
+	content, err := ReadTextFile(filename)
+	if err != nil {
+		fmt.Printf("WARN: Cannot parse file: %s: %v!\n", filename, err)
+		return
+	}
+
+	rsNew := []rune{}
+	rs := []rune(content)
+
+	for _, r := range rs {
+		if r == splitChar {
+			rsNew = append(rsNew, r)
+			rsNew = append(rsNew, '\n')
+		} else {
+			rsNew = append(rsNew, r)
+		}
+	}
+
+	s := string(rsNew)
+	WriteTextFile(filename+".txt", s)
 }
