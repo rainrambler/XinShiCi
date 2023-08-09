@@ -306,48 +306,6 @@ func (p *QscConv) FindRepeatWords() {
 	fmt.Printf("Total %d results.\n", totalResults)
 }
 
-func (p *QscConv) FindSentense(qc *QueryCondition) {
-	if qc == nil {
-		return
-	}
-	totalResults := 0
-
-	for _, v := range p.allPoems.ID2Poems {
-		for pos, sentence := range v.Sentences {
-			if qc.ZhLen > 0 {
-				if qc.ZhLen != ChcharLen(sentence) {
-					continue
-				}
-			}
-
-			founded := false
-			switch qc.Pos {
-			case POS_PREFIX:
-				if strings.HasPrefix(sentence, qc.KeywordStr) {
-					founded = true
-				}
-			case POS_SUFFIX:
-				if strings.HasSuffix(sentence, qc.KeywordStr) {
-					founded = true
-				}
-			case POS_ANY:
-				if strings.Contains(sentence, qc.KeywordStr) {
-					founded = true
-				}
-			default:
-
-			}
-
-			if founded {
-				fmt.Printf("%s [%s]: %s\n", sentence, v.title(), v.FindContext(pos))
-				totalResults++
-			}
-		}
-	}
-
-	fmt.Printf("Total %d results.\n", totalResults)
-}
-
 func (p *QscConv) CountPoemChars(qc *QueryCondition) {
 	totalResults := 0
 	var c2c ZhCharCount
