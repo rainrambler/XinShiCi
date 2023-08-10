@@ -159,3 +159,58 @@ func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
 
 	fmt.Printf("Total %d results.\n", totalResults)
 }
+
+// `黃葉` ==> 西風:15, 何處:7, 淒涼:5, 獨倚:4
+func (p *ChinesePoems) CountPoemChars(qc *QueryCondition) {
+	totalResults := 0
+	var c2c ZhCharCount
+	c2c.Init()
+
+	for _, v := range p.ID2Poems {
+		for _, sentence := range v.Sentences {
+			if qc.ZhLen > 0 {
+				if qc.ZhLen != ChcharLen(sentence) {
+					continue
+				}
+			}
+
+			founded := false
+			switch qc.Pos {
+			case POS_PREFIX:
+				if strings.HasPrefix(sentence, qc.KeywordStr) {
+					founded = true
+				}
+			case POS_SUFFIX:
+				if strings.HasSuffix(sentence, qc.KeywordStr) {
+					founded = true
+				}
+			case POS_ANY:
+				if strings.Contains(sentence, qc.KeywordStr) {
+					founded = true
+				}
+			default:
+
+			}
+
+			if founded {
+				//fmt.Printf("%s [%s]: %s\n", sentence, v.title(), v.FindContext(pos))
+				c2c.AddPoem(v)
+				totalResults++
+			}
+		}
+	}
+
+	fmt.Printf("Total %d results.\n", totalResults)
+	c2c.r2c.PrintSorted()
+}
+
+func (p *ChinesePoems) FindRepeatWords() {
+	totalResults := 0
+	for id, v := range p.ID2Poems {
+		if v.hasRepeatWords() {
+			fmt.Printf("[%s][%s][%s]\n", id, v.Title, v.toDesc())
+			totalResults++
+		}
+	}
+	fmt.Printf("Total %d results.\n", totalResults)
+}
