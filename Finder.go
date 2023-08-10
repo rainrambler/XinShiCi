@@ -72,8 +72,6 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.FindSentense(createQuery("染", POS_ANY, 0))
 	//qc.FindSentense(createQuery("自由", POS_ANY, 0))
 	//missedChars.DbgPrint()
-
-	//qc.CountPoemChars(createQuery("黄叶", POS_ANY, 0))
 }
 
 func findRepeatChChars() {
@@ -109,6 +107,13 @@ func findRelated(keyword string, verbmode int) {
 	qc.allPoems.FindRelatedWords(keyword)
 }
 
+// `黃葉` ==> 西風:15, 何處:7, 淒涼:5, 獨倚:4
+func CountPoemZhChars(keyword string) {
+	var qc QscZhtLoader
+	qc.loadFile(`qsc_zht_fmt.txt`)
+
+	qc.allPoems.CountPoemChars(createQuery(keyword, POS_ANY, 0))
+}
 func AnalyseCipai() {
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
