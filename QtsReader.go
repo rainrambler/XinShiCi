@@ -238,7 +238,7 @@ func convertQts(filename string) {
 		if len(line) == 0 {
 			continue
 		}
-		s := fmt.Sprintf("798_%d\t宮詞\t花蕊夫人\t%s", id, line)
+		s := fmt.Sprintf("83_%d\t感遇詩三十八首\t陳子昂\t%s", id, line)
 		id++
 
 		linesnew = append(linesnew, s)
