@@ -86,7 +86,6 @@ func (p *QscZhtLoader) addLine(pos int, line string) {
 	if len(linenew) == 0 {
 		return
 	}
-	//p.curContent += linenew + "\r\n" // TODO ??
 
 	lastchar := GetLastRune(linenew)
 	if !IsPunctuation(lastchar) {
@@ -138,7 +137,6 @@ func (p *QscZhtLoader) CommitPoem(pos int) {
 		cp.analyseRhyme()
 	}
 	p.allPoems.AddPoem(cp)
-
 	p.ClearCurrent()
 }
 
