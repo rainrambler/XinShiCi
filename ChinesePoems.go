@@ -214,3 +214,68 @@ func (p *ChinesePoems) FindRepeatWords() {
 	}
 	fmt.Printf("Total %d results.\n", totalResults)
 }
+
+// see: ZhRhymes
+// chlen: 0 means any
+func (p *ChinesePoems) FindByYayunLengthPingze(yayun string, chlen, pztype int) {
+	totalResults := 0
+	for _, v := range p.ID2Poems {
+		arr := v.FindByYayunLengthPingze(yayun, chlen, pztype)
+
+		for id, item := range arr {
+			fmt.Printf("[%d][%s][%s]\n", id, v.Title, item)
+			totalResults++
+		}
+	}
+	fmt.Printf("Total %d results.\n", totalResults)
+}
+
+func (p *ChinesePoems) PrintRhyme() {
+	for _, v := range p.ID2Poems {
+		fmt.Printf("[%s]: %s\n", v.Rhyme, v.LeftChars(50))
+	}
+}
+
+func (p *ChinesePoems) FindByCiPai(cipai string) {
+	resultcount := 0
+	for _, v := range p.ID2Poems {
+		if v.Title == cipai {
+			fmt.Printf("[%s]: %s\n", v.title(), v.LeftChars(75))
+			resultcount++
+		}
+	}
+
+	fmt.Printf("Total %d results.\n", resultcount)
+}
+
+func (p *ChinesePoems) FindByYayun(yayun string) {
+	resultcount := 0
+	for _, v := range p.ID2Poems {
+		if v.Rhyme == yayun {
+			fmt.Printf("[%s]: %s\n", v.title(), v.LeftChars(50))
+			resultcount++
+		}
+	}
+	fmt.Printf("Total %d results.\n", resultcount)
+}
+
+func (p *ChinesePoems) FindByCiPaiYayun(cipai, yayun string) {
+	resultcount := 0
+	for _, v := range p.ID2Poems {
+		if (v.Rhyme == yayun) && (v.Title == cipai) {
+			fmt.Printf("[%s]: %s\n", v.toDesc(), v.LeftChars(75))
+			resultcount++
+		}
+	}
+	fmt.Printf("Total %d results.\n", resultcount)
+}
+
+func (p *ChinesePoems) FindByYayunLength(yayun string, chlen int) {
+	for _, v := range p.ID2Poems {
+		arr := v.FindByYayunLength(yayun, chlen)
+
+		for id, item := range arr {
+			fmt.Printf("[%d][%s][%s]\n", id, v.Title, item)
+		}
+	}
+}
