@@ -133,7 +133,7 @@ func (p *QtsPurifer) CleanCommentInLine(s string) string {
 				p.curIndent--
 			}
 		} else {
-			if indent == 0 {
+			if p.curIndent == 0 {
 				arr = append(arr, r)
 			}
 		}
@@ -192,8 +192,4 @@ func isTitle(s string) bool {
 	}
 
 	return (rs[0] == '【') && (rs[len(rs)-1] == '】')
-}
-
-func TrimTitle(s string) string {
-	return strings.Trim(s, " \t【】")
 }
