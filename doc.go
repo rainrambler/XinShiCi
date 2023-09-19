@@ -188,17 +188,3 @@ func convertHanzi2Pinyin2() {
 	err := ioutil.WriteFile("zhs2py", bs, 0644)
 	check(err)
 }
-
-func SubString(s string, beginPos, size int) string {
-	slen := len(s)
-
-	if beginPos >= slen {
-		return ""
-	}
-
-	if beginPos+size >= slen {
-		return s[beginPos:]
-	}
-
-	return s[beginPos : beginPos+size]
-}
