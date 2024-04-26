@@ -111,3 +111,14 @@ func TestHasRepeatWords4(t *testing.T) {
 		t.Errorf("failed: %v, want: %v", val, want)
 	}
 }
+
+func TestArr2String1(t *testing.T) {
+	arr := []string{"aaa", "bb"}
+
+	val := Arr2String(arr)
+	want := "aaa,bb"
+
+	if val != want {
+		t.Errorf("failed: %v, want: %v", val, want)
+	}
+}
