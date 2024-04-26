@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// Keys: [端午 客] ==> 拜跪題封向端午,漂零已是滄浪客|杜甫|惜別行
 func findKeywords(keywords string) {
 	var qtsInst Qts
 	qtsInst.Init()
@@ -21,12 +22,11 @@ func findKeywords(keywords string) {
 }
 
 func findQscKeyword(keyword string, pattern, length int, verbmode int) {
+	g_ZhRhymes.Init()
 	//var qc QscConv
 	//qc.Init()
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
-
-	g_ZhRhymes.Init()
 
 	//qc.analyseCipai("qsc.txt")
 	//qc.convertFile("qsc.txt")
@@ -40,6 +40,7 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.FindByCiPai(`醉桃源`)
 	//qc.FindByCiPai(`醉花阴`)
 	//qc.FindByCiPai("采桑子")
+	//qc.allPoems.FindByCiPai("鷓鴣天")
 
 	//qc.countCiPai()
 
@@ -49,7 +50,9 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.FindByYayunLengthPingze(Yun_Ing, 0, PingZePing)
 	//qc.FindByYayunLengthPingze(Yun_Ei, 0, PingZeZe)
 	//qc.FindByYayunLength("8", 7)
-	//qc.FindByYayunLengthPingze(Yun_U, 7, PingZeZe)
+	//qc.allPoems.FindByYayunLength("8", 7)
+	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 7, PingZePing)
+	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 2, PingZeZe)
 	//qc.FindByYayunLengthPingze(Yun_Ou3, 4, PingZeZe)
 
 	//qc.FindByYayun("8")
@@ -58,20 +61,42 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 
 	//qc.FindByCiPaiYayun("醉花阴", Yun_U)
 	//qc.FindByCiPaiYayun("诉衷情", Yun_Ong)
+	//qc.allPoems.FindByCiPaiYayun("鷓鴣天", Yun_Ong)
 
-	qc.allPoems.FindSentense(createQuery(keyword, pattern, length))
-	//qc.FindSentense(createQuery("媚", POS_ANY, 0))
-	//qc.FindSentense(createQuery("美", POS_SUFFIX, 0))
-	//qc.FindSentense(createQuery("屏", POS_SUFFIX, 7))
+	//qc.allPoems.FindSentense(createQuery(keyword, pattern, length))
+	qc.allPoems.FindSentense(createQuery("解語", POS_ANY, 0))
+	//qc.allPoems.FindSentense(createQuery("清", POS_SUFFIX, 5))
+
+	//qc.allPoems.FindSentense(createQuery("酒", POS_ANY, 7))
+
 	//qc.FindSentense(createQuery("风", POS_SUFFIX, 4))
-	//qc.FindSentense(createQuery("酒", POS_SUFFIX, 7))
+	//qc.allPoems.FindSentense(createQuery("處", POS_SUFFIX, 7))
 	//qc.FindSentense(createQuery("翠", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("桐", POS_SUFFIX, 0))
 	//qc.FindSentense(createQuery("柳", POS_SUFFIX, 0))
-	//qc.FindSentense(createQuery("暖", POS_ANY, 4))
+	//qc.allPoems.FindSentense(createQuery("暖", POS_ANY, 4))
 	//qc.FindSentense(createQuery("染", POS_ANY, 0))
 	//qc.FindSentense(createQuery("自由", POS_ANY, 0))
-	//missedChars.DbgPrint()
+}
+
+func findQscDemo() {
+	g_ZhRhymes.Init()
+
+	var qc QscZhtLoader
+	qc.loadFile(`qsc_zht_fmt.txt`)
+
+	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 3, PingZePing)
+	//qc.allPoems.FindByYayunLength(Yun_Ou3, 4)
+	//qc.FindByYayunLength(Yun_Ou3, 4)
+	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 7, PingZePing)
+}
+
+func findQscCipai(cipai, yayun string) {
+	g_ZhRhymes.Init()
+	var qc QscZhtLoader
+	qc.loadFile(`qsc_zht_fmt.txt`)
+
+	qc.allPoems.FindByCiPaiYayun(cipai, yayun)
 }
 
 func findRepeatChChars() {
@@ -90,23 +115,29 @@ func findRepeatChChars() {
 	qc.allPoems.FindRepeatDiffs("repdiff_qsc.txt")
 }
 
+// Keys: [新綠]==>新綠:87, 東風:12, 闌幹:9, 年華:7
 func findRelated(keyword string, verbmode int) {
 	var qtsInst Qts
 	qtsInst.Init()
 	qtsInst.ReadFile("qts_zht.txt")
 
-	qtsInst.FindRelatedWords(keyword)
+	if verbmode != 0 {
+		fmt.Println("Finding in all poems in Tang Dynasty...")
+	}
 
-	//var qc QscConv
-	//qc.Init()
-	//qc.convertFile("qsc.txt")
+	qtsInst.FindRelatedWords(keyword)
 
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
 
+	if verbmode != 0 {
+		fmt.Println("Finding in all poems in Song Dynasty...")
+	}
+
 	qc.allPoems.FindRelatedWords(keyword)
 }
 
+// Same to findRelated(), only in QSC
 // `黃葉` ==> 西風:15, 何處:7, 淒涼:5, 獨倚:4
 func CountPoemZhChars(keyword string) {
 	var qc QscZhtLoader
@@ -114,6 +145,23 @@ func CountPoemZhChars(keyword string) {
 
 	qc.allPoems.CountPoemChars(createQuery(keyword, POS_ANY, 0))
 }
+
+// eg: 昨夜 星辰 昨夜 风
+func findAllRepeatWordInSentences() {
+	var qtsInst Qts
+	qtsInst.Init()
+	qtsInst.ReadFile("qts_zht.txt")
+
+	qtsInst.FindRepeatWords()
+
+	var qc QscZhtLoader
+	qc.loadFile(`qsc_zht_fmt.txt`)
+
+	qc.allPoems.FindRepeatWords()
+}
+
+// 浣溪沙:774, 水調歌頭:750
+// No instance for: 倚樓人, 花幕暗
 func AnalyseCipai() {
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
