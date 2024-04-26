@@ -111,7 +111,7 @@ func (p *ChineseRhymes) ImportFile(filename string) {
 	lines := ReadTxtFile(filename)
 
 	for idx, line := range lines {
-		p.parseLine(idx+1, line)
+		p.parseLine2(idx+1, line)
 	}
 }
 
@@ -134,6 +134,44 @@ func (p *ChineseRhymes) parseLine(rownum int, line string) {
 	rs := []rune(zhchars)
 	for _, zhch := range rs {
 		p.AddRhyme(string(zhch), rhymestr)
+	}
+}
+
+func splitShiyun(row int, line string) (string, string) {
+	if len(line) == 0 {
+		return "", ""
+	}
+	rs := []rune(line)
+	firstchar := rs[0]
+	if firstchar != '【' {
+		log.Printf("WARN: Invalid line in Rhyme file (No Start): %d\n", row)
+		return line, ""
+	}
+
+	pos := 1
+	for rs[pos] != '】' {
+		pos++
+
+		if pos == len(line) {
+			log.Printf("WARN: Invalid line in Rhyme file (No End): %d\n", row)
+			return "", ""
+		}
+	}
+
+	rhymestr := string(rs[1:pos])
+	remain := string(rs[pos+1:])
+	return rhymestr, remain
+}
+
+func (p *ChineseRhymes) parseLine2(rownum int, line string) {
+	rhymestr, remain := splitShiyun(rownum, line)
+	if remain == "" {
+		return
+	}
+
+	rs := []rune(remain)
+	for _, r := range rs {
+		p.AddRhyme(string(r), rhymestr)
 	}
 }
 
