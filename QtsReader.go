@@ -238,7 +238,7 @@ func convertQts(filename string) {
 		if len(line) == 0 {
 			continue
 		}
-		s := fmt.Sprintf("83_%d\t感遇詩三十八首\t陳子昂\t%s", id, line)
+		s := fmt.Sprintf("837_%d\t山居詩二十四首\t貫休\t%s", id, line)
 		id++
 
 		linesnew = append(linesnew, s)
@@ -258,27 +258,4 @@ func countPoemLength() {
 	}
 
 	PrintMapByValueTop(poem2len, 50)
-}
-
-func AppendEntertoFile(filename string, splitChar rune) {
-	content, err := ReadTextFile(filename)
-	if err != nil {
-		fmt.Printf("WARN: Cannot parse file: %s: %v!\n", filename, err)
-		return
-	}
-
-	rsNew := []rune{}
-	rs := []rune(content)
-
-	for _, r := range rs {
-		if r == splitChar {
-			rsNew = append(rsNew, r)
-			rsNew = append(rsNew, '\n')
-		} else {
-			rsNew = append(rsNew, r)
-		}
-	}
-
-	s := string(rsNew)
-	WriteTextFile(filename+".txt", s)
 }
