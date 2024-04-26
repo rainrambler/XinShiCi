@@ -242,6 +242,7 @@ func (p *ZhCharCount) AddPoem(poem *ChinesePoem) {
 	for _, s := range poem.Sentences {
 		rs := []rune(s)
 		for i := 0; i < len(rs)-1; i++ {
+			// each two chars
 			chpair := []rune{rs[i], rs[i+1]}
 			p.r2c.Add(string(chpair))
 		}
