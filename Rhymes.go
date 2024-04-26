@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-var g_Rhymes ChineseRhymes
-
 type Rhyme struct {
 	Desc   string
 	rhymes []string
@@ -26,6 +24,64 @@ func (p *Rhyme) AddItem(rhy string) {
 func (p *Rhyme) toDesc() string {
 	return p.Desc
 }
+
+// var g_Rhymes ChineseRhymes
+
+// 平声（诗韵新编）
+const (
+	P1Ma    = "P1"
+	P2Bo    = "P2"
+	P3Ge    = "P3"
+	P4Jie   = "P4"
+	P5Zhi   = "P5"
+	P6Er    = "P6"
+	P7Qi    = "P7"
+	P8Wei   = "P8"
+	P9Kai   = "P9"
+	P10Gu   = "P10"
+	P11Yu   = "P11"
+	P12Hou  = "P12"
+	P13Hao  = "P13"
+	P14Han  = "P14"
+	P15Hen  = "P15"
+	P16Tang = "P16"
+	P17Geng = "P17"
+	P18Dong = "P18"
+)
+
+// 仄声（诗韵新编）
+const (
+	Z1Ba3     = "Z1"
+	Z2Bo3     = "Z2"
+	Z3Che3    = "Z3"
+	Z4Jie3    = "Z4"
+	Z5Chi3    = "Z5"
+	Z6Er3     = "Z6"
+	Z7Bi3     = "Z7"
+	Z8Bei3    = "Z8"
+	Z9Ai3     = "Z9"
+	Z10Bu4    = "Z10"
+	Z11Ju3    = "Z11"
+	Z12Chou3  = "Z12"
+	Z13Ao3    = "Z13"
+	Z14An3    = "Z14"
+	Z15Ben3   = "Z15"
+	Z16Bang3  = "Z16"
+	Z17Beng3  = "Z17"
+	Z18Chong3 = "Z18"
+)
+
+// 入声（诗韵新编）
+const (
+	R1Ba  = "R1"
+	R2Bo  = "R2"
+	R3Ge  = "R3"
+	R4Bie = "R4"
+	R5Chi = "R5"
+	R6Bi  = "R6"
+	R7Chu = "R7"
+	R8Qu  = "R8"
+)
 
 type ChineseRhymes struct {
 	ZhChar2Rhyme map[string]*Rhyme // "安" -> "【十四寒】"
@@ -79,11 +135,13 @@ func (p *ChineseRhymes) parseLine(rownum int, line string) {
 	for _, zhch := range rs {
 		p.AddRhyme(string(zhch), rhymestr)
 	}
-
 }
 
 var missedChars Rhyme2Count
 
+// 晴。清。明。蕖，盈。鷺，意，婷。箏。情。聽。收，靈。取，見，青。
+// ==>
+// 【十七庚】
 func (p *ChineseRhymes) AnalyseRhyme(lastwords []string) string {
 	var rhy2count Rhyme2Count
 	rhy2count.Init()
@@ -91,12 +149,10 @@ func (p *ChineseRhymes) AnalyseRhyme(lastwords []string) string {
 	for _, wd := range lastwords {
 		if curRhyme, ok := p.ZhChar2Rhyme[wd]; ok {
 			// exists
-			//fmt.Printf("[%s] Rhyme: [%s]\n", wd, curRhyme.Desc)
 			for _, rhy := range curRhyme.rhymes {
 				rhy2count.Add(rhy)
 			}
 		} else {
-			//fmt.Printf("WARN: Cannot find rhyme for: %s\n", wd)
 			missedChars.Add(wd)
 		}
 	}
@@ -123,7 +179,6 @@ func (p *Rhyme2Count) Add(rhy string) {
 	} else {
 		p.rhy2Count[rhy] = 1
 	}
-
 }
 
 type KeyValue struct {
@@ -169,10 +224,16 @@ func (p *Rhyme2Count) FindTop1() string {
 func (p *Rhyme2Count) PrintSorted() {
 	kvs := p.SortByValue()
 
+	total := 0
 	fmt.Println("-->Start")
 	for _, kv := range kvs {
 		if kv.Value > 1 {
-			fmt.Printf("[%s] count: %d\n", kv.Key, kv.Value)
+			fmt.Printf("[%s]: %d, ", kv.Key, kv.Value)
+			total++
+
+			if (total % 10) == 0 {
+				fmt.Println()
+			}
 		}
 	}
 	fmt.Println("<--End")
