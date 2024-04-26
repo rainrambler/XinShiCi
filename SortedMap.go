@@ -47,8 +47,12 @@ func PrintMapByValueTop(m map[string]int, topn int) {
 	total := 0
 	fmt.Println("===>")
 	for _, kv := range ss {
-		fmt.Printf("%s:%d\n", kv.Key, kv.Value)
+		fmt.Printf("%s:%d, ", kv.Key, kv.Value)
 		total++
+
+		if (total % 10) == 0 {
+			fmt.Println()
+		}
 
 		if (total >= topn) && (topn > 0) {
 			break
