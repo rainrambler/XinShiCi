@@ -16,10 +16,10 @@ func GenerateWordCloud(filename string) {
 	wc.Init()
 	wc.parseLines(lines)
 
-	//wc.PrintResult()
-	PrintMapGroupByValue(wc.char2count)
+	wc.PrintResult(500)
+	//PrintMapGroupByValue(wc.char2count)
 	//wc.ConvertJsonHardCode()
-	wc.SaveFile(`nalan`)
+	//wc.SaveFile(`nalan`)
 }
 
 type WordCloud struct {
@@ -62,7 +62,7 @@ func (p *CiCloud) parseOneLine(line string) {
 
 	if sencount == 1 {
 		if !p.allCipais.Exists(line) {
-			fmt.Printf("subtitle: [%s]\n", line)
+			//fmt.Printf("subtitle: [%s]\n", line)
 		}
 
 		// Do NOT use title or subtitle
@@ -120,13 +120,11 @@ func (p *WordCloud) AddWord(s string) {
 
 // Print Top N values (sorted by value), -1 means all
 func (p *WordCloud) PrintResult(topn int) {
-	PrintMapByValueTop(p.char2count, topn)
+	if len(p.word2count) == 0 {
+		fmt.Println("No result!")
+		return
+	}
 	PrintMapByValueTop(p.word2count, topn)
-}
-
-type Char2Count struct {
-	Title  string `json:"name"`
-	Number int    `json:"value"`
 }
 
 const Multiply = 30
