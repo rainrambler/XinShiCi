@@ -46,6 +46,8 @@ func (p *ZhRhymes) Init() {
 }
 
 const (
+	YunA    = "1"
+	YunIa   = "2"
 	Yun_Ao  = "13"
 	Yun_Ian = "14"
 	Yun_Ing = "17"
@@ -92,7 +94,7 @@ func (p *ZhRhymes) FindRhyme2(chword rune) string {
 }
 
 // eg: Input: (`闲`, PingZePing), Output:  `14` (ian)
-// eg: Input: (`闲`, PingZeZe), Output:  ``
+// eg: Input: (`闲`, PingZeZe), Output:  “
 func (p *ZhRhymes) findRhymePingze(chword rune, pztype int) string {
 	pystr := p.pyf.FindPinyin2(chword)
 
