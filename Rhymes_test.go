@@ -33,3 +33,16 @@ func TestAnalyseRhyme1(t *testing.T) {
 
 	cr.AnalyseRhyme(strs)
 }
+
+func TestSplitShiyun1(t *testing.T) {
+	rs := "【ab】123"
+	left, right := splitShiyun(1, rs)
+
+	if right != "123" {
+		t.Errorf("failed: %v, want: 24", right)
+	}
+
+	if left != "ab" {
+		t.Errorf("failed: %v, want: 24", right)
+	}
+}
