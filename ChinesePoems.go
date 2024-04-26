@@ -58,13 +58,18 @@ func (p *ChinesePoems) GetPoem(id string) *ChinesePoem {
 
 // "白日依山尽", ["白", "山"] ==> true
 func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
+	fmt.Printf("Keys: %+v\n", keywords)
 	var cp ChinesePoems
 	cp.Init()
 
 	for _, poem := range p.ID2Poems {
-		if poem.ContainsAll(keywords) {
-			cp.AddPoem(poem)
+		arr := poem.MatchAllKeywords(keywords)
+		if len(arr) == 0 {
+			continue
 		}
+		pnew := poem.Clone()
+		pnew.Segment = Arr2String(arr)
+		cp.AddPoem(pnew)
 	}
 
 	return &cp
@@ -72,7 +77,7 @@ func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
 
 // "白日依山尽", "白 山" ==> true
 func (p *ChinesePoems) FindKeywords(keywords string) *ChinesePoems {
-	arr := strings.FieldsFunc(keywords, SplitLine)
+	arr := strings.FieldsFunc(keywords, SplitLine) //blank or tab
 	cp := p.findByKeywords(arr)
 	return cp
 }
@@ -104,6 +109,7 @@ func (p *ChinesePoems) FindRepeatDiffs(resultfile string) {
 	WriteLines(allRes, resultfile)
 }
 
+// Keys: [新綠]==>新綠:87, 東風:12, 闌幹:9, 年華:7
 func (p *ChinesePoems) FindRelatedWords(keyword string) {
 	cp := p.FindKeywords(keyword)
 
@@ -123,6 +129,8 @@ func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
 		return
 	}
 	totalResults := 0
+	var wc WordCloud
+	wc.InitParams()
 
 	for _, v := range p.ID2Poems {
 		for pos, sentence := range v.Sentences {
@@ -152,15 +160,20 @@ func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
 
 			if founded {
 				fmt.Printf("%s [%s]: %s\n", sentence, v.title(), v.FindContext(pos))
+				lastchar := GetLastZhChar(sentence, 1)
+				wc.AddWord(lastchar)
+
 				totalResults++
 			}
 		}
 	}
 
 	fmt.Printf("Total %d results.\n", totalResults)
+	wc.PrintResult(RhymeTop) // top chars. eg: ["夢": 30, "鏡":20]
 }
 
 // `黃葉` ==> 西風:15, 何處:7, 淒涼:5, 獨倚:4
+// count all poems with specified keyword. eg. 靜夜思 (true) for "明月"
 func (p *ChinesePoems) CountPoemChars(qc *QueryCondition) {
 	totalResults := 0
 	var c2c ZhCharCount
@@ -204,30 +217,40 @@ func (p *ChinesePoems) CountPoemChars(qc *QueryCondition) {
 	c2c.r2c.PrintSorted()
 }
 
+// eg: 昨夜 星辰 昨夜 风
 func (p *ChinesePoems) FindRepeatWords() {
 	totalResults := 0
 	for id, v := range p.ID2Poems {
 		if v.hasRepeatWords() {
-			fmt.Printf("[%s][%s][%s]\n", id, v.Title, v.toDesc())
+			fmt.Printf("[%s][%s][%s]\n", id, v.Title, v.toFullDesc())
 			totalResults++
 		}
 	}
 	fmt.Printf("Total %d results.\n", totalResults)
 }
 
+// eg: ["夢": 30, "鏡":20, ...]
+const RhymeTop = 50
+
 // see: ZhRhymes
 // chlen: 0 means any
 func (p *ChinesePoems) FindByYayunLengthPingze(yayun string, chlen, pztype int) {
 	totalResults := 0
+	var wc WordCloud
+	wc.InitParams()
+
 	for _, v := range p.ID2Poems {
 		arr := v.FindByYayunLengthPingze(yayun, chlen, pztype)
 
-		for id, item := range arr {
-			fmt.Printf("[%d][%s][%s]\n", id, v.Title, item)
+		for _, item := range arr {
+			fmt.Printf("[%s]|[%s]\n", item, v.toDesc())
+			lastchar := GetLastZhChar(item, 1)
+			wc.AddWord(lastchar)
 			totalResults++
 		}
 	}
 	fmt.Printf("Total %d results.\n", totalResults)
+	wc.PrintResult(RhymeTop)
 }
 
 func (p *ChinesePoems) PrintRhyme() {
@@ -237,13 +260,19 @@ func (p *ChinesePoems) PrintRhyme() {
 }
 
 func (p *ChinesePoems) FindByCiPai(cipai string) {
+	cipai2count := make(map[string]int)
+
 	resultcount := 0
 	for _, v := range p.ID2Poems {
+		cipai2count[v.Title] = cipai2count[v.Title] + 1
+
 		if v.Title == cipai {
 			fmt.Printf("[%s]: %s\n", v.title(), v.LeftChars(75))
 			resultcount++
 		}
 	}
+
+	//PrintSortedMapByValue(cipai2count)
 
 	fmt.Printf("Total %d results.\n", resultcount)
 }
@@ -260,14 +289,21 @@ func (p *ChinesePoems) FindByYayun(yayun string) {
 }
 
 func (p *ChinesePoems) FindByCiPaiYayun(cipai, yayun string) {
+	//rhyme2c := make(map[string]int)
+
 	resultcount := 0
 	for _, v := range p.ID2Poems {
+		//rhyme2c[v.Rhyme] = rhyme2c[v.Rhyme] + 1
+
 		if (v.Rhyme == yayun) && (v.Title == cipai) {
-			fmt.Printf("[%s]: %s\n", v.toDesc(), v.LeftChars(75))
+			//fmt.Printf("[%s]: %s\n", v.toDesc(), v.LeftChars(75))
+			fmt.Printf("[%s]\n", v.toFullDesc())
 			resultcount++
 		}
 	}
 	fmt.Printf("Total %d results.\n", resultcount)
+
+	//PrintSortedMapByValue(rhyme2c)
 }
 
 func (p *ChinesePoems) FindByYayunLength(yayun string, chlen int) {
