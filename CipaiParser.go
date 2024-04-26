@@ -5,14 +5,21 @@ import (
 	"strings"
 )
 
-func cipaiDemo() {
+func matchCipai() {
 	var cp CipaiParser
 	cp.Load(`Cipai/CipaiGelv.txt`)
 	//cp.Match(`冰肌玉骨，自清凉无汗`)
 	//cp.Match(`玉骨冰肌，自清凉无汗`)
 	//cp.Match(`冉冉秋光留不住，满径红叶暮`)
-	cp.Match(`此君一见如逢旧，愿今世，长相守`)
+	//cp.Match(`此君一见如逢旧，愿今世，长相守`)
 	//cp.Match(`千金难买相如赋，脉脉此情谁诉`)
+	//cp.Match(`深深浅浅绿`)
+	//cp.Match(`待得團圓時候，樽前問這時節。`)
+	//cp.Match(`當年忠貞為國酬`)
+	//cp.Match(`忠贞为国酬`)
+	//cp.Match(`夜夜姑苏城外，当时月`)
+	//cp.Match(`寒料峭，心似玉壶冰`)
+	cp.Match(`寒料峭，心似玉壺冰`)
 	//cp.DbgPrint()
 }
 
@@ -70,6 +77,7 @@ func (p *CipaiParser) commitCipai(aCipai *Cipai) {
 	p.AllCipais = append(p.AllCipais, aCipai)
 }
 
+// `玉骨冰肌，自清凉无汗` ==> "洞仙歌"
 func (p *CipaiParser) Match(content string) bool {
 	found := false
 	for _, item := range p.AllCipais {
