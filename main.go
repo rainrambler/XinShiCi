@@ -8,16 +8,6 @@ import (
 	"time"
 )
 
-func demoText() {
-	var cd ChineseDict
-	cd.Init()
-	ReadDict("/Users/anyu/goproj/Xindict/dictdemo.txt", &cd)
-
-	for _, cw := range cd.chs2Word {
-		fmt.Println(cw.toDesc())
-	}
-}
-
 func readDictFile() {
 	var cd ChineseDict
 	cd.Init()
@@ -137,36 +127,40 @@ func getCommandLine() string {
 }
 
 func main() {
+	//CountPoemZhChars(`新綠`)
+	//CountPoemZhChars(`紫府`)
+
 	//findKeywords(`端午 客`)
+	//findKeywords(`龍騰`)
+	//findKeywords(`龍 雨`)
+	//findKeywords(`紫府`)
 
-	findRepeatChChars()
+	//findRepeatChChars()
+	//ConvertRepeatCipai(`D:\Projects\Golang\NovelFinder\全唐五代詞.txt`)
+	//AnalyseCipai()
 
-	//findRelated(`黄叶`)
+	//findRelated(`新綠`, 1)
+	//findRelated(`重錦`, 1)
 	//findRelatedKeyword()
 
+	//findAllRepeatWordInSentences()
+
 	//readQts()
-	//loadPoetryFile(`./quantangshi/005.json`)
-	//loadFileDemo(`./quantangshi/005.json`)
-	//LoadPoetries(`./quantangshi/`)
 	//printHans(`allhans.txt`)
 
-	//analyseQsc()
+	//findQscCipai("定風波", Yun_Ing)
+	findQscKeyword("", 0, 0, 0)
 	//findQscByChars()
 
-	//cipaiDemo()
+	//findQscDemo()
+
+	//matchCipai()
 
 	//ExportPoetry(`D:\tmp\poem\chinese-poetry-master\ci`, `D:\tmp\poem\exportdemo`)
 
 	//ExportQsc(`D:\Projects\GitHubSync\XinShiCi\qsc.txt`, `D:\tmp\xsc`)
 
-	//GenerateWordCloud(`D:\Projects\XinShiCi\qsc.txt`)
+	//GenerateWordCloud(`qsc_zht_fmt.txt`)
 
 	//qscRank()
-
-	//var qc QscZht
-	//qc.convertFile(`D:\Err2.txt`)
-	//qc.convertFile(`D:\Projects\GitHubSync\XinShiCi\qsc_zht.txt`)
-
-	//var qc QscZhtLoader
-	//qc.convertFile(`D:\Projects\GitHubSync\XinShiCi\qsc_zht_fmt.txt`)
 }
