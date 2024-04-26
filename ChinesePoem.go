@@ -14,6 +14,21 @@ type ChinesePoem struct {
 	AllText    string
 	LineNumber int
 	Rhyme      string // 韵脚
+	Segment    string // 片段或者摘要
+}
+
+func (p *ChinesePoem) Clone() *ChinesePoem {
+	var cp ChinesePoem
+	cp.ID = p.ID
+	cp.Title = p.Title
+	cp.Comments = p.Comments
+	cp.Author = p.Author
+	cp.Sentences = append(cp.Sentences, p.Sentences...)
+	cp.AllText = p.AllText
+	cp.LineNumber = p.LineNumber
+	cp.Rhyme = p.Rhyme
+	cp.Segment = p.Segment
+	return &cp
 }
 
 func (p *ChinesePoem) ParseSentences() {
@@ -33,6 +48,10 @@ func (p *ChinesePoem) title() string {
 }
 
 func (p *ChinesePoem) toFullDesc() string {
+	if len(p.Segment) != 0 {
+		return p.Segment + "|" + p.Author + "|" + p.Title + "|" + p.AllText +
+			"|" + p.ID
+	}
 	return p.ID + "|" + p.Author + "|" + p.Title + "|" + p.AllText
 }
 
@@ -57,6 +76,7 @@ func (p *ChinesePoem) analyseRhyme() {
 	lastwords := p.collectLastWords()
 	s := g_ZhRhymes.AnalyseRhyme(lastwords)
 
+	//fmt.Printf("[DBG]Rhyme: %s of %s\n", s, p.Title)
 	p.Rhyme = s
 }
 
@@ -265,4 +285,45 @@ func (p *ChinesePoem) ContainsAll(keywords []string) bool {
 	}
 
 	return true
+}
+
+func (p *ChinesePoem) MatchOneKeywords(keywords []string) []string {
+	arr := []string{}
+	for _, key := range keywords {
+		if len(key) == 0 {
+			continue
+		}
+
+		for _, sen := range p.Sentences {
+			if strings.Contains(sen, key) {
+				arr = append(arr, sen)
+			}
+		}
+	}
+
+	return arr
+}
+
+func (p *ChinesePoem) MatchAllKeywords(keywords []string) []string {
+	arr := []string{}
+	for _, key := range keywords {
+		if len(key) == 0 {
+			continue
+		}
+
+		partarr := []string{}
+		for _, sen := range p.Sentences {
+			if strings.Contains(sen, key) {
+				partarr = append(partarr, sen)
+			}
+		}
+
+		if len(partarr) == 0 {
+			return []string{}
+		} else {
+			arr = append(arr, partarr...)
+		}
+	}
+
+	return arr
 }
