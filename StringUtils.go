@@ -28,3 +28,15 @@ func GetLastZhChar(s string, count int) string {
 func combineFilename(prefix string, i int) string {
 	return fmt.Sprintf(`%s%03d`, prefix, i)
 }
+
+func Arr2String(arr []string) string {
+	if len(arr) == 0 {
+		return ""
+	}
+	line := ""
+	for _, s := range arr {
+		line += s + ","
+	}
+
+	return line[:len(line)-1] // Remove last ","
+}
