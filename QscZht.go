@@ -1,4 +1,3 @@
-// QscConvertor
 package main
 
 import (
@@ -40,7 +39,6 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 	totallines := len(lines)
 	for i := 0; i < totallines; i++ {
 		line := lines[i]
-		//fmt.Printf("[DBG][%d]: %s\n", i+1, line)
 
 		if IsEmptyLine(line) {
 			arr = append(arr, line)
@@ -58,7 +56,6 @@ func (p *QscZht) parseLines(lines []string, tofile string) {
 			// # 林逋
 			linenew := strings.Trim(line, "\t #")
 			p.curPoet = linenew
-			//fmt.Printf("DBG: Poet: %s in line: %d\n", p.curPoet, i+1)
 			p.prevPoet = true
 			if !p.allpoets.IsPoet(linenew) {
 				fmt.Printf("WARN: Cannot find poet [%s] in line: [%d]\n", linenew, i)
