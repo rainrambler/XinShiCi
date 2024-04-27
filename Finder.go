@@ -23,8 +23,8 @@ func findKeywords(keywords string) {
 
 func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	g_ZhRhymes.Init()
-	//var qc QscConv
-	//qc.Init()
+	g_Rhymes.ImportFile("ShiYunXinBianZH.txt")
+
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
 
@@ -50,14 +50,14 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.FindByYayunLengthPingze(Yun_Ing, 0, PingZePing)
 	//qc.FindByYayunLengthPingze(Yun_Ei, 0, PingZeZe)
 	//qc.FindByYayunLength("8", 7)
-	//qc.allPoems.FindByYayunLength("8", 7)
+	qc.allPoems.FindByYayunLength("十七庚", 7)
 	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 7, PingZePing)
 	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 2, PingZeZe)
 	//qc.FindByYayunLengthPingze(Yun_Ou3, 4, PingZeZe)
 
 	//qc.FindByYayun("8")
 	//qc.FindByCiPaiYayun("临江仙", "15")
-	//qc.FindByCiPaiYayun("青玉案", Yun_Ou3)
+	//qc.allPoems.FindByCiPaiYayun("青玉案", "十二醜")
 
 	//qc.FindByCiPaiYayun("醉花阴", Yun_U)
 	//qc.FindByCiPaiYayun("诉衷情", Yun_Ong)
@@ -65,7 +65,7 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 
 	//qc.allPoems.FindSentense(createQuery(keyword, pattern, length))
 	//qc.allPoems.FindSentense(createQuery("解語", POS_ANY, 0))
-	qc.allPoems.FindSentense(createQuery("聲", POS_SUFFIX, 7))
+	//qc.allPoems.FindSentense(createQuery("聲", POS_SUFFIX, 7))
 
 	//qc.allPoems.FindSentense(createQuery("酒", POS_ANY, 7))
 
@@ -81,6 +81,7 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 
 func findQscDemo() {
 	g_ZhRhymes.Init()
+	g_Rhymes.ImportFile("ShiYunXinBianZH.txt")
 
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
@@ -93,6 +94,8 @@ func findQscDemo() {
 
 func findQscCipai(cipai, yayun string) {
 	g_ZhRhymes.Init()
+	g_Rhymes.ImportFile(`ShiYunXinBianZH.txt`)
+
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
 
