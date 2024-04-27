@@ -50,7 +50,7 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.FindByYayunLengthPingze(Yun_Ing, 0, PingZePing)
 	//qc.FindByYayunLengthPingze(Yun_Ei, 0, PingZeZe)
 	//qc.FindByYayunLength("8", 7)
-	qc.allPoems.FindByYayunLength("十七庚", 7)
+	//qc.allPoems.FindByYayunLength("十七庚", 7)
 	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 7, PingZePing)
 	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 2, PingZeZe)
 	//qc.FindByYayunLengthPingze(Yun_Ou3, 4, PingZeZe)
@@ -67,7 +67,7 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.allPoems.FindSentense(createQuery("解語", POS_ANY, 0))
 	//qc.allPoems.FindSentense(createQuery("聲", POS_SUFFIX, 7))
 
-	//qc.allPoems.FindSentense(createQuery("酒", POS_ANY, 7))
+	//qc.allPoems.FindSentense(createQuery("盈", POS_SUFFIX, 0))
 
 	//qc.FindSentense(createQuery("风", POS_SUFFIX, 4))
 	//qc.allPoems.FindSentense(createQuery("處", POS_SUFFIX, 7))
@@ -185,4 +185,38 @@ func AnalyseCipai() {
 			fmt.Printf("No instance for: %s\n", k)
 		}
 	}
+}
+
+func addPinyin(filename string) {
+	g_ZhRhymes.Init()
+
+	lines, err := ReadLines(filename)
+	if err != nil {
+		fmt.Printf("INFO: Cannot read file: %s!\n", filename)
+		return
+	}
+
+	resline := []string{}
+
+	for row, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
+
+		rs := []rune(line)
+		first := rs[0]
+
+		res := g_ZhRhymes.FindRhyme(first)
+		if len(res) == 0 {
+			fmt.Printf("[INFO]Cannot find rhyme for %s in row %d\n", line, row)
+			res = line + ":NA"
+			resline = append(resline, res)
+
+			continue
+		}
+		res = line + ":" + res
+		resline = append(resline, res)
+	}
+
+	WriteLines(resline, filename+".txt")
 }
