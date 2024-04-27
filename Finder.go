@@ -64,8 +64,8 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.allPoems.FindByCiPaiYayun("鷓鴣天", Yun_Ong)
 
 	//qc.allPoems.FindSentense(createQuery(keyword, pattern, length))
-	qc.allPoems.FindSentense(createQuery("解語", POS_ANY, 0))
-	//qc.allPoems.FindSentense(createQuery("清", POS_SUFFIX, 5))
+	//qc.allPoems.FindSentense(createQuery("解語", POS_ANY, 0))
+	qc.allPoems.FindSentense(createQuery("聲", POS_SUFFIX, 7))
 
 	//qc.allPoems.FindSentense(createQuery("酒", POS_ANY, 7))
 
