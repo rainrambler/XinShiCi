@@ -13,7 +13,7 @@ func TestParseLine1(t *testing.T) {
 	cr.parseLine(1, s)
 
 	for k, v := range cr.ZhChar2Rhyme {
-		fmt.Printf("[%s]: [%s]\n", k, v.Desc)
+		fmt.Printf("[%s]: [%s]\n", string(k), v.Desc)
 	}
 
 	if len(cr.ZhChar2Rhyme) != 24 {
@@ -22,14 +22,16 @@ func TestParseLine1(t *testing.T) {
 }
 
 func TestAnalyseRhyme1(t *testing.T) {
-	rs := []rune("下中翁动守风空梦")
+	rs := []rune("空中李風相字鐘少翁") // 任昉 朝中措
 	strs := []string{}
 	for _, zhch := range rs {
 		strs = append(strs, string(zhch))
 	}
 
 	var cr ChineseRhymes
-	cr.ImportFile("ShiYunXinBian.txt")
+	cr.ImportFile("ShiYunXinBianZH.txt")
+
+	missedChars.Init()
 
 	cr.AnalyseRhyme(strs)
 }
