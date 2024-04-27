@@ -25,6 +25,10 @@ func (p *Rhyme) toDesc() string {
 	return p.Desc
 }
 
+func (p *Rhyme) match(rhy string) bool {
+	return false
+}
+
 // var g_Rhymes ChineseRhymes
 
 // 平声（诗韵新编）
@@ -84,14 +88,24 @@ const (
 )
 
 type ChineseRhymes struct {
-	ZhChar2Rhyme map[string]*Rhyme // "安" -> "【十四寒】"
+	ZhChar2Rhyme map[rune]*Rhyme // "安" -> "【十四寒】"
 }
 
 func (p *ChineseRhymes) Init() {
-	p.ZhChar2Rhyme = make(map[string]*Rhyme)
+	p.ZhChar2Rhyme = make(map[rune]*Rhyme)
 }
 
-func (p *ChineseRhymes) AddRhyme(zhch, rhyme string) {
+// TODO multi rhyme
+func (p *ChineseRhymes) FindRhyme(zhch rune) string {
+	if curRhyme, ok := p.ZhChar2Rhyme[zhch]; ok {
+		// exists
+		return curRhyme.Desc
+	}
+
+	return ""
+}
+
+func (p *ChineseRhymes) AddRhyme(zhch rune, rhyme string) {
 	// https://stackoverflow.com/questions/2050391/how-to-check-if-a-map-contains-a-key-in-go
 	if curRhyme, ok := p.ZhChar2Rhyme[zhch]; ok {
 		// exists
@@ -113,6 +127,8 @@ func (p *ChineseRhymes) ImportFile(filename string) {
 	for idx, line := range lines {
 		p.parseLine2(idx+1, line)
 	}
+
+	p.checkMultivalue()
 }
 
 func (p *ChineseRhymes) parseLine(rownum int, line string) {
@@ -133,7 +149,7 @@ func (p *ChineseRhymes) parseLine(rownum int, line string) {
 
 	rs := []rune(zhchars)
 	for _, zhch := range rs {
-		p.AddRhyme(string(zhch), rhymestr)
+		p.AddRhyme(zhch, rhymestr)
 	}
 }
 
@@ -171,7 +187,16 @@ func (p *ChineseRhymes) parseLine2(rownum int, line string) {
 
 	rs := []rune(remain)
 	for _, r := range rs {
-		p.AddRhyme(string(r), rhymestr)
+		p.AddRhyme(r, rhymestr)
+		//fmt.Printf("[DBG]%s to {%s}\n", string(r), rhymestr)
+	}
+}
+
+func (p *ChineseRhymes) checkMultivalue() {
+	for k, v := range p.ZhChar2Rhyme {
+		if len(v.rhymes) > 1 {
+			fmt.Printf("%s:%s\n", string(k), v.Desc)
+		}
 	}
 }
 
@@ -185,7 +210,12 @@ func (p *ChineseRhymes) AnalyseRhyme(lastwords []string) string {
 	rhy2count.Init()
 
 	for _, wd := range lastwords {
-		if curRhyme, ok := p.ZhChar2Rhyme[wd]; ok {
+		wdrs := []rune(wd)
+		if len(wdrs) != 1 {
+			fmt.Printf("[DBG]Error Last rune: %s\n", wd)
+		}
+		firstrune := wdrs[0]
+		if curRhyme, ok := p.ZhChar2Rhyme[firstrune]; ok {
 			// exists
 			for _, rhy := range curRhyme.rhymes {
 				rhy2count.Add(rhy)
