@@ -9,16 +9,34 @@ import (
 
 type Rhyme struct {
 	Desc   string
-	rhymes []string
+	rhymes map[string]int // key: rhymes
 }
 
-func (p *Rhyme) AddItem(rhy string) {
+func CreateRhyme() *Rhyme {
+	var rhy Rhyme
+	rhy.rhymes = make(map[string]int)
+	return &rhy
+}
+
+func (p *Rhyme) AddItem(rhy string) bool {
 	if len(rhy) == 0 {
-		return
+		return false
+	}
+
+	purified := strings.TrimSpace(rhy)
+	if len(purified) == 0 {
+		return false
 	}
 
 	p.Desc = p.Desc + rhy + "|"
-	p.rhymes = append(p.rhymes, rhy)
+
+	if _, ok := p.rhymes[rhy]; ok {
+
+	} else {
+		p.rhymes[rhy] = 1
+	}
+
+	return true
 }
 
 func (p *Rhyme) toDesc() string {
@@ -26,10 +44,19 @@ func (p *Rhyme) toDesc() string {
 }
 
 func (p *Rhyme) match(rhy string) bool {
-	return false
+	_, ok := p.rhymes[rhy]
+	return ok
 }
 
-// var g_Rhymes ChineseRhymes
+func (p *Rhyme) getAll() []string {
+	var arr []string
+	for k, _ := range p.rhymes {
+		arr = append(arr, k)
+	}
+	return arr
+}
+
+var g_Rhymes ChineseRhymes
 
 // 平声（诗韵新编）
 const (
@@ -93,16 +120,7 @@ type ChineseRhymes struct {
 
 func (p *ChineseRhymes) Init() {
 	p.ZhChar2Rhyme = make(map[rune]*Rhyme)
-}
-
-// TODO multi rhyme
-func (p *ChineseRhymes) FindRhyme(zhch rune) string {
-	if curRhyme, ok := p.ZhChar2Rhyme[zhch]; ok {
-		// exists
-		return curRhyme.Desc
-	}
-
-	return ""
+	missedChars.Init()
 }
 
 func (p *ChineseRhymes) AddRhyme(zhch rune, rhyme string) {
@@ -113,7 +131,7 @@ func (p *ChineseRhymes) AddRhyme(zhch rune, rhyme string) {
 		return
 	}
 
-	curRhyme := new(Rhyme)
+	curRhyme := CreateRhyme()
 	curRhyme.AddItem(rhyme)
 	p.ZhChar2Rhyme[zhch] = curRhyme
 }
@@ -125,32 +143,10 @@ func (p *ChineseRhymes) ImportFile(filename string) {
 	lines := ReadTxtFile(filename)
 
 	for idx, line := range lines {
-		p.parseLine2(idx+1, line)
+		p.parseLine(idx+1, line)
 	}
 
 	p.checkMultivalue()
-}
-
-func (p *ChineseRhymes) parseLine(rownum int, line string) {
-	if !strings.HasPrefix(line, "【") {
-		log.Printf("WARN: Invalid line in Rhyme file (No Start): %d\n", rownum)
-		return
-	}
-
-	pos := strings.Index(line, "】")
-
-	if pos == -1 {
-		log.Printf("WARN: Invalid line in Rhyme file (No End): %d\n", rownum)
-		return
-	}
-
-	rhymestr := SubString(line, ZH_CHAR_LEN, pos-ZH_CHAR_LEN)
-	zhchars := SubString(line, pos+ZH_CHAR_LEN, len(line))
-
-	rs := []rune(zhchars)
-	for _, zhch := range rs {
-		p.AddRhyme(zhch, rhymestr)
-	}
 }
 
 func splitShiyun(row int, line string) (string, string) {
@@ -179,7 +175,7 @@ func splitShiyun(row int, line string) (string, string) {
 	return rhymestr, remain
 }
 
-func (p *ChineseRhymes) parseLine2(rownum int, line string) {
+func (p *ChineseRhymes) parseLine(rownum int, line string) {
 	rhymestr, remain := splitShiyun(rownum, line)
 	if remain == "" {
 		return
@@ -205,27 +201,29 @@ var missedChars Rhyme2Count
 // 晴。清。明。蕖，盈。鷺，意，婷。箏。情。聽。收，靈。取，見，青。
 // ==>
 // 【十七庚】
-func (p *ChineseRhymes) AnalyseRhyme(lastwords []string) string {
+func (p *ChineseRhymes) AnalyseRhyme(lastwords []rune) string {
 	var rhy2count Rhyme2Count
 	rhy2count.Init()
 
 	for _, wd := range lastwords {
-		wdrs := []rune(wd)
-		if len(wdrs) != 1 {
-			fmt.Printf("[DBG]Error Last rune: %s\n", wd)
-		}
-		firstrune := wdrs[0]
-		if curRhyme, ok := p.ZhChar2Rhyme[firstrune]; ok {
+		if curRhyme, ok := p.ZhChar2Rhyme[wd]; ok {
 			// exists
-			for _, rhy := range curRhyme.rhymes {
+			for rhy, _ := range curRhyme.rhymes {
 				rhy2count.Add(rhy)
 			}
 		} else {
-			missedChars.Add(wd)
+			missedChars.Add(string(wd))
 		}
 	}
 
 	return rhy2count.FindTop1()
+}
+
+func (p *ChineseRhymes) FindRhyme(chword rune) *Rhyme {
+	if curRhyme, ok := p.ZhChar2Rhyme[chword]; ok {
+		return curRhyme
+	}
+	return nil
 }
 
 type Rhyme2Count struct {
