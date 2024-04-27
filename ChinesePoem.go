@@ -74,7 +74,8 @@ func IsPunctuationAll(r rune) bool {
 
 func (p *ChinesePoem) analyseRhyme() {
 	lastwords := p.collectLastWords()
-	s := g_ZhRhymes.AnalyseRhyme(lastwords)
+	//s := g_ZhRhymes.AnalyseRhyme(lastwords)
+	s := g_Rhymes.AnalyseRhyme(lastwords)
 
 	//fmt.Printf("[DBG]Rhyme: %s of %s\n", s, p.Title)
 	p.Rhyme = s
@@ -106,8 +107,13 @@ func (p *ChinesePoem) FindByYayunLength(yayun string, chlen int) []string {
 		}
 
 		lastchar := GetLastRune(sentence)
-		curRhyme := g_ZhRhymes.FindRhyme2(lastchar)
-		if curRhyme == yayun {
+		//curRhyme := g_ZhRhymes.FindRhyme(lastchar)
+		curRhyme := g_Rhymes.FindRhyme(lastchar)
+		if curRhyme == nil {
+			fmt.Printf("Cannot find rhyme for %s!\n", string(lastchar))
+			continue
+		}
+		if curRhyme.match(yayun) {
 			arr = append(arr, sentence)
 		}
 	}
@@ -127,8 +133,14 @@ func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
 		}
 
 		lastchar := GetLastRune(sentence)
-		curRhyme := g_ZhRhymes.findRhymePingze(lastchar, pztype)
-		if curRhyme == yayun {
+		/*
+			curRhyme := g_ZhRhymes.findRhymePingze(lastchar, pztype)
+			if curRhyme == yayun {
+				arr = append(arr, sentence)
+			}
+		*/
+		curRhyme := g_Rhymes.FindRhyme(lastchar)
+		if curRhyme.match(yayun) {
 			arr = append(arr, sentence)
 		}
 	}
