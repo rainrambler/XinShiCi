@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 )
 
@@ -73,6 +74,7 @@ func (p *ZhRhymes) AnalyseRhyme(lastwords []rune) string {
 // `闲` ==> `14` (ian)
 func (p *ZhRhymes) FindRhyme(chword rune) string {
 	pystr := p.pyf.FindPinyin2(chword)
+	//fmt.Printf("[DBG]%s: %s\n", string(chword), pystr)
 
 	if pystr == "" {
 		//log.Printf("DBG: Cannot find pinyin for %s!\n", chword)
@@ -87,6 +89,7 @@ func (p *ZhRhymes) FindRhyme(chword rune) string {
 	}
 
 	if curRhyme, ok := p.ZhChar2Rhyme[pyval.Yunmu]; ok {
+		fmt.Printf("[DBG]%s: %s, %s, %s\n", string(chword), pystr, pyval.Yunmu, curRhyme)
 		return curRhyme
 	} else {
 		return ""
