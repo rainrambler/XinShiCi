@@ -62,7 +62,7 @@ func (p *ZhRhymes) AnalyseRhyme(lastwords []rune) string {
 	rhy2count.Init()
 
 	for _, wd := range lastwords {
-		curRhyme := p.FindRhyme2(wd)
+		curRhyme := p.FindRhyme(wd)
 		if len(curRhyme) != 0 {
 			rhy2count.Add(curRhyme)
 		}
@@ -71,7 +71,7 @@ func (p *ZhRhymes) AnalyseRhyme(lastwords []rune) string {
 }
 
 // `闲` ==> `14` (ian)
-func (p *ZhRhymes) FindRhyme2(chword rune) string {
+func (p *ZhRhymes) FindRhyme(chword rune) string {
 	pystr := p.pyf.FindPinyin2(chword)
 
 	if pystr == "" {
