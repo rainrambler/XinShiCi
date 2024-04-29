@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 )
 
@@ -89,7 +88,7 @@ func (p *ZhRhymes) FindRhyme(chword rune) string {
 	}
 
 	if curRhyme, ok := p.ZhChar2Rhyme[pyval.Yunmu]; ok {
-		fmt.Printf("[DBG]%s: %s, %s, %s\n", string(chword), pystr, pyval.Yunmu, curRhyme)
+		//fmt.Printf("[DBG]%s: %s, %s, %s\n", string(chword), pystr, pyval.Yunmu, curRhyme)
 		return curRhyme
 	} else {
 		return ""
