@@ -146,7 +146,7 @@ func (p *ChineseRhymes) ImportFile(filename string) {
 		p.parseLine(idx+1, line)
 	}
 
-	p.checkMultivalue()
+	//p.checkMultivalue()
 }
 
 func splitShiyun(row int, line string) (string, string) {
