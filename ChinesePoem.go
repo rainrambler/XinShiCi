@@ -121,6 +121,8 @@ func (p *ChinesePoem) FindByYayunLength(yayun string, chlen int) []string {
 	return arr
 }
 
+const ChineseUnknownChar = '□'
+
 func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
 	chlen, pztype int) []string {
 	arr := []string{}
@@ -139,7 +141,15 @@ func (p *ChinesePoem) FindByYayunLengthPingze(yayun string,
 				arr = append(arr, sentence)
 			}
 		*/
+		if lastchar == ChineseUnknownChar {
+			continue
+		}
 		curRhyme := g_Rhymes.FindRhyme(lastchar)
+		if curRhyme == nil {
+			fmt.Printf("Cannot find Rhyme for %s in sentense: %s!\n",
+				string(lastchar), sentence)
+			continue
+		}
 		if curRhyme.match(yayun) {
 			arr = append(arr, sentence)
 		}
