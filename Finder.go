@@ -50,8 +50,8 @@ func findQscKeyword(keyword string, pattern, length int, verbmode int) {
 	//qc.FindByYayunLengthPingze(Yun_Ing, 0, PingZePing)
 	//qc.FindByYayunLengthPingze(Yun_Ei, 0, PingZeZe)
 	//qc.FindByYayunLength("8", 7)
-	//qc.allPoems.FindByYayunLength("十七庚", 7)
-	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 7, PingZePing)
+	//qc.allPoems.FindByYayunLength(Yun_Ing, 7)
+	qc.allPoems.FindByYayunLengthPingze("十七庚", 7, PingZePing)
 	//qc.allPoems.FindByYayunLengthPingze(Yun_Ing, 2, PingZeZe)
 	//qc.FindByYayunLengthPingze(Yun_Ou3, 4, PingZeZe)
 
