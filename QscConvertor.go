@@ -1,26 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"strings"
 )
-
-type QscConv struct {
-	curPoet    string
-	curTitle   string
-	curContent string
-	curComment string
-	curLineNum int
-
-	allpoets  Poets
-	allPoems  ChinesePoems
-	allCipais Cipais
-}
-
-func (p *QscConv) Init() {
-	p.allPoems.Init()
-}
 
 // remove prefix and suffix spaces and comments (tag : |< >|)
 func lineFormat(line string) string {
@@ -43,46 +26,6 @@ func lineFormat(line string) string {
 	return leftPart + rightPart
 }
 
-func (p *QscConv) MakeNewPoem(id int, runRhyme bool) {
-	if p.curPoet == "" {
-		//fmt.Printf("DBG: Cannot find author in line: %d\n", id)
-		return
-	}
-	if p.curTitle == "" {
-		//fmt.Printf("DBG: Cannot find title in line: %d\n", id)
-		return
-	}
-	if p.curContent == "" {
-		log.Printf("DBG: Cannot find content in line: %d\n", id)
-		return
-	}
-	poetId := p.allpoets.FindPoet(p.curPoet)
-	if poetId < 0 {
-		log.Printf("DBG: [%d]Cannot find poet: %s\n", id, p.curPoet)
-		return
-	}
-
-	if p.curLineNum > 3 {
-		if getPartNumber(p.curTitle) <= 2 {
-			/*
-				// TODO confirm
-				log.Printf("DBG: [%d][%s] Lines: (%d): %s\n",
-					id, p.curTitle, p.curLineNum, SubChineseString(p.curContent, 0, 7))
-			*/
-		}
-	}
-
-	poemId := fmt.Sprintf("%d-%d", poetId, id)
-	cp := CreateQscPoem(poemId, p.curPoet, p.curTitle, p.curContent, p.curComment)
-
-	if runRhyme {
-		cp.analyseRhyme()
-	}
-	p.allPoems.AddPoem(cp)
-
-	p.ClearCurrent()
-}
-
 func getPartNumber(cipai string) int {
 	switch cipai {
 	case "莺啼序":
@@ -93,81 +36,6 @@ func getPartNumber(cipai string) int {
 		return 7
 	default:
 		return 2
-	}
-}
-
-func (p *QscConv) ClearCurrent() {
-	p.curContent = ""
-	p.curTitle = ""
-	p.curLineNum = 0
-}
-
-// analyse and collect Cipai
-func (p *QscConv) analyseCipai(srcFile string) {
-	lines := ReadTxtFile(srcFile)
-
-	p.allCipais.Init("CiPai.txt")
-	p.allpoets.Init("SongPoets.txt")
-
-	var k2lines Keyword2Lines
-	k2lines.Init()
-
-	for idx, line := range lines {
-		linenew := strings.TrimSpace(line)
-
-		isCipai, cipainame := p.isCipaiMissed(linenew)
-		if isCipai {
-			k2lines.AddLine(cipainame, idx+1)
-		}
-	}
-
-	fmt.Println("-----------------")
-
-	k2lines.DemoPrint()
-}
-
-func (p *QscConv) isCipaiMissed(s string) (bool, string) {
-	chsize := ChcharLen(s)
-
-	if chsize < 2 {
-		return false, s
-	}
-
-	if IsCommentLine(s) {
-		return false, s
-	}
-
-	pos := strings.Index(s, " ")
-	if pos != -1 {
-		// contains blank
-		leftpart := s[:pos]
-
-		if ChcharLen(leftpart) > CIPAI_MAX {
-			return false, leftpart
-		}
-
-		return !p.allCipais.HasActualCipai(leftpart), leftpart
-	}
-
-	pos = strings.Index(s, "（")
-	if pos != -1 {
-		// contains blank
-		leftpart := s[:pos]
-		if ChcharLen(leftpart) > CIPAI_MAX {
-			return false, leftpart
-		}
-
-		return !p.allCipais.HasActualCipai(leftpart), leftpart
-	}
-
-	if chsize <= 5 {
-		if p.allpoets.IsPoet(s) {
-			return false, s
-		}
-
-		return !p.allCipais.HasActualCipai(s), s
-	} else {
-		return false, s
 	}
 }
 
