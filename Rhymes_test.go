@@ -23,9 +23,9 @@ func TestParseLine1(t *testing.T) {
 
 func TestAnalyseRhyme1(t *testing.T) {
 	rs := []rune("空中李風相字鐘少翁") // 任昉 朝中措
-	strs := []string{}
+	strs := []rune{}
 	for _, zhch := range rs {
-		strs = append(strs, string(zhch))
+		strs = append(strs, zhch)
 	}
 
 	var cr ChineseRhymes
