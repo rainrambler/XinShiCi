@@ -22,65 +22,6 @@ func (p *QscConv) Init() {
 	p.allPoems.Init()
 }
 
-func (p *QscConv) convertFile(srcFile string) {
-	lines := ReadTxtFile(srcFile)
-	p.convertLines(lines, true)
-}
-
-func (p *QscConv) convertLines(lines []string, runRhyme bool) {
-	p.allCipais.Init("CiPai.txt")
-	p.allpoets.Init("SongPoets.txt")
-
-	fmt.Printf("INFO: Total poets: %d\n", p.allpoets.Count())
-
-	totallines := len(lines)
-
-	prevBlank := false
-	for i := 0; i < totallines; i++ {
-		line := lines[i]
-		linenew := lineFormat(line) // remove comment tag : |< >|
-
-		if len(linenew) == 0 {
-			if prevBlank {
-				prevBlank = true
-				continue
-			} else {
-				p.MakeNewPoem(i, runRhyme)
-				prevBlank = true
-				continue
-			}
-		}
-
-		if prevBlank {
-			prevBlank = false
-			p.curPoet = linenew
-
-			if !p.allpoets.IsPoet(linenew) {
-				fmt.Printf("WARN: [%d]Cannot find poet: %s\n", i, linenew)
-			}
-			continue
-		}
-
-		hascipai, title := p.allCipais.HasCipai(linenew)
-		if hascipai {
-			// Start a new poem
-			p.MakeNewPoem(i, runRhyme)
-
-			p.curTitle = title
-			continue
-		}
-
-		if IsCommentLine(linenew) {
-			p.curComment += linenew + "\n"
-		} else {
-			p.curContent += linenew
-			p.curLineNum++
-		}
-	}
-
-	p.MakeNewPoem(totallines, runRhyme)
-}
-
 // remove prefix and suffix spaces and comments (tag : |< >|)
 func lineFormat(line string) string {
 	linenew := strings.TrimSpace(line)
