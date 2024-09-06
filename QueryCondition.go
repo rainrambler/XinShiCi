@@ -8,6 +8,7 @@ const (
 	POS_PREFIX = 1
 	POS_SUFFIX = 2
 	POS_ANY    = 3
+	POS_MID    = 5
 	PosUnknown = 0
 )
 
