@@ -150,6 +150,16 @@ func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
 				if strings.HasSuffix(sentence, qc.KeywordStr) {
 					founded = true
 				}
+			case POS_MID:
+				{
+					zhlen := ChcharLen(sentence)
+					if (zhlen % 2) == 1 {
+						midchar := SubChineseString(sentence, zhlen/2, 1)
+						if midchar == qc.KeywordStr {
+							founded = true
+						}
+					}
+				}
 			case POS_ANY:
 				if strings.Contains(sentence, qc.KeywordStr) {
 					founded = true
