@@ -128,16 +128,13 @@ func (p *WordCloud) PrintResult(topn int) {
 	PrintMapByValueTop(p.word2count, topn)
 }
 
-func (p *WordCloud) CreateDot(curWord, filename string) {
-	var df DotFile
-	df.Init()
+func (p *WordCloud) GetTopResult(topn int) map[string]int {
+	if len(p.word2count) == 0 {
+		fmt.Println("No result!")
+		return map[string]int{}
+	}
 
-	/*
-
-		for otherword, _ := range p.word2count {
-			df.AddLink(curWord, otherword)
-		}
-	*/
+	k2v := make(map[string]int)
 
 	type kv struct {
 		Key   string
@@ -155,8 +152,41 @@ func (p *WordCloud) CreateDot(curWord, filename string) {
 
 	total := 0
 	for _, kv := range ss {
-		df.AddLink(curWord, kv.Key)
-		fmt.Printf("[DBG][%d]%s -> %s (%d)\n", total, curWord, kv.Key, kv.Value)
+		k2v[kv.Key] = kv.Value
+		//df.AddLink(curWord, kv.Key, kv.Value)
+		//fmt.Printf("[DBG][%d]%s -> %s (%d)\n", total, curWord, kv.Key, kv.Value)
+
+		total++
+		if total >= topn {
+			break
+		}
+	}
+
+	return k2v
+}
+
+func (p *WordCloud) CreateDot(curWord, filename string) {
+	var df DotFile
+	df.Init()
+
+	type kv struct {
+		Key   string
+		Value int
+	}
+
+	var ss []kv
+	for k, v := range p.word2count {
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
+
+	total := 0
+	for _, kv := range ss {
+		df.AddLink(curWord, kv.Key, kv.Value)
+		//fmt.Printf("[DBG][%d]%s -> %s (%d)\n", total, curWord, kv.Key, kv.Value)
 
 		total++
 		if total >= TOP_WORD {
