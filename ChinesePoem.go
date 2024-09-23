@@ -74,10 +74,7 @@ func IsPunctuationAll(r rune) bool {
 
 func (p *ChinesePoem) analyseRhyme() {
 	lastwords := p.collectLastWords()
-	//s := g_ZhRhymes.AnalyseRhyme(lastwords)
 	s := g_Rhymes.AnalyseRhyme(lastwords)
-
-	//fmt.Printf("[DBG]Rhyme: %s of %s\n", s, p.Title)
 	p.Rhyme = s
 }
 

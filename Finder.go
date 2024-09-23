@@ -128,7 +128,7 @@ func findRelated(keyword string, verbmode int) {
 		fmt.Println("Finding in all poems in Tang Dynasty...")
 	}
 
-	qtsInst.FindRelatedWords(keyword)
+	qtsInst.FindRelatedWords(keyword, "qtsdemo1.dot")
 
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
@@ -137,7 +137,7 @@ func findRelated(keyword string, verbmode int) {
 		fmt.Println("Finding in all poems in Song Dynasty...")
 	}
 
-	qc.allPoems.FindRelatedWords(keyword)
+	qc.allPoems.FindRelatedWords(keyword, "qscdemo1.dot")
 }
 
 // Same to findRelated(), only in QSC

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -125,6 +126,45 @@ func (p *WordCloud) PrintResult(topn int) {
 		return
 	}
 	PrintMapByValueTop(p.word2count, topn)
+}
+
+func (p *WordCloud) CreateDot(curWord, filename string) {
+	var df DotFile
+	df.Init()
+
+	/*
+
+		for otherword, _ := range p.word2count {
+			df.AddLink(curWord, otherword)
+		}
+	*/
+
+	type kv struct {
+		Key   string
+		Value int
+	}
+
+	var ss []kv
+	for k, v := range p.word2count {
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
+
+	total := 0
+	for _, kv := range ss {
+		df.AddLink(curWord, kv.Key)
+		fmt.Printf("[DBG][%d]%s -> %s (%d)\n", total, curWord, kv.Key, kv.Value)
+
+		total++
+		if total >= TOP_WORD {
+			break
+		}
+	}
+
+	df.Generate(filename)
 }
 
 const Multiply = 30

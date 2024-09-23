@@ -110,7 +110,7 @@ func (p *ChinesePoems) FindRepeatDiffs(resultfile string) {
 }
 
 // Keys: [新綠]==>新綠:87, 東風:12, 闌幹:9, 年華:7
-func (p *ChinesePoems) FindRelatedWords(keyword string) {
+func (p *ChinesePoems) FindRelatedWords(keyword, tofile string) {
 	cp := p.FindKeywords(keyword)
 
 	var wc WordCloud
@@ -122,6 +122,11 @@ func (p *ChinesePoems) FindRelatedWords(keyword string) {
 	}
 
 	wc.PrintResult(100)
+
+	if tofile == "" {
+		return
+	}
+	wc.CreateDot(keyword, tofile)
 }
 
 func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
