@@ -7,10 +7,11 @@ import (
 )
 
 type DotFile struct {
-	dotHeader []string
-	dotFooter string
-	Nodes     map[string]int // ignored value
-	Links     []string
+	dotHeader  []string
+	dotFooter  string
+	Nodes      map[string]int // ignored value
+	pair2count map[string]int // "紅葉|江南:20"
+	Links      []string
 
 	Word2Word *setmultimap.MultiMap
 }
@@ -18,6 +19,7 @@ type DotFile struct {
 func (p *DotFile) Init() {
 	p.Word2Word = setmultimap.New()
 	p.Nodes = make(map[string]int)
+	p.pair2count = make(map[string]int)
 }
 
 func (p *DotFile) AddNode(oneWord string) {
@@ -38,32 +40,60 @@ func (p *DotFile) AddNode(oneWord string) {
 	p.Nodes[oneWord] = 1
 }
 
-func (p *DotFile) AddLink(word1 string, word2 string) {
+func (p *DotFile) AddLink(word1 string, word2 string, cnt int) {
 	p.AddNode(word1)
 	p.AddNode(word2)
 
 	p.Word2Word.Put(word1, word2)
+	p.addLinkCount(word1, word2, cnt)
 }
 
-const TOP_WORD = 20
+func createPair(wd1, wd2 string) string {
+	pair := wd1 + "|" + wd2
+	return pair
+}
+
+func (p *DotFile) addLinkCount(word1 string, word2 string, cnt int) {
+	pair := createPair(word1, word2)
+
+	_, exists := p.pair2count[pair]
+	if exists {
+		return
+	}
+
+	p.pair2count[pair] = cnt
+}
+
+func (p *DotFile) getLinkCount(word1 string, word2 string) int {
+	pair := createPair(word1, word2)
+	v, exists := p.pair2count[pair]
+	if !exists {
+		return 0
+	}
+
+	return v
+}
+
+const TOP_WORD = 10
 
 func (p *DotFile) Generate(filename string) {
 	lines := []string{}
 
 	header := `
-	digraph "ChWordLinks" {
+	digraph ChWordLinks {
+	fontname = "SimHei";
 	graph [	fontname = "SimHei",
 		fontsize = 36,
 		label = "\n\n\n\nObject Oriented Graphs\nStephen North, 3/19/93",
 		];
 	node [	shape = polygon,
+		fontname="SimHei,SimSun"
 		sides = 4,
 		distortion = "0.0",
 		orientation = "0.0",
 		skew = "0.0",
 		color = Gray,
-		style = filled,
-		fontname = "Arial" ];
+		style = filled];
 	`
 
 	lines = append(lines, header)
@@ -79,8 +109,18 @@ func (p *DotFile) Generate(filename string) {
 	}
 
 	for _, entry := range p.Word2Word.Entries() {
-		line := fmt.Sprintf(`"%s" -> "%s";`, entry.Key.(string), entry.Value.(string))
-		lines = append(lines, line)
+		wd1 := entry.Key.(string)
+		wd2 := entry.Value.(string)
+
+		cnt := p.getLinkCount(wd1, wd2)
+
+		if cnt == 0 {
+			fmt.Printf("[INFO]Pair not found: %s and %s!\n", wd1, wd2)
+		} else {
+			line := fmt.Sprintf(`"%s" -> "%s" [label="%d" color="coral1"];`,
+				entry.Key.(string), entry.Value.(string), cnt)
+			lines = append(lines, line)
+		}
 	}
 
 	footer := `}`
