@@ -15,16 +15,6 @@ type JsonContent struct {
 	Data interface{}
 }
 
-func loadFileDemo(filename string) {
-	jc, err := parsePoetryFile(filename)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	iterContent(jc.Data)
-}
-
 func parsePoetryFile(jsonFile string) (*JsonContent, error) {
 	raw, err := ioutil.ReadFile(jsonFile)
 	if err != nil {
@@ -74,20 +64,20 @@ func iterContent(content interface{}) {
 }
 
 /*
-{
-    "title": "登驪山高頂寓目",
-    "author": "李顯",
-    "biography": "",
-    "paragraphs": [
-        "四郊秦漢國，八水帝王都。閶闔雄裏閈，城闕壯規模。",
-        "貫渭稱天邑，含岐實奧區。金門披玉館，因此識皇圖。"
-    ],
-    "notes": [
-        ""
-    ],
-    "volume": "卷二",
-    "no#": 10
-}
+	{
+	    "title": "登驪山高頂寓目",
+	    "author": "李顯",
+	    "biography": "",
+	    "paragraphs": [
+	        "四郊秦漢國，八水帝王都。閶闔雄裏閈，城闕壯規模。",
+	        "貫渭稱天邑，含岐實奧區。金門披玉館，因此識皇圖。"
+	    ],
+	    "notes": [
+	        ""
+	    ],
+	    "volume": "卷二",
+	    "no#": 10
+	}
 */
 type Poetry struct {
 	Title      string   `json:"title"`
@@ -105,33 +95,6 @@ func (p *Poetry) getDesc() string {
 
 func (p *Poetry) convId() string {
 	return fmt.Sprintf("%d_%d", ChineseToNumber(p.Volume), int(p.No))
-}
-
-func (p *Poetry) ComparePoem(poem *ChinesePoem) bool {
-	if poem == nil {
-		return false
-	}
-
-	alltext := ""
-	for _, text := range p.Paragraphs {
-		alltext += text
-	}
-
-	alltext = removePunctuation(alltext)
-	poemtext := removePunctuation(poem.AllText)
-
-	if alltext != poemtext {
-		/*
-			fmt.Println("[" + alltext)
-			fmt.Println("--------------------")
-			fmt.Println(poemtext + "]")
-		*/
-		fmt.Println(poem.ID + "|" + p.Title + "|" + compString(alltext, poemtext))
-		fmt.Println("------------------------")
-		return false
-	}
-
-	return true
 }
 
 func removePunctuation(s string) string {
@@ -200,53 +163,6 @@ func (p *Poetries) loadPoetryPath(fullpath string) {
 	}
 
 	fmt.Printf("[INFO]Total %d poetries.\n", len(p.AllPoets))
-}
-
-func (p *Poetries) comparePoemsOld() {
-	id2poet := make(map[string]*Poetry)
-
-	for _, pt := range p.AllPoets {
-		id := pt.convId()
-
-		id2poet[id] = &pt
-		fmt.Printf("[DBG]ID: %s: Poetry: %s\n", id, pt.Title)
-	}
-
-	fmt.Printf("[INFO]Parsed %d poetries.\n", len(id2poet))
-
-	var qtsInst Qts
-	qtsInst.Init()
-	qtsInst.ReadFile("qts_zht.txt")
-
-	for id, poetry := range id2poet {
-		fmt.Printf("[DBG]ID: %s: Poetry: %s\n", id, poetry.Title)
-		chpoem := qtsInst.GetPoem(id)
-		poetry.ComparePoem(chpoem)
-	}
-}
-
-func (p *Poetries) comparePoems() {
-	var qtsInst Qts
-	qtsInst.Init()
-	qtsInst.ReadFile("qts_zht.txt")
-
-	samecount := 0
-	for _, pt := range p.AllPoets {
-		id := pt.convId()
-		chpoem := qtsInst.GetPoem(id)
-
-		if pt.ComparePoem(chpoem) {
-			samecount++
-		}
-	}
-
-	fmt.Printf("[INFO]Parsed %d poetries. Same: %d\n", len(p.AllPoets), samecount)
-}
-
-func LoadPoetries(fullpath string) {
-	var pt Poetries
-	pt.loadPoetryPath(fullpath)
-	pt.comparePoems()
 }
 
 func ChineseToNumber(chnStr string) int {
