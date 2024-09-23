@@ -7,11 +7,16 @@ import (
 )
 
 type ChinesePoems struct {
-	ID2Poems map[string]*ChinesePoem
+	ID2Poems    map[string]*ChinesePoem
+	dotFileInst *DotFile
+	maxLayer    int
 }
 
 func (p *ChinesePoems) Init() {
 	p.ID2Poems = make(map[string]*ChinesePoem)
+	p.dotFileInst = new(DotFile)
+	p.dotFileInst.Init()
+	p.maxLayer = 0
 }
 
 func (p *ChinesePoems) AddPoem(poem *ChinesePoem) {
@@ -58,7 +63,7 @@ func (p *ChinesePoems) GetPoem(id string) *ChinesePoem {
 
 // "白日依山尽", ["白", "山"] ==> true
 func (p *ChinesePoems) findByKeywords(keywords []string) *ChinesePoems {
-	fmt.Printf("Keys: %+v\n", keywords)
+	//fmt.Printf("Keys: %+v\n", keywords)
 	var cp ChinesePoems
 	cp.Init()
 
@@ -129,7 +134,23 @@ func (p *ChinesePoems) FindRelatedWords(keyword, tofile string) {
 	wc.CreateDot(keyword, tofile)
 }
 
-func (p *ChinesePoems) FindRelatedWordsN(keyword, tofile string) {
+func (p *ChinesePoems) FindAllRelatedWords(keyword, tofile string, layers int) {
+	p.maxLayer = layers
+
+	p.FindRelatedWordsN(keyword, 0)
+
+	if tofile == "" {
+		return
+	}
+
+	p.dotFileInst.GenerateFull(tofile)
+}
+
+func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
+	if p.maxLayer <= layers {
+		return
+	}
+
 	cp := p.FindKeywords(keyword)
 
 	var wc WordCloud
@@ -142,10 +163,13 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword, tofile string) {
 
 	wc.PrintResult(100)
 
-	if tofile == "" {
-		return
+	k2v := wc.GetTopResult(TOP_WORD)
+	for k, v := range k2v {
+		p.dotFileInst.AddLink(keyword, k, v)
+		//fmt.Printf("[DBG]%s -> %s (%d)\n", keyword, k, v)
+
+		p.FindRelatedWordsN(k, layers+1)
 	}
-	wc.CreateDot(keyword, tofile)
 }
 
 func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
