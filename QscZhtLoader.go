@@ -23,6 +23,8 @@ type QscZhtLoader struct {
 }
 
 func (p *QscZhtLoader) loadFile(srcFile string) {
+	g_Rhymes.ImportFile("ShiYunXinBianZH.txt")
+
 	p.allCipais.Init("CiPaiZh.txt")
 	p.allpoets.Init(`Data/AncientAuthors.txt`)
 	p.allPoems.Init()
