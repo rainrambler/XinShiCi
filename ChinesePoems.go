@@ -129,6 +129,25 @@ func (p *ChinesePoems) FindRelatedWords(keyword, tofile string) {
 	wc.CreateDot(keyword, tofile)
 }
 
+func (p *ChinesePoems) FindRelatedWordsN(keyword, tofile string) {
+	cp := p.FindKeywords(keyword)
+
+	var wc WordCloud
+	wc.InitParams()
+	for _, poem := range cp.ID2Poems {
+		for _, oneLine := range poem.Sentences {
+			wc.parseMultiLine(oneLine)
+		}
+	}
+
+	wc.PrintResult(100)
+
+	if tofile == "" {
+		return
+	}
+	wc.CreateDot(keyword, tofile)
+}
+
 func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
 	if qc == nil {
 		return
