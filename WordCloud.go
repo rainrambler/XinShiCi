@@ -169,29 +169,11 @@ func (p *WordCloud) CreateDot(curWord, filename string) {
 	var df DotFile
 	df.Init()
 
-	type kv struct {
-		Key   string
-		Value int
-	}
+	k2v := p.GetTopResult(TOP_WORD)
 
-	var ss []kv
-	for k, v := range p.word2count {
-		ss = append(ss, kv{k, v})
-	}
-
-	sort.Slice(ss, func(i, j int) bool {
-		return ss[i].Value > ss[j].Value
-	})
-
-	total := 0
-	for _, kv := range ss {
-		df.AddLink(curWord, kv.Key, kv.Value)
+	for k, v := range k2v {
+		df.AddLink(curWord, k, v)
 		//fmt.Printf("[DBG][%d]%s -> %s (%d)\n", total, curWord, kv.Key, kv.Value)
-
-		total++
-		if total >= TOP_WORD {
-			break
-		}
 	}
 
 	df.Generate(filename)
