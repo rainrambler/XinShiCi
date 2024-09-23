@@ -25,12 +25,6 @@ func (p *ChineseWord) toDesc() string {
 		p.EngMean1, p.EngMean2)
 }
 
-// TODO len(chinese word) == 3??
-func (p *ChineseWord) IsSingle() bool {
-	wdlen := len(p.Chs)
-	return wdlen == ZH_CHAR_LEN
-}
-
 func (p *ChineseWord) IsSingle2() bool {
 	rs := []rune(p.Chs)
 	return (len(rs) == 1) && (len(p.Chs) > 1) // filter "a", "1", etc.
