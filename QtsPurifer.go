@@ -143,6 +143,10 @@ func (p *QtsPurifer) CleanCommentInLine(s string) string {
 	return string(arr)
 }
 
+func TrimTitle(s string) string {
+	return strings.Trim(s, " \t【】")
+}
+
 func CleanComment(s string) string {
 	if s == "" {
 		return ""
