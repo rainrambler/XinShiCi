@@ -1,11 +1,11 @@
 package main
 
 type PoemWords struct {
-	poet2id map[string]int
+	word2cnt map[string]int
 }
 
 func (p *PoemWords) InitMaps() {
-	p.poet2id = make(map[string]int)
+	p.word2cnt = make(map[string]int)
 }
 
 func (p *PoemWords) Init(filename string) {
@@ -21,14 +21,14 @@ func (p *PoemWords) Init(filename string) {
 }
 
 func (p *PoemWords) Contains(nm string) bool {
-	if _, ok := p.poet2id[nm]; ok {
+	if _, ok := p.word2cnt[nm]; ok {
 		return true
 	}
 	return false
 }
 
 func (p *PoemWords) Count() int {
-	return len(p.poet2id)
+	return len(p.word2cnt)
 }
 
 func (p *PoemWords) AddWord(wd string) {
@@ -36,13 +36,13 @@ func (p *PoemWords) AddWord(wd string) {
 		return
 	}
 
-	p.poet2id[wd] = 1
+	p.word2cnt[wd] = p.word2cnt[wd] + 1
 }
 
 func (p *PoemWords) Write(filename string) {
 	lines := []string{}
 
-	for k, _ := range p.poet2id {
+	for k, _ := range p.word2cnt {
 		lines = append(lines, k)
 	}
 
