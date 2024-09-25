@@ -138,6 +138,12 @@ func (p *ChinesePoems) FindRelatedWords(keyword, tofile string) {
 }
 
 func (p *ChinesePoems) FindAllRelatedWords(keyword, tofile string, layers int) {
+	// Check dependencies
+	if p.commonWords.Count() == 0 {
+		fmt.Println("[WARN]Typical Words not loaded!\n")
+		return
+	}
+
 	p.maxLayer = layers
 
 	p.FindRelatedWordsN(keyword, 0)
@@ -186,7 +192,9 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 
 			p.FindRelatedWordsN(k, layers+1)
 		} else {
-			fmt.Printf("[DBG]%s is not a common word.\n", k)
+			if v >= 5 {
+				fmt.Printf("[DBG]%s (Ref) is not a common word.\n", k)
+			}
 		}
 	}
 }
