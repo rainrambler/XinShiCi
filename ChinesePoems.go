@@ -10,6 +10,7 @@ type ChinesePoems struct {
 	ID2Poems    map[string]*ChinesePoem
 	dotFileInst *DotFile
 	maxLayer    int
+	commonWords *PoemWords
 }
 
 func (p *ChinesePoems) Init() {
@@ -17,6 +18,8 @@ func (p *ChinesePoems) Init() {
 	p.dotFileInst = new(DotFile)
 	p.dotFileInst.Init()
 	p.maxLayer = 0
+	p.commonWords = new(PoemWords)
+	p.commonWords.Init(`PoemWordsClean.txt`)
 }
 
 func (p *ChinesePoems) AddPoem(poem *ChinesePoem) {
@@ -151,6 +154,11 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 		return
 	}
 
+	if !p.checkCommonWord(keyword) {
+		fmt.Printf("[INFO]%s is not a common word.\n", keyword)
+		return
+	}
+
 	cp := p.FindKeywords(keyword)
 
 	var wc WordCloud
@@ -163,13 +171,28 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 
 	wc.PrintResult(100)
 
-	k2v := wc.GetTopResult(TOP_WORD)
-	for k, v := range k2v {
-		p.dotFileInst.AddLink(keyword, k, v)
-		//fmt.Printf("[DBG]%s -> %s (%d)\n", keyword, k, v)
+	k2v := wc.GetTopResult(TOP_WORD * 2)
 
-		p.FindRelatedWordsN(k, layers+1)
+	validnum := 0
+	for k, v := range k2v {
+		if p.checkCommonWord(k) {
+			p.dotFileInst.AddLink(keyword, k, v)
+			validnum++
+
+			if validnum >= TOP_WORD {
+				// enough
+				break
+			}
+
+			p.FindRelatedWordsN(k, layers+1)
+		} else {
+			fmt.Printf("[DBG]%s is not a common word.\n", k)
+		}
 	}
+}
+
+func (p *ChinesePoems) checkCommonWord(wd string) bool {
+	return p.commonWords.Contains(wd)
 }
 
 func (p *ChinesePoems) FindSentense(qc *QueryCondition) {
