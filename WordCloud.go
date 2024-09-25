@@ -153,8 +153,6 @@ func (p *WordCloud) GetTopResult(topn int) map[string]int {
 	total := 0
 	for _, kv := range ss {
 		k2v[kv.Key] = kv.Value
-		//df.AddLink(curWord, kv.Key, kv.Value)
-		//fmt.Printf("[DBG][%d]%s -> %s (%d)\n", total, curWord, kv.Key, kv.Value)
 
 		total++
 		if total >= topn {
@@ -173,7 +171,6 @@ func (p *WordCloud) CreateDot(curWord, filename string) {
 
 	for k, v := range k2v {
 		df.AddLink(curWord, k, v)
-		//fmt.Printf("[DBG][%d]%s -> %s (%d)\n", total, curWord, kv.Key, kv.Value)
 	}
 
 	df.Generate(filename)
@@ -187,7 +184,6 @@ func ConvertJsonHardCode(s2c map[string]int, margin int) string {
 		if v > margin {
 			line := fmt.Sprintf(`{name:"%s",value:%d},`, k, v)
 			s += line
-			//filtered = append(filtered, Char2Count{Title: k, Number: v * 50})
 		}
 	}
 
