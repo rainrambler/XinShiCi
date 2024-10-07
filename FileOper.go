@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strings"
 )
 
 func FileExists(filename string) bool {
@@ -12,4 +13,15 @@ func FileExists(filename string) bool {
 	}
 
 	return true
+}
+
+// d:\aaa.txt, .png ==> d:\aaa.png
+func ChangeFileExt(filename, extnew string) string {
+	revpos := strings.LastIndex(filename, ".")
+	if revpos == -1 {
+		return filename + extnew
+	}
+
+	noext := filename[:revpos]
+	return noext + extnew
 }
