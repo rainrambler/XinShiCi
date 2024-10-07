@@ -140,7 +140,7 @@ func (p *ChinesePoems) FindRelatedWords(keyword, tofile string) {
 func (p *ChinesePoems) FindAllRelatedWords(keyword, tofile string, layers int) {
 	// Check dependencies
 	if p.commonWords.Count() == 0 {
-		fmt.Println("[WARN]Typical Words not loaded!\n")
+		fmt.Println("[WARN]Typical Words not loaded!")
 		return
 	}
 
@@ -153,6 +153,8 @@ func (p *ChinesePoems) FindAllRelatedWords(keyword, tofile string, layers int) {
 	}
 
 	p.dotFileInst.GenerateFull(tofile)
+
+	CreatePngFromDot(tofile)
 }
 
 func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
@@ -160,7 +162,7 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 		return
 	}
 
-	if !p.checkCommonWord(keyword) {
+	if !p.checkCommonWord(keyword) && (layers != 0) {
 		fmt.Printf("[INFO]%s is not a common word.\n", keyword)
 		return
 	}
