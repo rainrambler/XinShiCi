@@ -118,6 +118,8 @@ func findRepeatChChars() {
 	qc.allPoems.FindRepeatDiffs("repdiff_qsc.txt")
 }
 
+const KEYWORD_NEST = 3
+
 // Keys: [新綠]==>新綠:87, 東風:12, 闌幹:9, 年華:7
 func findRelated(keyword string, verbmode int) {
 	var qtsInst Qts
@@ -128,7 +130,7 @@ func findRelated(keyword string, verbmode int) {
 		fmt.Println("Finding in all poems in Tang Dynasty...")
 	}
 
-	qtsInst.FindAllRelatedWords(keyword, "qtsdemo1.dot", 2)
+	qtsInst.FindAllRelatedWords(keyword, "qtsdemo1.dot", KEYWORD_NEST)
 
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
@@ -137,7 +139,7 @@ func findRelated(keyword string, verbmode int) {
 		fmt.Println("Finding in all poems in Song Dynasty...")
 	}
 
-	qc.allPoems.FindAllRelatedWords(keyword, "qscdemo1.dot", 2)
+	qc.allPoems.FindAllRelatedWords(keyword, "qscdemo1.dot", KEYWORD_NEST)
 }
 
 // Same to findRelated(), only in QSC
