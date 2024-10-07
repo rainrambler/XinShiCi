@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os/exec"
 
 	"github.com/jwangsadinata/go-multimap/setmultimap"
 )
@@ -22,7 +24,15 @@ func (p *DotFile) Init() {
 	p.pair2count = make(map[string]int)
 }
 
-func (p *DotFile) AddNode(oneWord string) {
+func (p *DotFile) AddLink(word1 string, word2 string, cnt int) {
+	p.addNode(word1)
+	p.addNode(word2)
+
+	p.Word2Word.Put(word1, word2)
+	p.addLinkCount(word1, word2, cnt)
+}
+
+func (p *DotFile) addNode(oneWord string) {
 	if oneWord == "" {
 		return
 	}
@@ -37,16 +47,8 @@ func (p *DotFile) AddNode(oneWord string) {
 		return
 	}
 
-	p.Nodes[oneWord] = 1
+	p.Nodes[oneWord] = p.Nodes[oneWord] + 1
 	//fmt.Printf("[DBG]Node added: %s, Total: %d\n", oneWord, len(p.Nodes))
-}
-
-func (p *DotFile) AddLink(word1 string, word2 string, cnt int) {
-	p.AddNode(word1)
-	p.AddNode(word2)
-
-	p.Word2Word.Put(word1, word2)
-	p.addLinkCount(word1, word2, cnt)
 }
 
 func createPair(wd1, wd2 string) string {
@@ -168,4 +170,19 @@ func (p *DotFile) GenerateFull(filename string) {
 	lines = append(lines, footer)
 
 	WriteLines(lines, filename)
+}
+
+func CreatePngFromDot(dotname string) {
+	pngname := ChangeFileExt(dotname, ".png")
+	//fmt.Printf("[DBG]PNG: %s\n", pngname)
+
+	dotpath := `D:\Soft\graphviz\Graphviz-12.1.1-win64\bin\dot.exe`
+	cmd := exec.Command(dotpath, dotname, "-Tpng", "-o", pngname)
+
+	_, err := cmd.Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	//fmt.Printf("[INFO]PNG %s created. Result: %s\n", pngname, out)
 }
