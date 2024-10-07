@@ -174,6 +174,8 @@ func (p *WordCloud) CreateDot(curWord, filename string) {
 	}
 
 	df.Generate(filename)
+
+	CreatePngFromDot(filename)
 }
 
 const Multiply = 30
