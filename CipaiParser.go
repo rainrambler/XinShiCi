@@ -5,6 +5,11 @@ import (
 	"strings"
 )
 
+func AnalyseCipaiBySentence() {
+	matchCipai()
+}
+
+// `寒料峭，心似玉壺冰` --> `憶江南`，`小重山`，……
 func matchCipai() {
 	var cp CipaiParser
 	cp.Load(`Cipai/CipaiGelv.txt`)
@@ -16,10 +21,12 @@ func matchCipai() {
 	//cp.Match(`深深浅浅绿`)
 	//cp.Match(`待得團圓時候，樽前問這時節。`)
 	//cp.Match(`當年忠貞為國酬`)
-	//cp.Match(`忠贞为国酬`)
+	//cp.Match(`且待新歲譜新篇`)
+	//cp.Match(`期許新歲譜新篇`)
 	//cp.Match(`夜夜姑苏城外，当时月`)
 	//cp.Match(`寒料峭，心似玉壶冰`)
-	cp.Match(`寒料峭，心似玉壺冰`)
+	//cp.Match(`寒料峭，心似玉壺冰`)
+	cp.Match(`功名半紙，風雪千山`)
 	//cp.DbgPrint()
 }
 
