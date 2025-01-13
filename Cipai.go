@@ -63,7 +63,7 @@ func (p *Cipai) compareArr(arr []string) bool {
 		partSentences := p.AllSentences[startPos : startPos+len(arr)]
 
 		if compareArrSameSize(arr, partSentences) {
-			fmt.Printf("Found in %s (%d)\n", p.Title, p.CharSize())
+			fmt.Printf("Found in %s (%d) Chars\n", p.Title, p.CharSize())
 			fmt.Println("----------------------------")
 			return true
 		}
