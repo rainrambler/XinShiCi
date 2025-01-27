@@ -121,16 +121,18 @@ func findRepeatChChars() {
 const KEYWORD_NEST = 3
 
 // Keys: [新綠]==>新綠:87, 東風:12, 闌幹:9, 年華:7
-func findRelated(keyword string, verbmode int) {
-	var qtsInst Qts
-	qtsInst.Init()
-	qtsInst.ReadFile("qts_zht.txt")
+func findRelated(keyword string, verbmode int, inQts bool) {
+	if inQts {
+		var qtsInst Qts
+		qtsInst.Init()
+		qtsInst.ReadFile("qts_zht.txt")
 
-	if verbmode != 0 {
-		fmt.Println("Finding in all poems in Tang Dynasty...")
+		if verbmode != 0 {
+			fmt.Println("Finding in all poems in Tang Dynasty...")
+		}
+
+		qtsInst.FindAllRelatedWords(keyword, "qtsdemo1.dot", KEYWORD_NEST)
 	}
-
-	qtsInst.FindAllRelatedWords(keyword, "qtsdemo1.dot", KEYWORD_NEST)
 
 	var qc QscZhtLoader
 	qc.loadFile(`qsc_zht_fmt.txt`)
