@@ -177,7 +177,7 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 		}
 	}
 
-	wc.PrintResult(100)
+	wc.PrintResult(20)
 
 	k2v := wc.GetTopResult(TOP_WORD * 2)
 
@@ -379,22 +379,23 @@ func (p *ChinesePoems) FindByYayun(yayun string) {
 	fmt.Printf("Total %d results.\n", resultcount)
 }
 
+// 鷓鴣天, 十四寒
 func (p *ChinesePoems) FindByCiPaiYayun(cipai, yayun string) {
-	//rhyme2c := make(map[string]int)
-
 	resultcount := 0
+	sameCipai := 0
 	for _, v := range p.ID2Poems {
-		//rhyme2c[v.Rhyme] = rhyme2c[v.Rhyme] + 1
-
-		if (v.Rhyme == yayun) && (v.Title == cipai) {
-			//fmt.Printf("[%s]: %s\n", v.toDesc(), v.LeftChars(75))
+		if v.Title != cipai {
+			continue
+		}
+		sameCipai++
+		if v.Rhyme == yayun {
 			fmt.Printf("[%s]\n", v.toFullDesc())
 			resultcount++
+		} else {
+			//fmt.Printf("[DBG]Rhyme of %s: %v\n", v.title(), v.Rhyme)
 		}
 	}
 	fmt.Printf("Total %d results.\n", resultcount)
-
-	//PrintSortedMapByValue(rhyme2c)
 }
 
 func (p *ChinesePoems) FindByYayunLength(yayun string, chlen int) {
