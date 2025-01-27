@@ -32,7 +32,7 @@ func (p *ChinesePoems) AddPoem(poem *ChinesePoem) {
 		log.Printf("WARN: AddPoem: empty ID!!\n")
 		return
 	}
-	// https://stackoverflow.com/questions/2050391/how-to-check-if-a-map-contains-a-key-in-go
+	
 	if res, ok := p.ID2Poems[poem.ID]; ok {
 		// exists
 		log.Printf("WARN: AddPoem: exists ID: %s, Line: %d whith Line: %d\n",
@@ -162,8 +162,8 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 		return
 	}
 
-	if !p.checkCommonWord(keyword) && (layers != 0) {
-		fmt.Printf("[INFO]%s is not a common word.\n", keyword)
+	if !p.checkFrequentWord(keyword) && (layers != 0) {
+		fmt.Printf("[INFO]%s is not a common word. Layer: %d\n", keyword, layers)
 		return
 	}
 
@@ -183,7 +183,7 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 
 	validnum := 0
 	for k, v := range k2v {
-		if p.checkCommonWord(k) {
+		if p.checkFrequentWord(k) {
 			p.dotFileInst.AddLink(keyword, k, v)
 			validnum++
 
@@ -201,7 +201,7 @@ func (p *ChinesePoems) FindRelatedWordsN(keyword string, layers int) {
 	}
 }
 
-func (p *ChinesePoems) checkCommonWord(wd string) bool {
+func (p *ChinesePoems) checkFrequentWord(wd string) bool {
 	return p.commonWords.Contains(wd)
 }
 
