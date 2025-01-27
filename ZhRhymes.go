@@ -49,7 +49,7 @@ const (
 	YunA    = "1"
 	YunIa   = "2"
 	Yun_Ao  = "13"
-	Yun_Ian = "14"
+	Yun_An  = "14" // 寒
 	Yun_Ing = "17"
 	Yun_Ei  = "8" // 北
 	Yun_U   = "10"
