@@ -4,11 +4,11 @@ import (
 	"fmt"
 )
 
-type Lines struct {
+type Rows struct {
 	AllLines []int
 }
 
-func (p *Lines) ToOneLine() string {
+func (p *Rows) ToOneLine() string {
 	s := ""
 	for _, item := range p.AllLines {
 		s += fmt.Sprintf("%d", item) + ", "
@@ -30,16 +30,16 @@ func (p *Keywords) ToOneLine() string {
 	return s
 }
 
-func (p *Lines) Count() int {
+func (p *Rows) Count() int {
 	return len(p.AllLines)
 }
 
 type Keyword2Lines struct {
-	Key2Lines map[string]*Lines
+	Key2Lines map[string]*Rows
 }
 
 func (p *Keyword2Lines) Init() {
-	p.Key2Lines = make(map[string]*Lines)
+	p.Key2Lines = make(map[string]*Rows)
 }
 
 func (p *Keyword2Lines) AddLine(keyword string, line int) {
@@ -52,7 +52,7 @@ func (p *Keyword2Lines) AddLine(keyword string, line int) {
 	if exists {
 		ls.AllLines = append(ls.AllLines, line)
 	} else {
-		lsnew := new(Lines)
+		lsnew := new(Rows)
 		lsnew.AllLines = append(lsnew.AllLines, line)
 
 		p.Key2Lines[keyword] = lsnew
