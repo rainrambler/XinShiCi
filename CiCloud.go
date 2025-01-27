@@ -5,21 +5,28 @@ import (
 	"strings"
 )
 
-func GenerateWordCloud(filename string) {
+func GenerateWordCloud(filename, outfilepart string) {
 	lines, err := ReadLines(filename)
 	if err != nil {
 		fmt.Printf("Cannot load file: %s!\n", filename)
 		return
 	}
 
+	generateWordCloudByLines(lines, outfilepart)
+}
+
+// outfile: "dufu" --> "dufu_2_30.html"
+func generateWordCloudByLines(lines []string, outfile string) {
 	var wc CiCloud
 	wc.Init()
 	wc.parseLines(lines)
 
 	wc.PrintResult(500)
-	//PrintMapGroupByValue(wc.char2count)
-	//wc.ConvertJsonHardCode()
-	//wc.SaveFile(`nalan`)
+	if outfile == "" {
+		return
+	}
+
+	wc.SaveMultiFiles(outfile)
 }
 
 type CiCloud struct {
@@ -61,27 +68,5 @@ func (p *CiCloud) parseOneLine(line string) {
 
 	for _, item := range arr {
 		p.parseSentence(item)
-	}
-}
-
-func (p *CiCloud) SaveFile(filename string) {
-	tmpl, err := ReadTextFile(`./doc/wordcloudtempl.html`)
-	if err != nil {
-		fmt.Println("Cannot read template file!")
-		return
-	}
-
-	for i := 4; i < 30; i++ {
-		s := ConvertJsonHardCode(p.char2count, i)
-		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
-		fullfname := fmt.Sprintf("%s_1_%d.html", filename, i)
-		WriteTextFile(fullfname, content)
-	}
-
-	for i := 4; i < 30; i++ {
-		s := ConvertJsonHardCode(p.word2count, i)
-		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
-		fullfname := fmt.Sprintf("%s_2_%d.html", filename, i)
-		WriteTextFile(fullfname, content)
 	}
 }
