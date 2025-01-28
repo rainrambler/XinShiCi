@@ -119,9 +119,81 @@ func (p *WordCloud) CreateDot(curWord, filename string) {
 	CreatePngFromDot(filename)
 }
 
+func (p *WordCloud) SaveMultiFiles(filename string) {
+	tmpl, err := ReadTextFile(`./doc/wordcloudtempl.html`)
+	if err != nil {
+		fmt.Println("Cannot read template file!")
+		return
+	}
+
+	for i := 4; i < 30; i++ {
+		s := ConvertJsonHardCode(p.char2count, i)
+		if s == "" {
+			continue
+		}
+		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
+		fullfname := fmt.Sprintf("./output/%s_1_%d.html", filename, i)
+		WriteTextFile(fullfname, content)
+	}
+
+	for i := 4; i < 30; i++ {
+		s := ConvertJsonHardCode(p.word2count, i)
+		if s == "" {
+			continue
+		}
+		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
+		fullfname := fmt.Sprintf("./output/%s_2_%d.html", filename, i)
+		WriteTextFile(fullfname, content)
+	}
+}
+
+func (p *WordCloud) SaveFilesAutoCount(filename string, desiredCount int) {
+	tmpl, err := ReadTextFile(`./doc/wordcloudtempl.html`)
+	if err != nil {
+		fmt.Println("Cannot read template file!")
+		return
+	}
+
+	s, wdCount := ConvertMap2Json(p.char2count, desiredCount)
+	if s != "" {
+		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
+		fullfname := fmt.Sprintf("./output/%s_1_%d.html", filename, wdCount)
+		WriteTextFile(fullfname, content)
+	}
+
+	s, wdCount = ConvertMap2Json(p.word2count, desiredCount)
+	if s != "" {
+		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
+		fullfname := fmt.Sprintf("./output/%s_2_%d.html", filename, wdCount)
+		WriteTextFile(fullfname, content)
+	}
+}
+
+func (p *WordCloud) SaveFile(partname string, margin int) {
+	tmpl, err := ReadTextFile(`./doc/wordcloudtempl.html`)
+	if err != nil {
+		fmt.Println("Cannot read template file!")
+		return
+	}
+
+	s := ConvertJsonHardCode(p.word2count, margin)
+	if s == "" {
+		fmt.Printf("INFO: No results for %s and margin: %d!\n",
+			partname, margin)
+		return
+	}
+	content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
+	fullfname := fmt.Sprintf("%s_2_%d.html", partname, margin)
+	WriteTextFile(fullfname, content)
+}
+
 const Multiply = 30
 
 func ConvertJsonHardCode(s2c map[string]int, margin int) string {
+	if len(s2c) == 0 {
+		return ""
+	}
+
 	s := ""
 	for k, v := range s2c {
 		if v > margin {
@@ -130,9 +202,57 @@ func ConvertJsonHardCode(s2c map[string]int, margin int) string {
 		}
 	}
 
+	if len(s) == 0 {
+		return ""
+	}
+
 	s = s[:len(s)-1] // remove last comma
 	s = "[" + s + "]"
 	return s
+}
+
+// return name:"黃金",value:28
+func ConvertMap2Json(s2c map[string]int, count int) (string, int) {
+	if len(s2c) == 0 {
+		return "", -1
+	}
+
+	type kv struct {
+		Key   string
+		Value int
+	}
+
+	var ss []kv
+	for k, v := range s2c {
+		ss = append(ss, kv{k, v})
+	}
+
+	sort.Slice(ss, func(i, j int) bool {
+		return ss[i].Value > ss[j].Value
+	})
+
+	s := ""
+	curCount := 0
+	wordCount := 0
+
+	for _, kv := range ss {
+		if curCount < count {
+			line := fmt.Sprintf(`{name:"%s",value:%d},`, kv.Key, kv.Value)
+			s += line
+			curCount++
+		} else {
+			wordCount = kv.Value
+			break
+		}
+	}
+
+	if len(s) == 0 {
+		return "", -1
+	}
+
+	s = s[:len(s)-1] // remove last comma
+	s = "[" + s + "]"
+	return s, wordCount
 }
 
 func SplitSentence(r rune) bool {
