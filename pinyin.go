@@ -11,6 +11,7 @@ type Pinyin struct {
 	Shengdiao string
 }
 
+// "ping0" ==> Pinyin instance
 func CreatePinyin(s string) *Pinyin {
 	if len(s) == 0 {
 		return nil
