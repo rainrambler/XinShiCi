@@ -1,9 +1,10 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <!-- script src='https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js'></script> -->
-        <script src="../dist/echarts.js"></script>
-        <script src='../dist/echarts-wordcloud.js'></script>
+        <script src="../dist/echarts.min.js"></script>
+        <script src='../dist/echarts-wordcloud.min.js'></script>
     </head>
     <body>
         <style>
@@ -22,11 +23,11 @@
                 series: [ {
                     type: 'wordCloud',
                     gridSize: 2,
-                    sizeRange: [12, 100],
+                    sizeRange: [8, 70],
                     rotationRange: [-30, 30],
-                    shape: 'cardioid',
-                    width: 1200,
-                    height: 800,
+                    shape: 'circle',
+                    width: '95%',
+                    height: '90%',
                     drawOutOfBound: false,
                     textStyle: {
                         color: function () {
