@@ -7,25 +7,50 @@ import (
 
 func CreateTangClouds() {
 	var fps FamousPoets
-	fps.Init()
-	fps.CreateWordCloud()
+	fps.Init(`李白,杜甫,白居易,李商隱,杜牧,高適`)
+	fps.CreateWordCloud(`qts_zht.txt`)
+}
+
+func CreateLiYuClouds() {
+	var fps FamousPoets
+	poetName := `李煜`
+	fps.Init(poetName)
+
+	filename := `LiYuCi.txt`
+	lines, err := ReadLines(filename)
+	if err != nil {
+		fmt.Printf("INFO: Cannot read file %s: %v!\n", filename, err)
+		return
+	}
+
+	var poet2lines Poet2Lines
+	for _, line := range lines {
+		if len(line) == 0 {
+			continue
+		}
+
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
+		poet2lines.AddLine(poetName, line)
+	}
+
+	fps.convertLines(poet2lines)
 }
 
 type FamousPoets struct {
 	allPoets []string
 }
 
-func (p *FamousPoets) Init() {
-	p.allPoets = strings.Split(`李白,杜甫,白居易,李商隱,杜牧,高適`, ",")
+func (p *FamousPoets) Init(poets string) {
+	p.allPoets = strings.Split(poets, ",")
 }
 
-func (p *FamousPoets) CreateWordCloud() {
+func (p *FamousPoets) CreateWordCloud(contentfile string) {
 	var qtsInst Qts
 	qtsInst.Init()
-	qtsInst.ReadFile("qts_zht.txt")
-
-	var pyf PinyinFinder
-	pyf.Init(`zht2py.txt`)
+	qtsInst.ReadFile(contentfile)
 
 	var poet2lines Poet2Lines
 
@@ -34,6 +59,13 @@ func (p *FamousPoets) CreateWordCloud() {
 			poet2lines.AddLine(poem.Author, line)
 		}
 	}
+
+	p.convertLines(poet2lines)
+}
+
+func (p *FamousPoets) convertLines(poet2lines Poet2Lines) {
+	var pyf PinyinFinder
+	pyf.Init(`zht2py.txt`)
 
 	for _, poet := range p.allPoets {
 		lines := poet2lines.GetLines(poet)
@@ -44,6 +76,8 @@ func (p *FamousPoets) CreateWordCloud() {
 		createWordCloudByLines(lines, poetpy)
 	}
 }
+
+const DESIRED_WORD_COUNT = 200
 
 // outfile: "dufu" --> "dufu_2_30.html"
 func createWordCloudByLines(lines []string, outfile string) {
@@ -58,7 +92,7 @@ func createWordCloudByLines(lines []string, outfile string) {
 		return
 	}
 
-	wc.SaveMultiFiles(outfile)
+	wc.SaveFilesAutoCount(outfile, DESIRED_WORD_COUNT)
 }
 
 type Lines struct {
