@@ -159,6 +159,9 @@ func (p *WordCloud) SaveFilesAutoCount(filename string, desiredCount int) {
 		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
 		fullfname := fmt.Sprintf("./output/%s_1_%d.html", filename, wdCount)
 		WriteTextFile(fullfname, content)
+	} else {
+		fmt.Printf("INFO: No Char results for %s (Margin: %d)!\n",
+			filename, desiredCount)
 	}
 
 	s, wdCount = ConvertMap2Json(p.word2count, desiredCount)
@@ -166,6 +169,9 @@ func (p *WordCloud) SaveFilesAutoCount(filename string, desiredCount int) {
 		content := strings.Replace(tmpl, `[$REALDATA$]`, s, 1)
 		fullfname := fmt.Sprintf("./output/%s_2_%d.html", filename, wdCount)
 		WriteTextFile(fullfname, content)
+	} else {
+		fmt.Printf("INFO: No Word results for %s (Margin: %d)!\n",
+			filename, desiredCount)
 	}
 }
 
