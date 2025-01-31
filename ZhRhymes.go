@@ -72,7 +72,7 @@ func (p *ZhRhymes) AnalyseRhyme(lastwords []rune) string {
 
 // `闲` ==> `14` (ian)
 func (p *ZhRhymes) FindRhyme(chword rune) string {
-	pystr := p.pyf.FindPinyin2(chword)
+	pystr := p.pyf.FindPinyin(chword)
 	//fmt.Printf("[DBG]%s: %s\n", string(chword), pystr)
 
 	if pystr == "" {
@@ -98,7 +98,7 @@ func (p *ZhRhymes) FindRhyme(chword rune) string {
 // eg: Input: (`闲`, PingZePing), Output:  `14` (ian)
 // eg: Input: (`闲`, PingZeZe), Output:  “
 func (p *ZhRhymes) findRhymePingze(chword rune, pztype int) string {
-	pystr := p.pyf.FindPinyin2(chword)
+	pystr := p.pyf.FindPinyin(chword)
 
 	if pystr == "" {
 		//log.Printf("DBG: Cannot find pinyin for %s!\n", chword)
