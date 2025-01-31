@@ -8,7 +8,7 @@ func TestPinyin1(t *testing.T) {
 	s := `壽丘惟舊跡，酆邑乃前基。`
 	pinyinstr := ""
 	for _, ch := range s {
-		res := pyf.FindPinyin2(ch)
+		res := pyf.FindPinyin(ch)
 
 		if len(res) > 0 {
 			pinyinstr += res + " "

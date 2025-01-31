@@ -68,17 +68,26 @@ func (p *PinyinFinder) SetPingze2(zhchar rune, pzval int) {
 func (p *PinyinFinder) FindStrPinyin(zhchars string) string {
 	s := ""
 	for _, c := range zhchars {
-		s += p.FindPinyin2(c)
+		s += p.FindPinyinNoAccent(c)
 	}
 	return s
 }
 
-func (p *PinyinFinder) FindPinyin2(zhchar rune) string {
+func (p *PinyinFinder) FindPinyin(zhchar rune) string {
 	if py, ok := p.hz2py[zhchar]; ok {
 		return py
 	}
 
 	return "" // empty
+}
+
+func (p *PinyinFinder) FindPinyinNoAccent(zhchar rune) string {
+	py, exists := p.hz2py[zhchar]
+	if !exists {
+		return "NA"
+	}
+
+	return strings.TrimRight(py, "012345")
 }
 
 func (p *PinyinFinder) FindPingze2(zhchar rune) int {
