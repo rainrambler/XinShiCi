@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -9,6 +10,21 @@ func CreateTangClouds() {
 	var fps FamousPoets
 	fps.Init(`李白,杜甫,白居易,李商隱,杜牧,高適`)
 	fps.CreateWordCloud(`qts_zht.txt`)
+}
+
+func CreateTangAllClouds() {
+	var fps FamousPoets
+	fps.CreateAllWordClouds(`qts_zht.txt`)
+}
+
+func CreateQtsCloud() {
+	var fps FamousPoets
+	fps.CreateAllCloud(`qts_zht.txt`)
+}
+
+func CreateQtsPoetCloud() {
+	var fps FamousPoets
+	fps.CreatePoetCloud(`qts_zht.txt`, `0214poets.html`)
 }
 
 func CreateLiYuClouds() {
@@ -41,10 +57,23 @@ func CreateLiYuClouds() {
 
 type FamousPoets struct {
 	allPoets []string
+	poetmap  map[string]int // key: poet name
 }
 
 func (p *FamousPoets) Init(poets string) {
-	p.allPoets = strings.Split(poets, ",")
+	p.poetmap = make(map[string]int)
+	if poets == "" {
+		return
+	}
+	arr := strings.Split(poets, ",")
+	for _, item := range arr {
+		p.AddPoet(item)
+	}
+}
+
+func (p *FamousPoets) AddPoet(poet string) {
+	p.allPoets = append(p.allPoets, poet)
+	p.poetmap[poet] = 1
 }
 
 func (p *FamousPoets) CreateWordCloud(contentfile string) {
@@ -77,6 +106,92 @@ func (p *FamousPoets) convertLines(poet2lines Poet2Lines) {
 	}
 }
 
+func (p *FamousPoets) CreateAllWordClouds(contentfile string) {
+	p.Init("")
+
+	var qtsInst Qts
+	qtsInst.Init()
+	qtsInst.ReadFile(contentfile)
+
+	var poet2lines Poet2Lines
+
+	for _, poem := range qtsInst.ID2Poems {
+		for _, line := range poem.Sentences {
+			poet2lines.AddLine(poem.Author, line)
+		}
+	}
+
+	var pyf PinyinFinder
+	pyf.Init(`zht2py.txt`)
+
+	for poet, lines := range poet2lines.poet2lines {
+		poetpy := pyf.FindStrPinyin(poet)
+		poetpy = p.checkPoetName(poetpy)
+		p.AddPoet(poetpy)
+
+		createWordCloudByLines(lines.allLines, poetpy)
+	}
+}
+
+// 全唐诗全文
+func (p *FamousPoets) CreateAllCloud(contentfile string) {
+	p.Init("")
+
+	var qtsInst Qts
+	qtsInst.Init()
+	qtsInst.ReadFile(contentfile)
+
+	var poet2lines Poet2Lines
+
+	for _, poem := range qtsInst.ID2Poems {
+		for _, line := range poem.Sentences {
+			poet2lines.AddLine(`全唐詩`, line)
+		}
+	}
+
+	var pyf PinyinFinder
+	pyf.Init(`zht2py.txt`)
+
+	for poet, lines := range poet2lines.poet2lines {
+		poetpy := pyf.FindStrPinyin(poet)
+		createWordCloudByLines(lines.allLines, poetpy)
+	}
+}
+
+func (p *FamousPoets) CreatePoetCloud(contentfile, outfile string) {
+	var qtsInst Qts
+	qtsInst.Init()
+	qtsInst.ReadFile(contentfile)
+
+	var wc WordCloud
+	wc.InitParams()
+
+	for _, poem := range qtsInst.ID2Poems {
+		wc.AddWord(poem.Author)
+	}
+
+	wc.SaveFilesAutoCount(outfile, DESIRED_WORD_COUNT)
+}
+
+func (p *FamousPoets) checkPoetName(poetname string) string {
+	poetnew := poetname
+	i := 1
+	for p.PoetExists(poetnew) {
+		poetnew = fmt.Sprintf("%s%d", poetname, i)
+		i++
+	}
+	return poetnew
+}
+
+func (p *FamousPoets) PoetExists(poet string) bool {
+	if len(poet) == 0 {
+		log.Printf("DBG: Empty poet name in PoetExists!\n")
+		return false
+	}
+	_, exists := p.poetmap[poet]
+	return exists
+}
+
 const DESIRED_WORD_COUNT = 200
 
 // outfile: "dufu" --> "dufu_2_30.html"
@@ -87,7 +202,6 @@ func createWordCloudByLines(lines []string, outfile string) {
 		wc.parseSentence(line)
 	}
 
-	//wc.PrintResult(500)
 	if outfile == "" {
 		return
 	}
@@ -130,4 +244,12 @@ func (p *Poet2Lines) GetLines(poet string) []string {
 		return poems.allLines
 	}
 	return []string{}
+}
+
+func (p *Poet2Lines) GetAuthors() []string {
+	arr := []string{}
+	for k, _ := range p.poet2lines {
+		arr = append(arr, k)
+	}
+	return arr
 }
