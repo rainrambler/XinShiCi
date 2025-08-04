@@ -207,7 +207,6 @@ func SplitLine(r rune) bool {
 // https://stackoverflow.com/questions/39862613/how-to-split-multiple-delimiter-in-golang
 func CreateQtsPoem(line string, idx int) *ChinesePoem {
 	arr := strings.FieldsFunc(line, SplitLine)
-
 	if len(arr) != 4 {
 		log.Printf("WARN: Format error in line [%d]: %s\n", idx, SubString(line, 0, 10))
 		return nil
