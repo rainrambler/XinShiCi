@@ -31,70 +31,78 @@ def segment_poetry(input_file: str, author_file: str, cipai_file: str) -> None:
     # 可忽略的小标题
     exempt_titles = {'又', '其一', '其二', '其三', '其四', '其五',
                      '其六', '其七', '其八', '其九', '其十', '一', '二', '三', '四', '五',
-                     '六', '七', '八', '九', '十'}
+                     '六', '七', '八', '九', '十', '十一', '十二', '十三'}
 
     author_order = {}
     author_contents = defaultdict(list)
     order_counter = 0
     current_author = None
-    state = 'expect_author'
-    just_had_cipai = False       # 标记是否刚处理完词牌，等待可能的副标题
+    state = 'expect_author'       # 状态: expect_author | expect_author_intro | expect_cipai | expect_content
+    just_had_cipai = False        # 刚处理完词牌，允许后续空行后接副标题
 
     with open(input_file, 'r', encoding='utf-8') as f:
         for line_no, raw_line in enumerate(f, start=1):
             line = raw_line.rstrip()
 
-            # ---------- 疑似短行检测 ----------
-            if line:
-                han_cnt = count_chinese(line)
-                if han_cnt <= 3 and line not in cipai and line not in authors:
-                    if line in exempt_titles:
-                        pass
-                    elif just_had_cipai:
-                        print(f"行 {line_no}: 疑似副标题: {line}")
-                        #pass    # 词牌后的副标题，不报警
-                    else:
-                        print(f"行 {line_no}: 疑似词牌或作者: {line}")
-
-            # ---------- 状态机解析 ----------
-            if not line:  # 空行
-                # 只有在非 expect_content 状态下（如 expect_author/expect_cipai）才清除标记
-                # expect_content 状态下保留标记，以便跨空行匹配副标题
-                if state != 'expect_content':
-                    just_had_cipai = False
+            # ---------- 空行处理 ----------
+            if not line:
                 if current_author is not None:
                     author_contents[current_author].append('')
+                # 保留 just_had_cipai 标记，支持跨空行副标题
                 continue
 
+            # ---------- 状态机 ----------
             if state == 'expect_author':
+                # 此时行为作者名
                 current_author = line
                 if current_author not in author_order:
                     order_counter += 1
                     author_order[current_author] = order_counter
                 author_contents[current_author].append(line)
+                state = 'expect_author_intro'
+
+            elif state == 'expect_author_intro':
+                # 此时行为作者介绍（第一行非空）
+                author_contents[current_author].append(line)
                 state = 'expect_cipai'
-                just_had_cipai = False
+                # 作者介绍无论多短都不报警
 
             elif state == 'expect_cipai':
-                # 当前行是词牌
+                # 此时行为词牌
                 author_contents[current_author].append(line)
                 state = 'expect_content'
-                just_had_cipai = True   # 词牌后允许副标题
+                just_had_cipai = True
 
             elif state == 'expect_content':
-                if line in authors:     # 新作者
+                if line in authors:          # 新作者
                     current_author = line
                     if current_author not in author_order:
                         order_counter += 1
                         author_order[current_author] = order_counter
                     author_contents[current_author].append(line)
-                    state = 'expect_cipai'
+                    state = 'expect_author_intro'
                     just_had_cipai = False
+                elif line in cipai or line in exempt_titles:          # 同一作者的新词牌
+                    author_contents[current_author].append(line)
+                    state = 'expect_cipai'   # 重新进入词牌状态，后续可接副标题
+                    just_had_cipai = True
                 else:
-                    # 处理词牌后第一个非空行（无论是否有副标题，标记都该释放）
+                    # 内容行（可能是副标题、正文）
+                    han_cnt = count_chinese(line)
+
+                    # 疑似短行报警（排除已知词牌、作者、豁免标题、副标题）
+                    if (han_cnt <= 3
+                            and line not in cipai
+                            and line not in authors
+                            and line not in exempt_titles
+                            and not just_had_cipai):   # 词牌后的副标题不报警
+                        print(f"行 {line_no}: 疑似词牌或作者: {line}")
+
+                    author_contents[current_author].append(line)
+
+                    # 刚处理完词牌后的第一个非空行（无论是否为副标题）后，释放标记
                     if just_had_cipai:
                         just_had_cipai = False
-                    author_contents[current_author].append(line)
                     # 状态保持 expect_content
 
     # 写出每位作者的文件
